@@ -41,7 +41,7 @@ public class WindowsHandler {
         public void setWindow() throws Exception{
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ihm/loginForm.fxml"));
             currentStage.setTitle("Hello World");
-            currentStage.setScene(new Scene(root, 300, 275));
+            currentStage.setScene(new Scene(root));
         }
 
         public void showWindow(){

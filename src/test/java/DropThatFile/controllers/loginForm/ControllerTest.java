@@ -1,6 +1,6 @@
 package DropThatFile.controllers.loginForm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
 
 /**
  * Created by Nicol on 21/03/2017.
