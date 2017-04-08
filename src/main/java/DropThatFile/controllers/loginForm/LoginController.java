@@ -1,6 +1,6 @@
 package DropThatFile.controllers.loginForm;
 
-import DropThatFile.engines.WindowsHandler;
+import DropThatFile.Main;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,18 +25,17 @@ public class LoginController extends AnchorPane implements Initializable {
     @FXML
     Label loginMessage;
 
-    private WindowsHandler.loginForm application;
+    private Main application;
     
-    public void setApp(WindowsHandler.loginForm application){
+    public void setApp(Main application){
         this.application = application;
     }
-    
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setMessage(loginMessage,"black",1,"Welcome on DropThatFile. Please enter your email and your password.");
         userEmail.setPromptText("Email...");
         password.setPromptText("Password...");
-        
     }
 
     /**

@@ -1,6 +1,6 @@
 package DropThatFile.controllers.profileForm;
 
-import DropThatFile.engines.WindowsHandler;
+import DropThatFile.Main;
 import DropThatFile.models.User2;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -30,13 +30,13 @@ public class ProfileController extends AnchorPane implements Initializable {
     @FXML
     private Hyperlink logout;
     @FXML 
-    private Button proceed;
+    private Button continueButton;
     @FXML 
     private Label profileMessage;
     
-    private WindowsHandler.loginForm application;
+    private Main application;
 
-    public void setApp(WindowsHandler.loginForm application){
+    public void setApp(Main application){
         this.application = application;
         User2 loggedUser = application.getLoggedUser();
         userEmail.setText(loggedUser.getId());
@@ -53,7 +53,7 @@ public class ProfileController extends AnchorPane implements Initializable {
      * OnClick on the "logout" hyperlink.
      * @param event
      */
-    public void processLogout(ActionEvent event) {
+    public void processLogout(ActionEvent event) throws Exception {
         if (application == null){
             return;
         }
