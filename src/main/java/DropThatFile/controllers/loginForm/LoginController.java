@@ -51,9 +51,9 @@ public class LoginController extends AnchorPane implements Initializable {
             setMessage(loginMessage,"red",1,"Your password must not contains any whitespace.");
         } else if (password.getText().length() < 8) {
             setMessage(loginMessage,"red",1,"Your password must contains at least 8 characters.");
-        } else if (!application.userLogging(userEmail.getText(), password.getText())) {
+        } /*else if (!application.userLogging(userEmail.getText(), password.getText())) {
             setMessage(loginMessage,"red", 1,"Your email or your password is unknown.");
-        }
+        }*/
     }
 
     /**

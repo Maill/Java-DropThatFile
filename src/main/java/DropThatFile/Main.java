@@ -28,8 +28,8 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        //GlobalVariables.windowsManager.Init(primaryStage);
-        try {
+        GlobalVariables.windowsManager.Init(primaryStage);
+        /*try {
             stage = primaryStage;
             stage.setTitle("DropThatFile");
             stage.setMinWidth(MINIMUM_WINDOW_WIDTH);
@@ -38,10 +38,10 @@ public class Main extends Application{
             primaryStage.show();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
     }
 
-    public User2 getLoggedUser() { return loggedUser; }
+   /* public User2 getLoggedUser() { return loggedUser; }
 
     public boolean userLogging(String userId, String password) throws Exception {
         if (Authenticator.validate(userId, password)) {
@@ -74,7 +74,7 @@ public class Main extends Application{
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Unable to load Login Form", ex);
         }
-    }
+    }*/
 
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();

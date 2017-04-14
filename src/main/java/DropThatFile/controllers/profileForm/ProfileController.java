@@ -38,10 +38,10 @@ public class ProfileController extends AnchorPane implements Initializable {
 
     public void setApp(Main application){
         this.application = application;
-        User2 loggedUser = application.getLoggedUser();
-        userEmail.setText(loggedUser.getId());
-        username.setText(loggedUser.getUsername());
-        phoneNumber.setText(loggedUser.getPhoneNumber());
+        //User2 loggedUser = application.getLoggedUser();
+        //userEmail.setText(loggedUser.getId());
+        //username.setText(loggedUser.getUsername());
+        //phoneNumber.setText(loggedUser.getPhoneNumber());
         setMessage(profileMessage, null, 0,null);
     }
 
@@ -57,7 +57,7 @@ public class ProfileController extends AnchorPane implements Initializable {
         if (application == null){
             return;
         }
-        application.userLogout();
+        //application.userLogout();
     }
 
     /**
@@ -69,12 +69,12 @@ public class ProfileController extends AnchorPane implements Initializable {
             animateMessage();
             return;
         }
-        User2 loggedUser = application.getLoggedUser();
+        /*User2 loggedUser = application.getLoggedUser();
         loggedUser.setUsername(username.getText());
         loggedUser.setPhoneNumber(phoneNumber.getText());
         loggedUser.setPostalAddress(postalAddress.getText());
         setMessage(profileMessage, null, 0,null);
-        animateMessage();
+        animateMessage();*/
 
 
 
