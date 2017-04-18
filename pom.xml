@@ -10,6 +10,22 @@
     <!--<build>
         <testSourceDirectory>test/main</testSourceDirectory>
     </build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <annotationProcessors>
+                        <proc>DropThatFile.engines.annotations.processor.TodoHTMLProcessor</proc>
+                        <proc>DropThatFile.engines.annotations.processor.TodoProcessor</proc>
+                    </annotationProcessors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>net.lingala.zip4j</groupId>

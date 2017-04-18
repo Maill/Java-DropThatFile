@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class User2 {
 
-    private static final Map<String, User2> users = new HashMap<String, User2>();
+    private static final Map<String, User2> users = new HashMap<>();
 
     public static User2 of(String id) {
         User2 user2 = users.get(id);
@@ -37,7 +37,7 @@ public class User2 {
     public String getEmail() { return email; }
 
     /**
-     * @param email the email to set
+     * @param email the email Recipient set
      */
     public void setEmail(String email) { this.email = email; }
 
@@ -49,7 +49,7 @@ public class User2 {
     }
 
     /**
-     * @param username the username to set
+     * @param username the username Recipient set
      */
     public void setUsername(String username) {
         this.username = username;
@@ -63,7 +63,7 @@ public class User2 {
     }
 
     /**
-     * @param phoneNumber the phoneNumber to set
+     * @param phoneNumber the phoneNumber Recipient set
      */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
@@ -77,7 +77,7 @@ public class User2 {
     }
 
     /**
-     * @param subscribed the subscribed to set
+     * @param subscribed the subscribed Recipient set
      */
     public void setSubscribed(boolean subscribed) {
         this.subscribed = subscribed;
@@ -91,7 +91,7 @@ public class User2 {
     }
 
     /**
-     * @param postalAddress the postalAddress to set
+     * @param postalAddress the postalAddress Recipient set
      */
     public void setPostalAddress(String postalAddress) {
         this.postalAddress = postalAddress;

@@ -1,6 +1,7 @@
 package DropThatFile.controllers.profileForm;
 
 import DropThatFile.Main;
+import DropThatFile.engines.annotations.*;
 import DropThatFile.models.User2;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -45,7 +46,6 @@ public class ProfileController extends AnchorPane implements Initializable {
         setMessage(profileMessage, null, 0,null);
     }
 
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
 
@@ -64,6 +64,11 @@ public class ProfileController extends AnchorPane implements Initializable {
      * OnClick on the "Continue" button.yh
      * @param event
      */
+    @_Todo(
+            level = Level.EVOLUTION,
+            author = "Olivier",
+            comment = "Implement the \"save user in database\" function."
+    )
     public void saveProfile(ActionEvent event) {
         if (application == null){
             animateMessage();
@@ -75,13 +80,6 @@ public class ProfileController extends AnchorPane implements Initializable {
         loggedUser.setPostalAddress(postalAddress.getText());
         setMessage(profileMessage, null, 0,null);
         animateMessage();*/
-
-
-
-        //TODO : save user in database
-
-
-
     }
 
     /**
@@ -103,10 +101,10 @@ public class ProfileController extends AnchorPane implements Initializable {
 
     /**
      * Set a customizable message
-     * @param label The label to alter
-     * @param colour The colour to set. Default = black.
-     * @param opacity The text to set
-     * @param text The text to set
+     * @param label The label Recipient alter
+     * @param colour The colour Recipient set. Default = black.
+     * @param opacity The text Recipient set
+     * @param text The text Recipient set
      */
     private void setMessage(Label label, String colour, int opacity, String text){
         if(colour == null && text == null)

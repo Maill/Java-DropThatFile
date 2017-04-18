@@ -31,7 +31,6 @@ public class LoginController extends AnchorPane implements Initializable {
         this.application = application;
     }
 
-    @Override
     public void initialize(URL location, ResourceBundle resources) {
         setMessage(loginMessage,"black",1,"Welcome on DropThatFile. Please enter your email and your password.");
         userEmail.setPromptText("Email...");
@@ -58,10 +57,10 @@ public class LoginController extends AnchorPane implements Initializable {
 
     /**
      * Set a customizable message
-     * @param label The label to alter
-     * @param colour The colour to set. Default = black.
-     * @param opacity The text to set
-     * @param text The text to set
+     * @param label The label Recipient alter
+     * @param colour The colour Recipient set. Default = black.
+     * @param opacity The text Recipient set
+     * @param text The text Recipient set
      */
     private void setMessage(Label label, String colour, int opacity, String text){
         if(colour == null && text == null)

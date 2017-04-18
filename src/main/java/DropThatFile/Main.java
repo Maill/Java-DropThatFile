@@ -63,7 +63,7 @@ public class Main extends Application{
             ProfileController profile = (ProfileController) replaceSceneContent("ihm/profile.fxml");
             profile.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Unable to load Profile Form", ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Unable Recipient load Profile Form", ex);
         }
     }
 
@@ -72,7 +72,7 @@ public class Main extends Application{
             LoginController login = (LoginController) replaceSceneContent("ihm/login.fxml");
             login.setApp(this);
         } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Unable to load Login Form", ex);
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Unable Recipient load Login Form", ex);
         }
     }*/
 
