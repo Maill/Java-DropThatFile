@@ -3,12 +3,11 @@ package DropThatFile.engines.annotations;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+@Deprecated
 public class AnnotationParsing {
-
     public static void main(String[] args) {
         try {
-            for (Method method : AnnotationParsing.class.getClassLoader()
-                    .loadClass(("com.journaldev.annotations.AnnotationExample")).getMethods()) {
+            for (Method method : AnnotationParsing.class.getClassLoader().loadClass(("com.journaldev.annotations.AnnotationExample")).getMethods()) {
                 // checks if MethodInfo annotation is present for the method
                 if (method.isAnnotationPresent(DropThatFile.engines.annotations._Stability.class)) {
                     try {
@@ -34,5 +33,4 @@ public class AnnotationParsing {
             e.printStackTrace();
         }
     }
-
 }
