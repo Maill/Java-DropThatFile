@@ -18,8 +18,8 @@ import javax.lang.model.element.TypeElement;
 
 import DropThatFile.engines.annotations._Todo;
 
-@SupportedAnnotationTypes(value = { "DropThatFile.engines.annotations._Todo" }) //Specifie which annotation Recipient process
-@SupportedSourceVersion(SourceVersion.RELEASE_8) //Specifie which jdk source version Recipient handle
+@SupportedAnnotationTypes(value = { "DropThatFile.engines.annotations._Todo" }) //Specifie which annotation Recipient to process
+@SupportedSourceVersion(SourceVersion.RELEASE_8) //Specifie which jdk source version Recipient to handle
 public class TodoHTMLProcessor extends AbstractProcessor {
     List<_Todo> list;
     FileOutputStream fw = null;
@@ -31,8 +31,6 @@ public class TodoHTMLProcessor extends AbstractProcessor {
         //Adding annotations into a list
         for (TypeElement te : annotations) {
             for (Element element : roundEnv.getElementsAnnotatedWith(te)) {
-                String name = element.getClass().toString();
-
                 _Todo todo = element.getAnnotation(_Todo.class);
 
                 if (todo != null) {
@@ -50,13 +48,11 @@ public class TodoHTMLProcessor extends AbstractProcessor {
         StringBuilder html = new StringBuilder();
         html.append("<html>");
         html.append("<body>");
-        html.append("<table>");
+        html.append("<center><table>");
 
         html.append("<tr>");
-        html.append("<td style=\"border:1px solid black\">Criticality</td>");
-        html.append("<td style=\"border:1px solid black\">Author</td>");
-        html.append("<td style=\"border:1px solid black\">Recipient</td>");
-        html.append("<td style=\"border:1px solid black\">Comment</td>");
+        html.append("<td style=\"border:2px solid black\">Status</td>");
+        html.append("<td style=\"border:2px solid black\">Comment</td>");
         html.append("</tr>");
 
         Iterator<_Todo>  it = list.iterator();
@@ -78,27 +74,25 @@ public class TodoHTMLProcessor extends AbstractProcessor {
 
             switch(todo.level().toString()){
                 case "IMPROVEMENT" :
-                    style = "style=\"color:green;border:1px solid black\"";
+                    style = "style=\"color:green;border:2px solid black\"";
                     break;
                 case "EVOLUTION":
-                    style = "style=\"color:purple;border:1px solid black\"";
+                    style = "style=\"color:purple;border:2px solid black\"";
                     break;
                 case "BUG":
-                    style = "style=\"color:orange;border:1px solid black\"";
+                    style = "style=\"color:orange;border:2px solid black\"";
                     break;
                 case "CRITICAL":
-                    style = "style=\"color:red;border:1px solid black\"";
+                    style = "style=\"color:red;border:2px solid black\"";
                     break;
             }
 
-            html.append("<td " + style + ">" + todo.level() + "</td>");
-            html.append("<td " + style + ">" + todo.author() + "</td>");
-            html.append("<td " + style + ">" + todo.Recipient() + "</td>");
+            html.append("<td " + style + "><b>" + todo.level() + "</b></td>");
             html.append("<td " + style + ">" + todo.comment() + "</td>");
             html.append("</tr>");
         }
 
-        html.append("</table>");
+        html.append("</table></center>");
         html.append("</body>");
         html.append("</html>");
 

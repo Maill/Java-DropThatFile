@@ -43,10 +43,8 @@ public class TodoProcessor extends AbstractProcessor {
 
                 //If it is retrieved (not null), then we retrieve its content
                 if (todo != null) {
-                    System.out.println("\t\t Author : " + todo.author());
-                    System.out.println("\t\t Recipient : " + todo.Recipient());
-                    System.out.println("\t\t Comment : " + todo.comment());
                     System.out.println("\t\t Level : " + todo.level());
+                    System.out.println("\t\t Comment : " + todo.comment());
                 }
             }
         }

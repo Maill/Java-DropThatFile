@@ -16,7 +16,7 @@ import java.lang.annotation.Inherited;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface _Todo {
     Level level() default Level.BUG;
-    String author() default "Unknown";
-    String Recipient() default "Unknown";
-    String comment() default "No comment.";
+    //String author() default "Unknown";
+    //String Recipient() default "Unknown";
+    String comment() default "None.";
 }

@@ -66,7 +66,6 @@ public class ProfileController extends AnchorPane implements Initializable {
      */
     @_Todo(
             level = Level.EVOLUTION,
-            author = "Olivier",
             comment = "Implement the \"save user in database\" function."
     )
     public void saveProfile(ActionEvent event) {
