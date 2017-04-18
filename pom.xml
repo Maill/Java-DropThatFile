@@ -19,8 +19,8 @@
                     <source>1.8</source>
                     <target>1.8</target>
                     <annotationProcessors>
-                        <proc>DropThatFile.engines.annotations.processor.TodoHTMLProcessor</proc>
-                        <proc>DropThatFile.engines.annotations.processor.TodoProcessor</proc>
+                        <proc>DropThatFile.engines.annotations.processors.TodoHTMLProcessor</proc>
+                        <proc>DropThatFile.engines.annotations.processors.TodoProcessor</proc>
                     </annotationProcessors>
                 </configuration>
             </plugin>

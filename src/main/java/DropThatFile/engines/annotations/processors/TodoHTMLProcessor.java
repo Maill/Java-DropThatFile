@@ -1,4 +1,4 @@
-package DropThatFile.engines.annotations.processor;
+package DropThatFile.engines.annotations.processors;
 
 import java.io.File;
 import java.io.FileOutputStream;

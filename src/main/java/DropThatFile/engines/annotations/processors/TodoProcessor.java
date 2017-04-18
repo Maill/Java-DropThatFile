@@ -1,4 +1,4 @@
-package DropThatFile.engines.annotations.processor;
+package DropThatFile.engines.annotations.processors;
 
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
