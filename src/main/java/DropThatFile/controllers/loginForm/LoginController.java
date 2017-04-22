@@ -1,15 +1,15 @@
 package DropThatFile.controllers.loginForm;
 
 import DropThatFile.Main;
+import DropThatFile.engines.WindowManager.LoginForm;
+import DropThatFile.engines.WindowManager.ProfileForm;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -25,16 +25,16 @@ public class LoginController extends AnchorPane implements Initializable {
     @FXML
     Label loginMessage;
 
-    private Main application;
+    private LoginForm application;
     
-    public void setApp(Main application){
+    public void setApp(LoginForm application){
         this.application = application;
     }
 
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setMessage(loginMessage,"black",1,"Welcome on DropThatFile. Please enter your email and your password.");
-        userEmail.setPromptText("Email...");
-        password.setPromptText("Password...");
+        //userEmail.setPromptText("Email...");
+        //password.setPromptText("Password...");
     }
 
     /**
@@ -43,39 +43,27 @@ public class LoginController extends AnchorPane implements Initializable {
      */
     public void loginVerification(ActionEvent event) throws Exception {
         if (!userEmail.getText().matches("^(?:(?:[a-z0-9]+\\.[a-z0-9]+)|(?:[a-z0-9]+))@(?:[a-z0-9]+(?:\\.[a-z0-9]+)+)$") || userEmail.getText() == null){
-            setMessage(loginMessage,"red",1,"Your email address is invalid.");
-        } else if(password.getText() == null){
-            setMessage(loginMessage,"red",1,"Your password is invalid.");
-        } else if(password.getText().contains(" ")) {
-            setMessage(loginMessage,"red",1,"Your password must not contains any whitespace.");
-        } else if (password.getText().length() < 8) {
-            setMessage(loginMessage,"red",1,"Your password must contains at least 8 characters.");
+            setMessage("L'adresse électronique est invalide.");
+        } else if(password.getText() == null || password.getText().contains(" ") || password.getText().length() < 8){
+            setMessage("Mot de passe invalide.");
         } /*else if (!application.userLogging(userEmail.getText(), password.getText())) {
-            setMessage(loginMessage,"red", 1,"Your email or your password is unknown.");
-        }*/
+            setMessage("L'adresse électionique et/ou le mot de passe sont invalides.");
+        }*/ else{
+            Stage profileStage = new Stage();
+            ProfileForm profile = new ProfileForm(profileStage);
+            profile.show();
+        }
     }
 
     /**
      * Set a customizable message
-     * @param label The label Recipient alter
-     * @param colour The colour Recipient set. Default = black.
-     * @param opacity The text Recipient set
-     * @param text The text Recipient set
+     * @param text The text to set
      */
-    private void setMessage(Label label, String colour, int opacity, String text){
-        if(colour == null && text == null)
-            return;
-        label.setOpacity(opacity == 1 ? 1 : 0);
-        label.setText(text);
-        label.setTextFill(Color.web(colour == null ? "black" : colour));
-    }
-
-    /**
-     * OnClick on the "Exit" button.
-     * @param event
-     */
-    public void exitApplication(ActionEvent event){
-        // WARNING : Close every connection or every instance before exiting the application !!!
-        System.exit(0);
+    private void setMessage(String text){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("LOLMDR");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
     }
 }

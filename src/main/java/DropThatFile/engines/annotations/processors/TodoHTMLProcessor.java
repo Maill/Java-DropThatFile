@@ -26,7 +26,7 @@ public class TodoHTMLProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        list = new ArrayList<>();
+        list = new ArrayList<_Todo>();
 
         //Adding annotations into a list
         for (TypeElement te : annotations) {
@@ -71,7 +71,6 @@ public class TodoHTMLProcessor extends AbstractProcessor {
             _Todo todo = it.next();
             html.append("<tr>");
             String style = "";
-
             switch(todo.level().toString()){
                 case "IMPROVEMENT" :
                     style = "style=\"color:green;border:2px solid black\"";

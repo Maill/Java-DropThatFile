@@ -16,119 +16,30 @@ public class User {
     private RSAEngine password;
     private String mail;
     private Date lastLogin;
-    private List<Group> isMemberOf = new List<Group>() {
-        public int size() {
-            return 0;
-        }
-
-        public boolean isEmpty() {
-            return false;
-        }
-
-        public boolean contains(Object o) {
-            return false;
-        }
-
-        public Iterator<Group> iterator() {
-            return null;
-        }
-
-        public Object[] toArray() {
-            return new Object[0];
-        }
-
-        public <T> T[] toArray(T[] a) {
-            return null;
-        }
-
-        public boolean add(Group group) {
-            return false;
-        }
-
-        public boolean remove(Object o) {
-            return false;
-        }
-
-        public boolean containsAll(Collection<?> c) {
-            return false;
-        }
-
-        public boolean addAll(Collection<? extends Group> c) {
-            return false;
-        }
-
-        public boolean addAll(int index, Collection<? extends Group> c) {
-            return false;
-        }
-
-        public boolean removeAll(Collection<?> c) {
-            return false;
-        }
-
-        public boolean retainAll(Collection<?> c) {
-            return false;
-        }
-
-        public void clear() {
-
-        }
-
-        public Group get(int index) {
-            return null;
-        }
-
-        public Group set(int index, Group element) {
-            return null;
-        }
-
-        public void add(int index, Group element) {
-
-        }
-
-        public Group remove(int index) {
-            return null;
-        }
-
-        public int indexOf(Object o) {
-            return 0;
-        }
-
-        public int lastIndexOf(Object o) {
-            return 0;
-        }
-
-        public ListIterator<Group> listIterator() {
-            return null;
-        }
-
-        public ListIterator<Group> listIterator(int index) {
-            return null;
-        }
-
-        public List<Group> subList(int fromIndex, int toIndex) {
-            return null;
-        }
-    };
+    private String phoneNumber;
+    private List<Group> isMemberOf = new ArrayList<Group>();
     //endregion
 
     //region Contructeurs
-    public User(int id, String fName, String lName, RSAEngine password, String mail, Date lastLogin, List<Group> isMemberOf) {
+    public User(int id, String fName, String lName, RSAEngine password, String mail, Date lastLogin, String phoneNumber,List<Group> isMemberOf) {
         this.id = id;
         this.fName = fName;
         this.lName = lName;
         this.password = password;
         this.mail = mail;
         this.lastLogin = lastLogin;
+        this.phoneNumber = phoneNumber;
         this.isMemberOf = isMemberOf;
     }
 
-    public User(int id, String fName, String lName, RSAEngine password, String mail, Date lastLogin, Group isMemberOf) {
+    public User(int id, String fName, String lName, RSAEngine password, String mail, Date lastLogin, String phoneNumber,Group isMemberOf) {
         this.id = id;
         this.fName = fName;
         this.lName = lName;
         this.password = password;
         this.mail = mail;
         this.lastLogin = lastLogin;
+        this.phoneNumber = phoneNumber;
         this.isMemberOf.add(isMemberOf);
     }
     //endregion
@@ -158,12 +69,26 @@ public class User {
         return lastLogin;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public List<Group> getIsMemberOf() {
         return isMemberOf;
     }
     //endregion
 
-    //region Overrided Methods
+    //region Setters
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    //endregion
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -172,26 +97,27 @@ public class User {
         User user = (User) o;
 
         if (id != user.id) return false;
-        if (fName != null ? !fName.equals(user.fName) : user.fName != null) return false;
-        if (lName != null ? !lName.equals(user.lName) : user.lName != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (mail != null ? !mail.equals(user.mail) : user.mail != null) return false;
+        if (!fName.equals(user.fName)) return false;
+        if (!lName.equals(user.lName)) return false;
+        if (!password.equals(user.password)) return false;
+        if (!mail.equals(user.mail)) return false;
         if (lastLogin != null ? !lastLogin.equals(user.lastLogin) : user.lastLogin != null) return false;
-        return isMemberOf != null ? isMemberOf.equals(user.isMemberOf) : user.isMemberOf == null;
+        if (!phoneNumber.equals(user.phoneNumber)) return false;
+        return isMemberOf.equals(user.isMemberOf);
     }
 
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + (fName != null ? fName.hashCode() : 0);
-        result = 31 * result + (lName != null ? lName.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (mail != null ? mail.hashCode() : 0);
+        result = 31 * result + fName.hashCode();
+        result = 31 * result + lName.hashCode();
+        result = 31 * result + password.hashCode();
+        result = 31 * result + mail.hashCode();
         result = 31 * result + (lastLogin != null ? lastLogin.hashCode() : 0);
-        result = 31 * result + (isMemberOf != null ? isMemberOf.hashCode() : 0);
+        result = 31 * result + phoneNumber.hashCode();
+        result = 31 * result + isMemberOf.hashCode();
         return result;
     }
-
 
     @Override
     public String toString() {
@@ -202,6 +128,7 @@ public class User {
                 ", password=" + password +
                 ", mail='" + mail + '\'' +
                 ", lastLogin=" + lastLogin +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 ", isMemberOf=" + isMemberOf +
                 '}';
     }

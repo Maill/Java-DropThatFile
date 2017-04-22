@@ -2,7 +2,6 @@ package DropThatFile.controllers.profileForm;
 
 import DropThatFile.Main;
 import DropThatFile.engines.annotations.*;
-import DropThatFile.models.User2;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
