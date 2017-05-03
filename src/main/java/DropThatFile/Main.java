@@ -1,6 +1,6 @@
 package DropThatFile;
 
-import DropThatFile.engines.WindowManager.LoginForm;
+import DropThatFile.engines.windowsManager.LoginForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

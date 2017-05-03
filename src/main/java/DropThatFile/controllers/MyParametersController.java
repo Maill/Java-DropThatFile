@@ -1,6 +1,8 @@
-package DropThatFile.controllers.profileForm;
+package DropThatFile.controllers;
 
 import DropThatFile.Main;
+import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
+import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.annotations.*;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
@@ -17,7 +19,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ProfileController extends AnchorPane implements Initializable {
+public class MyParametersController extends AnchorPane implements Initializable {
 
     @FXML
     private TextField userEmail;
@@ -36,12 +38,14 @@ public class ProfileController extends AnchorPane implements Initializable {
     
     private Main application;
 
-    public void setApp(Main application){
-        this.application = application;
-        //User2 loggedUser = application.getLoggedUser();
-        //userEmail.setText(loggedUser.getId());
-        //username.setText(loggedUser.getUsername());
-        //phoneNumber.setText(loggedUser.getPhoneNumber());
+    private MyParametersForm myParametersForm;
+
+    public void setApp(WindowsHandler windowsHandler){
+        this.myParametersForm = myParametersForm;
+        /*User loggedUser = myParametersForm.getLoggedUser();
+        userEmail.setText(loggedUser.getId());
+        username.setText(loggedUser.getUsername());
+        phoneNumber.setText(loggedUser.getPhoneNumber());*/
         setMessage(profileMessage, null, 0,null);
     }
 
@@ -72,12 +76,12 @@ public class ProfileController extends AnchorPane implements Initializable {
             animateMessage();
             return;
         }
-        /*User2 loggedUser = application.getLoggedUser();
+        /*User loggedUser = application.getLoggedUser();
         loggedUser.setUsername(username.getText());
-        loggedUser.setPhoneNumber(phoneNumber.getText());
-        loggedUser.setPostalAddress(postalAddress.getText());
+        loggedUser.setPhoneNumber(phoneNumber.getText());*/
+        //loggedUser.setPostalAddress(postalAddress.getText());
         setMessage(profileMessage, null, 0,null);
-        animateMessage();*/
+        animateMessage();
     }
 
     /**

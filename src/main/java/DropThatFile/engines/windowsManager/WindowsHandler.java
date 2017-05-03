@@ -1,4 +1,4 @@
-package DropThatFile.engines.WindowManager;
+package DropThatFile.engines.windowsManager;
 
 import javafx.stage.Stage;
 
@@ -7,8 +7,6 @@ import javafx.stage.Stage;
  */
 
 public abstract class WindowsHandler {
-
-
     protected Stage jfxStage;
 
     public WindowsHandler(Stage jfxStage){
@@ -19,4 +17,5 @@ public abstract class WindowsHandler {
         return jfxStage;
     }
 
+    public void closeForm(){ jfxStage.close(); }
 }

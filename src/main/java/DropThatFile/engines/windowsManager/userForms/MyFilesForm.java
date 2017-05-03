@@ -1,5 +1,6 @@
-package DropThatFile.engines.WindowManager;
+package DropThatFile.engines.windowsManager.userForms;
 
+import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -8,12 +9,12 @@ import javafx.stage.Stage;
 /**
  * Created by Nicol on 15/04/2017.
  */
-public class ProfileForm extends WindowsHandler{
+public class MyFilesForm extends WindowsHandler {
 
 
-    public ProfileForm(Stage primaryStage) throws Exception{
+    public MyFilesForm(Stage primaryStage) throws Exception{
         super(primaryStage);
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ihm/profile.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ihm/myFiles.fxml"));
         jfxStage.setTitle("DropThatFile");
         jfxStage.setScene(new Scene(root));
     }

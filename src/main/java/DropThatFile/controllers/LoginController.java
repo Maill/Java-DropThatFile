@@ -1,14 +1,12 @@
-package DropThatFile.controllers.loginForm;
+package DropThatFile.controllers;
 
-import DropThatFile.Main;
-import DropThatFile.engines.WindowManager.LoginForm;
-import DropThatFile.engines.WindowManager.ProfileForm;
+import DropThatFile.engines.windowsManager.LoginForm;
+import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -50,7 +48,7 @@ public class LoginController extends AnchorPane implements Initializable {
             setMessage("L'adresse électionique et/ou le mot de passe sont invalides.");
         }*/ else{
             Stage profileStage = new Stage();
-            ProfileForm profile = new ProfileForm(profileStage);
+            MyParametersForm profile = new MyParametersForm(profileStage);
             profile.show();
         }
     }
@@ -61,7 +59,7 @@ public class LoginController extends AnchorPane implements Initializable {
      */
     private void setMessage(String text){
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("LOLMDR");
+        alert.setTitle("Attention");
         alert.setHeaderText(null);
         alert.setContentText(text);
         alert.showAndWait();

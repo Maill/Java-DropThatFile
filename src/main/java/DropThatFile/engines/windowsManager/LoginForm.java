@@ -1,5 +1,7 @@
-package DropThatFile.engines.WindowManager;
+package DropThatFile.engines.windowsManager;
 
+import DropThatFile.engines.LogManagement;
+import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,7 +12,7 @@ import javafx.stage.Stage;
  */
 public class LoginForm extends WindowsHandler{
 
-    private final org.apache.log4j.Logger log = logManagement.Instance(this);
+    private final org.apache.log4j.Logger log = LogManagement.Instance(this);
 
     public LoginForm(Stage primaryStage) throws Exception{
         super(primaryStage);
@@ -31,7 +33,7 @@ public class LoginForm extends WindowsHandler{
     public void goToProfile() {
         try {
             Stage profileStage = new Stage();
-            ProfileForm profile = new ProfileForm(profileStage);
+            MyParametersForm profile = new MyParametersForm(profileStage);
             profile.show();
         } catch (Exception ex) {
             log.error("Unable to load Profile Form");

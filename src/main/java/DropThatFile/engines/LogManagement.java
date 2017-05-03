@@ -7,11 +7,11 @@ import org.apache.log4j.nt.NTEventLogAppender;
  *
  * Classe pour le logger log4j
  */
-public class logManagement {
+public class LogManagement {
 
     private Logger logger;
 
-    private logManagement(Object caller){
+    private LogManagement(Object caller){
         // On ne fait pas la gestion de la clé de registre ici, on la fait pendant l'installation
         logger = Logger.getLogger(caller.getClass());
         String mySource = "DropThatFile";
@@ -24,6 +24,6 @@ public class logManagement {
     }
 
     public static Logger Instance(Object caller){
-        return new logManagement(caller).logger;
+        return new LogManagement(caller).logger;
     }
 }

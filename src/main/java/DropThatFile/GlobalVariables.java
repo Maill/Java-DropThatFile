@@ -1,7 +1,6 @@
 package DropThatFile;
 
 import DropThatFile.engines.RSAEngine;
-import DropThatFile.engines.WindowManager.WindowsHandler;
 
 /**
  * Created by Nicol on 22/03/2017.
