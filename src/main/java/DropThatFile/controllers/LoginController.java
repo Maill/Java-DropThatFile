@@ -1,7 +1,7 @@
 package DropThatFile.controllers;
 
 import DropThatFile.engines.windowsManager.LoginForm;
-import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
+import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -24,6 +24,10 @@ public class LoginController extends AnchorPane implements Initializable {
     Label loginMessage;
 
     private LoginForm application;
+
+    private Stage stage = new Stage();
+
+    private WindowsHandler windowsHandler = new WindowsHandler(stage);
     
     public void setApp(LoginForm application){
         this.application = application;
@@ -41,15 +45,14 @@ public class LoginController extends AnchorPane implements Initializable {
      */
     public void loginVerification(ActionEvent event) throws Exception {
         if (!userEmail.getText().matches("^(?:(?:[a-z0-9]+\\.[a-z0-9]+)|(?:[a-z0-9]+))@(?:[a-z0-9]+(?:\\.[a-z0-9]+)+)$") || userEmail.getText() == null){
-            setMessage("L'adresse électronique est invalide.");
+            setMessage("Email address is incorrect.");
         } else if(password.getText() == null || password.getText().contains(" ") || password.getText().length() < 8){
-            setMessage("Mot de passe invalide.");
+            setMessage("Password is not valid.");
         } /*else if (!application.userLogging(userEmail.getText(), password.getText())) {
-            setMessage("L'adresse électionique et/ou le mot de passe sont invalides.");
-        }*/ else{
-            Stage profileStage = new Stage();
-            MyParametersForm profile = new MyParametersForm(profileStage);
-            profile.show();
+            setMessage("L'adresse électronique et/ou le mot de passe sont invalides.");
+        }*/
+        else{ // Si tout est OK, on se connecte
+            windowsHandler.goToForm("MyHomeForm", true);
         }
     }
 
@@ -59,7 +62,7 @@ public class LoginController extends AnchorPane implements Initializable {
      */
     private void setMessage(String text){
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Attention");
+        alert.setTitle("Warning!");
         alert.setHeaderText(null);
         alert.setContentText(text);
         alert.showAndWait();

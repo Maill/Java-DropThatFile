@@ -22,21 +22,7 @@ public class LoginForm extends WindowsHandler{
         jfxStage.setResizable(false);
     }
 
-    public void show(){
-        jfxStage.show();
-    }
-
     public boolean userLogging(String userId, String password) throws Exception {
         return true;
-    }
-
-    public void goToProfile() {
-        try {
-            Stage profileStage = new Stage();
-            MyParametersForm profile = new MyParametersForm(profileStage);
-            profile.show();
-        } catch (Exception ex) {
-            log.error("Unable to load Profile Form");
-        }
     }
 }
