@@ -20,6 +20,10 @@ public class WindowsHandler {
         return jfxStage;
     }
 
+    public void showForm(){
+        jfxStage.show();
+    }
+
     public void goToForm(String formName, Boolean showForm) throws Exception {
         try {
             // Instantiate the choosen form according to the input and its package

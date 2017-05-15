@@ -1,7 +1,7 @@
 package DropThatFile.controllers;
 
 import DropThatFile.Main;
-import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
+import DropThatFile.engines.windowsManager.userForms.ParametersForm;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.annotations.*;
 import javafx.animation.FadeTransition;
@@ -19,7 +19,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MyParametersController extends AnchorPane implements Initializable {
+public class ParametersController extends AnchorPane implements Initializable {
 
     @FXML
     private TextField userEmail;
@@ -38,7 +38,7 @@ public class MyParametersController extends AnchorPane implements Initializable 
     
     private Main application;
 
-    private MyParametersForm myParametersForm;
+    private ParametersForm myParametersForm;
 
     public void setApp(WindowsHandler windowsHandler){
         this.myParametersForm = myParametersForm;

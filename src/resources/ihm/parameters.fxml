@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
 
-<AnchorPane id="Profile" minWidth="500.0" prefHeight="500.0" prefWidth="500.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.MyParametersController">
+<AnchorPane id="Profile" minWidth="500.0" prefHeight="500.0" prefWidth="500.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.ParametersController">
   <children>
     <AnchorPane id="anchorPane1" prefHeight="392.0" prefWidth="500.0" styleClass="top-segment" AnchorPane.bottomAnchor="108.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <children>

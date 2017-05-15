@@ -13,6 +13,6 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         LoginForm startForm = new LoginForm(primaryStage);
-        startForm.show();
+        startForm.showForm();
     }
 }

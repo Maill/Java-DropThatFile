@@ -9,10 +9,10 @@ import javafx.stage.Stage;
 /**
  * Created by Nicol on 15/04/2017.
  */
-public class MyParametersForm extends WindowsHandler {
-    public MyParametersForm(Stage primaryStage) throws Exception{
+public class ParametersForm extends WindowsHandler {
+    public ParametersForm(Stage primaryStage) throws Exception{
         super(primaryStage);
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ihm/myParameters.fxml"));
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("ihm/parameters.fxml"));
         jfxStage.setTitle("DropThatFile");
         jfxStage.setScene(new Scene(root));
     }

@@ -52,7 +52,7 @@ public class LoginController extends AnchorPane implements Initializable {
             setMessage("L'adresse électronique et/ou le mot de passe sont invalides.");
         }*/
         else{ // Si tout est OK, on se connecte
-            windowsHandler.goToForm("MyHomeForm", true);
+            windowsHandler.goToForm("HomeForm", true);
         }
     }
 

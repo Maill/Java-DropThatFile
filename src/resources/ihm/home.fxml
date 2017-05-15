@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1095.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="343.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+  <tabs>
+    <Tab closable="false" text="My Files">
+      <content>
+        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0" />
+      </content>
+    </Tab>
+    <Tab closable="false" text="Parameters">
+      <content>
+        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0" />
+      </content>
+    </Tab>
+    <Tab closable="false" text="Home">
+      <content>
+        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
+               <children>
+                  <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="705.0" prefWidth="504.0" />
+                    </content>
+                  </ScrollPane>
+                  <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0" />
+                     </content>
+                  </ScrollPane>
+               </children>
+        </AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

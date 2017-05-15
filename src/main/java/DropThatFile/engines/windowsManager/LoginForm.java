@@ -1,7 +1,6 @@
 package DropThatFile.engines.windowsManager;
 
 import DropThatFile.engines.LogManagement;
-import DropThatFile.engines.windowsManager.userForms.MyParametersForm;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
