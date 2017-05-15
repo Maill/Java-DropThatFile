@@ -1,39 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.TilePane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1095.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="343.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
-  <tabs>
-    <Tab closable="false" text="My Files">
-      <content>
-        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0" />
-      </content>
-    </Tab>
-    <Tab closable="false" text="Parameters">
-      <content>
-        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0" />
-      </content>
-    </Tab>
-    <Tab closable="false" text="Home">
-      <content>
-        <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
-               <children>
-                  <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="705.0" prefWidth="504.0" />
-                    </content>
-                  </ScrollPane>
-                  <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0" />
-                     </content>
-                  </ScrollPane>
-               </children>
-        </AnchorPane>
-      </content>
-    </Tab>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1095.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="255.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.HomeController">
+    <tabs>
+        <Tab closable="false" text="Repository">
+          <content>
+              <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
+                  <children>
+                      <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="705.0" prefWidth="504.0">
+                           <children>
+                              <TilePane layoutX="14.0" layoutY="70.0" prefColumns="4" prefHeight="621.0" prefRows="6" prefWidth="475.0" />
+                           </children></AnchorPane>
+                          </content>
+                      </ScrollPane>
+                      <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0">
+                           <children>
+                              <SplitPane dividerPositions="0.5" layoutX="25.0" layoutY="18.0" orientation="VERTICAL" prefHeight="671.0" prefWidth="456.0">
+                                <items>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                                </items>
+                              </SplitPane>
+                           </children></AnchorPane>
+                          </content>
+                      </ScrollPane>
+                      <Pane layoutX="524.0" layoutY="16.0" prefHeight="284.0" prefWidth="48.0">
+                          <children>
+                              <Button id="webSite" fx:id="webSite" layoutX="4.0" layoutY="129.0" onMouseClicked="#openLink" pickOnBounds="true" scaleX="1.2" />
+                              <Button id="windowsExplorer" fx:id="windowsExplorer" layoutX="4.0" layoutY="63.0" pickOnBounds="true" prefHeight="37.0" prefWidth="29.0" scaleX="1.2" />
+                              <Button id="synchronize" fx:id="synchronize" layoutX="1.0" layoutY="-2.0" pickOnBounds="true" prefHeight="52.0" prefWidth="44.0" scaleX="1.2" />
+                          </children>
+                      </Pane>
+                  </children>
+              </AnchorPane>
+          </content>
+        </Tab>
+        <Tab closable="false" text="Parameters">
+          <content>
+            <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0" />
+          </content>
+        </Tab>
   </tabs>
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
 </TabPane>

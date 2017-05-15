@@ -1,3 +1,27 @@
+#synchronize {
+    -fx-background-image: url("../../../synchronize.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:center;
+    -fx-background-color: transparent;
+}
+
+#windowsExplorer {
+    -fx-background-image: url("../../../windowsExplorer.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:center;
+    -fx-background-color: transparent;
+}
+
+#webSite {
+    -fx-background-image: url("../../../webSite.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:center;
+    -fx-background-color: transparent;
+}
+
 .top-segment {
     -fx-background-color: rgb(0, 153, 204);
     -fx-border-color: 
@@ -25,11 +49,6 @@
     -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.6), 0, 0.0 , 0 , 1 );
     -fx-border-width: 0;
 }
-
-/*Not working*/
-/*.hyperlink:focused {
-    -fx-text-fill: blue;
-}*/
 
 .check-box .box {
     -fx-background-color:
