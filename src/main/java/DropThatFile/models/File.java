@@ -12,13 +12,13 @@ public class File {
     //region Attributs
     private int id;
     private String name;
-    private RSAEngine password;
+    private String password;
     private Date created;
     private String description;
     //endregion
 
     //region Constructeur
-    public File(int id, String name, RSAEngine password, Date created, String description) {
+    public File(int id, String name, String password, Date created, String description) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -36,7 +36,7 @@ public class File {
         return name;
     }
 
-    public RSAEngine getPassword() {
+    public String getPassword() {
         return password;
     }
 

@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
  */
 
 public class WindowsHandler {
-    private final org.apache.log4j.Logger log = LogManagement.Instance(this);
+    private final org.apache.log4j.Logger log = LogManagement.getInstanceLogger(this);
     protected Stage jfxStage;
 
     public WindowsHandler(Stage jfxStage){

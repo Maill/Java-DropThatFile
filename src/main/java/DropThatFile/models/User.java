@@ -19,11 +19,12 @@ public class User {
     private Date lastLogin;
     private String phoneNumber;
     private List<Group> isMemberOf = new ArrayList<Group>();
+    private UUID token;
     //endregion
 
     //region Contructeurs
     public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
-                String phoneNumber, List<Group> isMemberOf) {
+                String phoneNumber, List<Group> isMemberOf, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -32,10 +33,11 @@ public class User {
         this.lastLogin = lastLogin;
         this.phoneNumber = phoneNumber;
         this.isMemberOf = isMemberOf;
+        this.token = token;
     }
 
     public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
-                String phoneNumber, Group isMemberOf) {
+                String phoneNumber, Group isMemberOf, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -44,11 +46,12 @@ public class User {
         this.lastLogin = lastLogin;
         this.phoneNumber = phoneNumber;
         this.isMemberOf.add(isMemberOf);
+        this.token = token;
     }
 
     //Constructeur de test sans BDD
     public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
-                String phoneNumber) {
+                String phoneNumber, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -56,6 +59,7 @@ public class User {
         this.lName = lName;
         this.lastLogin = lastLogin;
         this.phoneNumber = phoneNumber;
+        this.token = token;
     }
     //endregion
 
@@ -65,7 +69,7 @@ public class User {
         User user = users.get(id);
         if (user == null) {
             user = new User(id, email, password, null, null,
-                    Time.from(Instant.now()), null);
+                    Time.from(Instant.now()), null, UUID.randomUUID());
             users.put(Integer.toString(id), user);
         }
         return user;
@@ -103,6 +107,8 @@ public class User {
     public List<Group> getIsMemberOf() {
         return isMemberOf;
     }
+
+    public UUID getToken() { return token; }
     //endregion
 
     //region Setters
@@ -115,37 +121,7 @@ public class User {
     }
     //endregion
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        if (id != user.id) return false;
-        if (!fName.equals(user.fName)) return false;
-        if (!lName.equals(user.lName)) return false;
-        if (!password.equals(user.password)) return false;
-        if (!email.equals(user.email)) return false;
-        if (lastLogin != null ? !lastLogin.equals(user.lastLogin) : user.lastLogin != null) return false;
-        if (!phoneNumber.equals(user.phoneNumber)) return false;
-        return isMemberOf.equals(user.isMemberOf);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + fName.hashCode();
-        result = 31 * result + lName.hashCode();
-        result = 31 * result + password.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + (lastLogin != null ? lastLogin.hashCode() : 0);
-        result = 31 * result + phoneNumber.hashCode();
-        result = 31 * result + isMemberOf.hashCode();
-        return result;
-    }
-
+    //region Overrided methods
     @Override
     public String toString() {
         return "User{" +
@@ -156,8 +132,41 @@ public class User {
                 ", email='" + email + '\'' +
                 ", lastLogin=" + lastLogin +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", isMemberOf=" + isMemberOf +
+                ", isMemberOf=" + isMemberOf + '\'' +
+                ", token=" + token +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (id != user.id) return false;
+        if (fName != null ? !fName.equals(user.fName) : user.fName != null) return false;
+        if (lName != null ? !lName.equals(user.lName) : user.lName != null) return false;
+        if (!password.equals(user.password)) return false;
+        if (!email.equals(user.email)) return false;
+        if (lastLogin != null ? !lastLogin.equals(user.lastLogin) : user.lastLogin != null) return false;
+        if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null) return false;
+        if (isMemberOf != null ? !isMemberOf.equals(user.isMemberOf) : user.isMemberOf != null) return false;
+        return token.equals(user.token);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (fName != null ? fName.hashCode() : 0);
+        result = 31 * result + (lName != null ? lName.hashCode() : 0);
+        result = 31 * result + password.hashCode();
+        result = 31 * result + email.hashCode();
+        result = 31 * result + (lastLogin != null ? lastLogin.hashCode() : 0);
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        result = 31 * result + (isMemberOf != null ? isMemberOf.hashCode() : 0);
+        result = 31 * result + token.hashCode();
+        return result;
     }
     //endregion
 }

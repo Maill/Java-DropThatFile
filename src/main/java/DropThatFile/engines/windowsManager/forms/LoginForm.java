@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  */
 public class LoginForm extends WindowsHandler {
 
-    private final org.apache.log4j.Logger log = LogManagement.Instance(this);
+    private final org.apache.log4j.Logger log = LogManagement.getInstanceLogger(this);
 
     public LoginForm(Stage primaryStage) throws Exception{
         super(primaryStage);

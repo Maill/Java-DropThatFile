@@ -19,11 +19,9 @@ public class LogManagement {
         NTEventLogAppender eventLogAppender= new NTEventLogAppender(mySource,myLayout);
         logger.addAppender(eventLogAppender);
         logger.setLevel(Level.WARN);
-
-
     }
 
-    public static Logger Instance(Object caller){
+    public static Logger getInstanceLogger(Object caller){
         return new LogManagement(caller).logger;
     }
 }
