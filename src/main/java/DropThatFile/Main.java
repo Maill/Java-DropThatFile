@@ -27,13 +27,14 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         XMLReader xml = XMLReader.Instance();
+        KeyStoreFactory.setKeyPairToKeyStore("password");
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
         try{
             System.out.println("Clé privée : " + Base64.toBase64String(pair.getPrivate().getEncoded()));
             System.out.println("Clé publique : " + Base64.toBase64String(pair.getPublic().getEncoded()));
             System.out.println("----------------------------------------Crypting----------------------------------------------");
             System.out.println("----------------------------------------------------------------------------------------------");
-            String message = "Je veux aller jouer a Rocket League.";
+            String message = "Ceci est une phrase de texte décodée.";
             String cryptedMessage = RSAEngine.encrypt(message, pair.getPublic());
             System.out.println("Message : " + message + "\n" + "Message crypté : " + cryptedMessage);
             System.out.println("----------------------------------------------------------------------------------------------");

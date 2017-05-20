@@ -10,7 +10,6 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="255.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.HomeController">
     <tabs>
@@ -18,16 +17,6 @@
           <content>
               <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
                   <children>
-                      <ScrollPane layoutX="14.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
-                          <content>
-                              <StackPane fx:id="stackPane_repository" minHeight="0.0" minWidth="0.0" prefHeight="705.0" prefWidth="504.0">
-                                   <children>
-                                      <TreeView fx:id="treeView_repository" editable="true" layoutX="152.0" layoutY="253.0" prefHeight="705.0" prefWidth="504.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                      </TreeView>
-                                   </children>
-                              </StackPane>
-                          </content>
-                      </ScrollPane>
                       <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
                           <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0">
@@ -35,18 +24,23 @@
                               <TextField fx:id="item_textField" layoutX="128.0" layoutY="45.0" prefHeight="31.0" prefWidth="251.0" />
                               <Button fx:id="item_add" layoutX="185.0" layoutY="78.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="139.0" text="ADD ITEM" />
                               <TextArea fx:id="item_textArea" editable="false" layoutX="1.0" layoutY="229.0" prefHeight="383.0" prefWidth="506.0" AnchorPane.bottomAnchor="94.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="229.0" />
-                              <TextArea fx:id="message_textArea" editable="false"  layoutX="1.0" layoutY="630.0" prefHeight="68.0" prefWidth="506.0" />
+                              <TextArea fx:id="message_textArea" editable="false" layoutX="1.0" layoutY="630.0" prefHeight="68.0" prefWidth="506.0" />
                               <Button fx:id="item_remove" layoutX="108.0" layoutY="146.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="292.0" text="REMOVE SELECTED ITEM" />
                            </children></AnchorPane>
                           </content>
                       </ScrollPane>
-                      <Pane layoutX="524.0" layoutY="16.0" prefHeight="284.0" prefWidth="48.0">
+                      <Pane layoutX="522.0" layoutY="16.0" prefHeight="284.0" prefWidth="48.0">
                           <children>
-                              <Button id="synchronize" fx:id="synchronize" layoutX="1.0" layoutY="-2.0" pickOnBounds="true" prefHeight="52.0" prefWidth="44.0" scaleX="1.2" />
-                              <Button id="browse" fx:id="browse" layoutX="4.0" layoutY="63.0" pickOnBounds="true" prefHeight="37.0" prefWidth="29.0" scaleX="1.2" />
-                              <Button id="webSite" fx:id="webSite" layoutX="4.0" layoutY="129.0" onMouseClicked="#openLink" pickOnBounds="true" scaleX="1.2" />
+                              <Button id="synchronize" fx:id="synchronize" layoutX="3.0" layoutY="-2.0" pickOnBounds="true" prefHeight="52.0" prefWidth="44.0" scaleX="1.2" />
+                              <Button id="browse" fx:id="browse" layoutX="5.0" layoutY="63.0" pickOnBounds="true" prefHeight="37.0" prefWidth="29.0" scaleX="1.2" />
+                              <Button id="webSite" fx:id="webSite" layoutX="5.0" layoutY="129.0" onMouseClicked="#openLink" pickOnBounds="true" prefHeight="43.0" prefWidth="40.0" scaleX="1.2" />
                           </children>
                       </Pane>
+                  <AnchorPane layoutY="7.0" prefHeight="736.0" prefWidth="524.0">
+                     <children>
+                        <TreeView fx:id="treeView_repository" editable="true" layoutX="5.0" layoutY="7.0" prefHeight="711.0" prefWidth="519.0" AnchorPane.bottomAnchor="18.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="7.0" />
+                     </children>
+                  </AnchorPane>
                   </children>
               </AnchorPane>
           </content>

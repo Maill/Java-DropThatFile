@@ -24,6 +24,10 @@ public class WindowsHandler {
         jfxStage.show();
     }
 
+    public void hideForm() { jfxStage.hide(); }
+
+    public void closeForm(){ jfxStage.close(); }
+
     public void goToForm(String formName, Boolean showForm) throws Exception {
         try {
             // Instantiate the choosen form according to the input and its package

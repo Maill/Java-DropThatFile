@@ -9,10 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.scene.image.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 
 import java.awt.*;
 import java.io.IOException;
@@ -41,9 +38,6 @@ public class HomeController extends AnchorPane implements Initializable {
     private TreeView treeView_repository;
 
     @FXML
-    private StackPane stackPane_repository;
-
-    @FXML
     private TextArea message_textArea;
 
     @FXML
@@ -67,56 +61,76 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setTreeView_repository();
+        setTreeView_repository(treeView_repository, "root");
     }
 
     //region TreeView
-    private void setTreeView_repository(){
+    /**
+     * Configuration of the TreeView
+     * @param treeView fx:id of a TreeView element
+     * @param rootNode root node name
+     */
+    private void setTreeView_repository(TreeView treeView, String rootNode){
         TreeViewRepository repo = new TreeViewRepository();
         ArrayList<TreeItem> all = repo.getAll();
-        TreeItem rootItem = new TreeItem("Root");
-        //rootItem.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("rootFolder.png"))));
+        TreeItem rootItem = new TreeItem(rootNode);
+        // Expand the treeView
         rootItem.setExpanded(true);
         // Add children to the root
         rootItem.getChildren().addAll(all);
         // Set the Root File
-        treeView_repository.setRoot(rootItem);
-        // Allow editing from user
-        treeView_repository.setEditable(true);
-
-        //region Events
+        treeView.setRoot(rootItem);
         // Set a cell factory to use TextFieldTreeCell
-        treeView_repository.setCellFactory(TextFieldTreeCell.forTreeView());
-        // Set editing related event handlers (OnEditCommit)
-        treeView_repository.setOnEditCommit(event -> editCommit((TreeView.EditEvent) event));
-        // Create the item with the typed name
-        item_add.setOnAction(event -> addItem(item_textField.getText()));
-        // Remove the selected item
-        item_remove.setOnAction(event -> removeItem());
-        //endregion
+        treeView.setCellFactory(TextFieldTreeCell.forTreeView());
+        // Trigger treeView events
+        treeView_events(treeView);
     }
 
-    //Event editOnCommit
+    /**
+     * Events of the treeView
+     */
+    private void treeView_events(TreeView treeView){
+        // Set editing related event handlers (OnEditCommit)
+        treeView.setOnEditCommit(event -> editCommit((TreeView.EditEvent) event));
+        // Create the item with the typed name
+        item_add.setOnAction(event -> addItem(treeView, item_textField.getText()));
+        // Remove the selected item
+        item_remove.setOnAction(event -> removeItem(treeView));
+    }
+
+    /**
+     * What happens on commit
+     * @param event editOnCommit
+     */
     private void editCommit(TreeView.EditEvent event)
     {
         //TODO : EVENT - communication avec la BDD lorsque le nom est modifié
         return;
     }
 
-    // Method for Adding an Item
-    private void addItem(String value)
+    /**
+     * Method for Adding an TreeItem
+     * @param value TreeItem name
+     * @param treeView fx:id of a TreeView element
+     */
+    private void addItem(TreeView treeView, String value)
     {
         if (value == null || value.trim().equals(""))
         {
-            this.writeMessage("directory name cannot be empty.");
+            this.writeMessage("Directory name cannot be empty.");
             return;
         }
 
-        TreeItem parent = (TreeItem)treeView_repository.getSelectionModel().getSelectedItem();
+        TreeItem parent = (TreeItem) treeView.getSelectionModel().getSelectedItem();
 
         if (parent == null)
         {
             this.writeMessage("Select a directory to add this directory to.");
+            return;
+        }
+
+        if (((TreeItem) treeView.getSelectionModel().getSelectedItem()).getValue().equals("root")){
+            this.writeMessage("Cannot create a directory from the root directory.");
             return;
         }
 
@@ -129,10 +143,13 @@ public class HomeController extends AnchorPane implements Initializable {
         }
     }
 
-    // Method for Removing an Item
-    private void removeItem()
+    /**
+     * Method for Removing an TreeItem
+     * @param treeView fx:id of a TreeView element
+     */
+    private void removeItem(TreeView treeView)
     {
-        TreeItem item = (TreeItem)treeView_repository.getSelectionModel().getSelectedItem();
+        TreeItem item = (TreeItem) treeView.getSelectionModel().getSelectedItem();
 
         if (item == null)
         {
@@ -141,9 +158,9 @@ public class HomeController extends AnchorPane implements Initializable {
         }
 
         TreeItem parent = item.getParent();
-        if (parent == null )
+        if (parent == null || item.getValue().equals("My Files") || item.getValue().equals("Shared Files"))
         {
-            this.writeMessage("Cannot remove the root directory.");
+            this.writeMessage("Cannot remove main directories.");
         }
         else
         {
@@ -151,7 +168,9 @@ public class HomeController extends AnchorPane implements Initializable {
         }
     }
 
-    // Logs of user in the textArea
+    /**
+     * User's logs in the textArea
+      */
     private void writeMessage(String msg)
     {
         this.message_textArea.appendText(msg + "\n");
