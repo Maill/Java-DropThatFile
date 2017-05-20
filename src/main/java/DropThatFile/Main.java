@@ -29,7 +29,7 @@ public class Main extends Application{
         XMLReader xml = XMLReader.Instance();
         KeyStoreFactory.setKeyPairToKeyStore("password");
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
-        try{
+        /*try{
             System.out.println("Clé privée : " + Base64.toBase64String(pair.getPrivate().getEncoded()));
             System.out.println("Clé publique : " + Base64.toBase64String(pair.getPublic().getEncoded()));
             System.out.println("----------------------------------------Crypting----------------------------------------------");
@@ -48,7 +48,7 @@ public class Main extends Application{
         }
         catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
 
         LoginForm startForm = new LoginForm(primaryStage);
         startForm.showForm();

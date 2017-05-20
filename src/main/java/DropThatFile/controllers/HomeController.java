@@ -1,23 +1,39 @@
 package DropThatFile.controllers;
 
+import DropThatFile.engines.FilesJobs;
+import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.windowsManager.TreeViewRepository;
+import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.windowsManager.forms.HomeForm;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.*;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.AnchorPane;
-
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import net.lingala.zip4j.exception.ZipException;
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.time.Instant;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by Travail on 02/05/2017.
@@ -25,14 +41,18 @@ import java.util.ResourceBundle;
 public class HomeController extends AnchorPane implements Initializable {
     //region FXML
     @FXML
+    /**
+     * Open a hypertext link
+     */
     public void openLink() throws URISyntaxException, IOException {
-        Desktop desktop = Desktop.getDesktop();
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
             desktop.browse(new URI("www.google.com"));
         } else {
             return;
         }
     }
+    @FXML
+    private Button browse;
 
     @FXML
     private TreeView treeView_repository;
@@ -52,8 +72,17 @@ public class HomeController extends AnchorPane implements Initializable {
     @FXML
     private Button item_remove;
     //endregion
+    private final org.apache.log4j.Logger log = LogManagement.getInstanceLogger(this);
+
+    private Desktop desktop = Desktop.getDesktop();
+
+    private Stage stage = new Stage();
+
+    private WindowsHandler windowsHandler = new WindowsHandler(stage);
 
     private HomeForm application;
+
+    public static String password = null;
 
     public void setApp(HomeForm application){
         this.application = application;
@@ -61,19 +90,88 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        setTreeView_repository(treeView_repository, "root");
+        setBrowseButton();
+        setTreeView_repository(treeView_repository);
+    }
+
+    private void modalPassword(){
+        final Stage dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(windowsHandler.getJfxStage());
+
+        TextField passwordTextField = new TextField();
+        Button btnValidate = new Button("Continue");
+
+        VBox dialogVbox = new VBox(20);
+        dialogVbox.getChildren().add(new Text("Type a password in the text field, or leave it blank: "));
+        dialogVbox.getChildren().add(passwordTextField);
+        dialogVbox.getChildren().add(btnValidate);
+
+        btnValidate.setOnMouseClicked(event -> {
+            password = passwordTextField.getText();
+            dialog.close();
+        });
+
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(20)); // space between elements and window border
+        root.setCenter(dialogVbox);
+        root.setBottom(btnValidate);
+
+        Scene dialogScene = new Scene(root, 400, 100);
+        dialog.setScene(dialogScene);
+        dialog.showAndWait();
+    }
+
+    private void setBrowseButton() {
+        final FileChooser fileChooser = new FileChooser();
+        Stage fileChooserStage = new Stage();
+        // set initial directory of the "browse window" to the user's dir
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
+        browse.setOnAction((ActionEvent e) -> {
+            modalPassword();
+            // Retrieve current selected item
+            TreeItem selectedTreeItem = (TreeItem)treeView_repository.getSelectionModel().getSelectedItem();
+            // If there's no selected item || if selected item is the root item || or is null
+            if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue().equals("root") || selectedTreeItem.getValue() == null) {
+                this.writeMessage("Please select a proper directory.");
+                return;
+            }
+            List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
+            if (list != null) {
+                FilesJobs filesJobs = new FilesJobs();
+                try {
+                    processFiles(filesJobs, list);
+                } catch(IOException | ZipException ex){
+                    this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
+                    log.trace("CUSTOM LOG - Error while trying to reach browsed file: \n" + ex.getMessage(), ex);
+                }
+            }
+        });
+    }
+
+    private void processFiles(FilesJobs filesjobs, List<File> files) throws IOException, ZipException {
+        // Check if the file exists and if it can be read
+        for (File currentFile : files) {
+            if (!currentFile.canRead()) {
+                this.writeMessage("Error while trying to reach one of the browsed files.");
+                return;
+            }
+        }
+        //TODO : Créer textField utilisateur pour avoir le nom de l'archive
+        DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, /*Nom archive*/ "NomArchive", "password", Date.from(Instant.now()), "TEST");
+        filesjobs.encryptFile(fileUpload, files);
     }
 
     //region TreeView
     /**
      * Configuration of the TreeView
      * @param treeView fx:id of a TreeView element
-     * @param rootNode root node name
      */
-    private void setTreeView_repository(TreeView treeView, String rootNode){
+    private void setTreeView_repository(TreeView treeView){
         TreeViewRepository repo = new TreeViewRepository();
         ArrayList<TreeItem> all = repo.getAll();
-        TreeItem rootItem = new TreeItem(rootNode);
+        TreeItem rootItem = new TreeItem("root");
         // Expand the treeView
         rootItem.setExpanded(true);
         // Add children to the root
@@ -93,9 +191,9 @@ public class HomeController extends AnchorPane implements Initializable {
         // Set editing related event handlers (OnEditCommit)
         treeView.setOnEditCommit(event -> editCommit((TreeView.EditEvent) event));
         // Create the item with the typed name
-        item_add.setOnAction(event -> addItem(treeView, item_textField.getText()));
+        item_add.setOnAction(event -> addItem(item_textField.getText()));
         // Remove the selected item
-        item_remove.setOnAction(event -> removeItem(treeView));
+        item_remove.setOnAction(event -> removeItem());
     }
 
     /**
@@ -111,9 +209,8 @@ public class HomeController extends AnchorPane implements Initializable {
     /**
      * Method for Adding an TreeItem
      * @param value TreeItem name
-     * @param treeView fx:id of a TreeView element
      */
-    private void addItem(TreeView treeView, String value)
+    private void addItem(String value)
     {
         if (value == null || value.trim().equals(""))
         {
@@ -121,15 +218,14 @@ public class HomeController extends AnchorPane implements Initializable {
             return;
         }
 
-        TreeItem parent = (TreeItem) treeView.getSelectionModel().getSelectedItem();
+        TreeItem parent = (TreeItem) treeView_repository.getSelectionModel().getSelectedItem();
 
         if (parent == null)
         {
             this.writeMessage("Select a directory to add this directory to.");
             return;
         }
-
-        if (((TreeItem) treeView.getSelectionModel().getSelectedItem()).getValue().equals("root")){
+        if (((TreeItem) treeView_repository.getSelectionModel().getSelectedItem()).getValue().equals("root")){
             this.writeMessage("Cannot create a directory from the root directory.");
             return;
         }
@@ -145,11 +241,10 @@ public class HomeController extends AnchorPane implements Initializable {
 
     /**
      * Method for Removing an TreeItem
-     * @param treeView fx:id of a TreeView element
      */
-    private void removeItem(TreeView treeView)
+    private void removeItem()
     {
-        TreeItem item = (TreeItem) treeView.getSelectionModel().getSelectedItem();
+        TreeItem item = (TreeItem) treeView_repository.getSelectionModel().getSelectedItem();
 
         if (item == null)
         {
@@ -161,8 +256,7 @@ public class HomeController extends AnchorPane implements Initializable {
         if (parent == null || item.getValue().equals("My Files") || item.getValue().equals("Shared Files"))
         {
             this.writeMessage("Cannot remove main directories.");
-        }
-        else
+        } else
         {
             parent.getChildren().remove(item);
         }
