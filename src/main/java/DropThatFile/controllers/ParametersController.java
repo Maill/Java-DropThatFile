@@ -1,7 +1,7 @@
 package DropThatFile.controllers;
 
 import DropThatFile.Main;
-import DropThatFile.engines.windowsManager.userForms.ParametersForm;
+import DropThatFile.engines.windowsManager.forms.ParametersForm;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.annotations.*;
 import javafx.animation.FadeTransition;

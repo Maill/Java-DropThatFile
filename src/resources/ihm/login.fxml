@@ -19,9 +19,9 @@
             <AnchorPane id="AnchorPane" prefHeight="180.0" prefWidth="430.0">
               <children>
                 <Label id="label1" layoutX="14.0" layoutY="67.0" text="Email :" />
-                <TextField id="emailField" fx:id="userEmail" layoutY="86.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+                <TextField id="emailField" fx:id="userEmail" layoutY="86.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" text="test@test.com"/>
                 <Label id="label1" layoutX="14.0" layoutY="139.0" text="Mot de passe :" />
-                <PasswordField id="passwdField" fx:id="password" layoutY="157.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+                <PasswordField id="passwdField" fx:id="password" layoutY="157.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" text="testtest"/>
                 <ImageView id="logo1" fx:id="logo1" fitHeight="78.0" fitWidth="72.0" layoutX="10.0" layoutY="-27.0" pickOnBounds="true">
                    <image>
                       <Image url="@../../../logo.png" />

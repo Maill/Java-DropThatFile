@@ -1,4 +1,4 @@
-package DropThatFile.engines.windowsManager.userForms;
+package DropThatFile.engines.windowsManager.forms;
 
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.fxml.FXMLLoader;

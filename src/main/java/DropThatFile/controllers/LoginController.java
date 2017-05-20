@@ -1,6 +1,6 @@
 package DropThatFile.controllers;
 
-import DropThatFile.engines.windowsManager.LoginForm;
+import DropThatFile.engines.windowsManager.forms.LoginForm;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -27,7 +27,7 @@ public class WindowsHandler {
     public void goToForm(String formName, Boolean showForm) throws Exception {
         try {
             // Instantiate the choosen form according to the input and its package
-            Class<?> clazz = Class.forName("DropThatFile.engines.windowsManager.".concat(formName.equals("LoginForm") ? formName : "userForms.".concat(formName)));
+            Class<?> clazz = Class.forName("DropThatFile.engines.windowsManager.".concat(formName.equals("LoginForm") ? formName : "forms.".concat(formName)));
             Constructor<?> constructor = clazz.getConstructor(jfxStage.getClass());
             constructor.newInstance(jfxStage);
         } catch (Exception ex) {

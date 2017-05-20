@@ -11,7 +11,7 @@ public class File {
 
     //region Attributs
     private int id;
-    private String name; // Normalement le nom doit être obfusqué mais pour le debut du dev, on s'en fous
+    private String name;
     private RSAEngine password;
     private Date created;
     private String description;
@@ -49,7 +49,7 @@ public class File {
     }
     //endregion
 
-    //region Overrided Methods
+    //region Override Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
