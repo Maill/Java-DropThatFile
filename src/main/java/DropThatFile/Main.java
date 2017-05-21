@@ -24,7 +24,7 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         XMLReader xml = XMLReader.Instance();
-        // Decomment to set a Key Store for RSA encryption/decryption
+        // Uncomment to set a Key Store for RSA encryption/decryption
         //KeyStoreFactory.setKeyPairToKeyStore("password");
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
 

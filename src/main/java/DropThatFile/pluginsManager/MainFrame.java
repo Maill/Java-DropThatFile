@@ -1,7 +1,8 @@
 package DropThatFile.pluginsManager;
 
-import DropThatFile.pluginsManager.plugins.IntPlugins;
+import DropThatFile.pluginsManager.plugins.IhmPlugins;
 import DropThatFile.pluginsManager.plugins.PluginsLoader;
+import DropThatFile.pluginsManager.plugins.IntPlugins;
 import DropThatFile.pluginsManager.plugins.StringPlugins;
 
 import java.awt.Color;
@@ -19,8 +20,6 @@ import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 
 public class MainFrame extends JFrame implements ActionListener{
-	//private static final long serialVersionUID = 4932662545205980307L;
-	
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JMenu stringPluginsMenu;
@@ -32,7 +31,6 @@ public class MainFrame extends JFrame implements ActionListener{
 	private JMenuItem runPluginsMenuItem;
 	private JTextArea stringTextArea;
 	private JTextArea intTextArea;
-    private JTextArea ihmTextArea;
 	
 	private PluginsLoader pluginsLoader;
 	private ArrayList files;
@@ -61,7 +59,6 @@ public class MainFrame extends JFrame implements ActionListener{
 		this.runPluginsMenuItem = new JMenuItem();
 		this.stringTextArea = new JTextArea();
 		this.intTextArea = new JTextArea();
-        this.ihmTextArea = new JTextArea();
 		
 		//menuBar
 		this.menuBar.add(this.fileMenu);
@@ -98,57 +95,44 @@ public class MainFrame extends JFrame implements ActionListener{
 		this.runPluginsMenuItem.addActionListener(this);
 		
 		//stringTextArea
-		this.stringTextArea.setBorder(new LineBorder(Color.black));
+		this.stringTextArea.setBorder(new LineBorder(Color.blue));
 		this.stringTextArea.setText("String zone");
 		
 		//intTextArea
-		this.intTextArea.setBorder(new LineBorder(Color.black));
+		this.intTextArea.setBorder(new LineBorder(Color.blue));
 		this.intTextArea.setText("Int zone");
-
-        //ihmTextArea
-        this.ihmTextArea.setBorder(new LineBorder(Color.black));
-        this.ihmTextArea.setText("Interface zone");
 		
 		//this
 		this.setSize(800,600);
 		this.setJMenuBar(this.menuBar);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setLayout(new GridLayout(2,1));
 		this.getContentPane().add(this.stringTextArea);
 		this.getContentPane().add(this.intTextArea);
-        this.getContentPane().add(this.ihmTextArea);
 	}
-
-	/*public static void main(String[] args) {
-		new MainFrame().setVisible(true);
-	}*/
 	
 	
-	public void actionPerformed(ActionEvent arg0) {
-		if(arg0.getSource() == this.exitMenuItem ){
+	public void actionPerformed(ActionEvent event) {
+		if(event.getSource() == this.exitMenuItem ){
 			this.setVisible(false);
-		}
-		else {
-			if( arg0.getSource() == this.loadMenuItem ){
+		} else {
+			if( event.getSource() == this.loadMenuItem ){
 				JFileChooser f = new JFileChooser();
 				
 				if(f.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
 					this.files.add(f.getSelectedFile().getAbsolutePath());
 				}
-			}
-			else {
-				if( this.runPluginsMenuItem == arg0.getSource() ){
+			} else {
+				if( this.runPluginsMenuItem == event.getSource() ){
 					this.pluginsLoader.setFiles(this.convertArrayListToArrayString(this.files));
 					
 					try {
 						this.fillStringPlugins(this.pluginsLoader.loadAllStringPlugins());
-					} catch (Exception e) {
-						
-						e.printStackTrace();
+					} catch (Exception ex) {
+						ex.printStackTrace();
 					}
-				}
-				else {
-					this.ActionFromPlugins(arg0);
+				} else {
+					this.ActionFromPlugins(event);
 				}
 			}
 		}
@@ -164,7 +148,7 @@ public class MainFrame extends JFrame implements ActionListener{
 	}
 
 	private void fillStringPlugins(StringPlugins[] plugins){
-		JMenuItem menuItem ;
+		JMenuItem menuItem;
 	
 		for(int index = 0 ; index < plugins.length; index++ ){
 			this.stringPlugins.add(plugins[index]);
@@ -178,20 +162,26 @@ public class MainFrame extends JFrame implements ActionListener{
 		}
 	}
 	
-	private void ActionFromPlugins(ActionEvent e){
-		for(int index = 0 ; index < this.stringPlugins.size(); index ++ )
-		{
-			if(e.getActionCommand().equals( ((StringPlugins)this.stringPlugins.get(index)).getLibelle() )){
+	private void ActionFromPlugins(ActionEvent event){
+		for(int index = 0 ; index < this.stringPlugins.size(); index++) {
+			if(event.getActionCommand().equals(((StringPlugins)this.stringPlugins.get(index)).getLibelle())){
 				this.stringTextArea.setText(((StringPlugins)this.stringPlugins.get(index)).actionOnString(this.stringTextArea.getText()));
 				return;
 			}
 		}
 		
-		for(int index = 0 ; index < this.intPlugins.size(); index ++ ){
-			if(e.getActionCommand().equals( ((IntPlugins)this.intPlugins.get(index)).getLibelle() )){
-				int res = ((IntPlugins)this.intPlugins.get(index)).actionOnInt( Integer.parseInt(this.stringTextArea.getText()) );
+		for(int index = 0 ; index < this.intPlugins.size(); index++) {
+			if(event.getActionCommand().equals(((IntPlugins)this.intPlugins.get(index)).getLibelle())){
+				int res = ((IntPlugins)this.intPlugins.get(index)).actionOnInt(Integer.parseInt(this.stringTextArea.getText()));
 				this.stringTextArea.setText( new Integer(res).toString() );
-				
+				return;
+			}
+		}
+
+		for(int index = 0 ; index < this.ihmPlugins.size(); index++) {
+			if(event.getActionCommand().equals(((IhmPlugins)this.ihmPlugins.get(index)).getLibelle())){
+				int res = ((IhmPlugins)this.ihmPlugins.get(index)).actionOnIhm(this.ihmPluginsMenu);
+				this.stringTextArea.setText( new Integer(res).toString() );
 				return;
 			}
 		}

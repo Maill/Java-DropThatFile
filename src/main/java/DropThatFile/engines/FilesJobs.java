@@ -41,7 +41,7 @@ public class FilesJobs {
         ArrayList<File> filesToAdd = new ArrayList();
         for (File filePath : filesPath) {
             filesToAdd.add(new File(filePath.getAbsolutePath()));
-            System.out.println("File AbsolutePath : " + filePath.getAbsolutePath());
+            //System.out.println("File AbsolutePath : " + filePath.getAbsolutePath());
         }
 
         ZipParameters parameters = new ZipParameters();
@@ -68,14 +68,14 @@ public class FilesJobs {
             System.out.println("ZipException : " + ex.getMessage());
         }
 
-        System.out.println("\nZipFile : " + zipFile.getFile().toString());
+        //System.out.println("\nZipFile : " + zipFile.getFile().toString());
 
         sendFileToServer(zipFile.getFile().getPath());
     }
 
     //SFTP
     private static boolean sendFileToServer(String pathFileToSend){
-        System.out.println("\nPathFileToSend : " + pathFileToSend);
+        //System.out.println("\nPathFileToSend : " + pathFileToSend);
         return true;
     }
 

@@ -5,9 +5,8 @@ import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.windowsManager.TreeViewRepository;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.windowsManager.forms.HomeForm;
-import DropThatFile.pluginsManager.MainFrame;
+import DropThatFile.engines.PluginLoader;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -100,8 +99,23 @@ public class HomeController extends AnchorPane implements Initializable {
         setBrowseButton();
         setTreeView_repository(treeView_repository);
         plugins.setOnMouseClicked((MouseEvent event) -> {
-            MainFrame pluginManager = new MainFrame();
-            pluginManager.show();
+            /*MainFrame pluginManager = new MainFrame();
+            pluginManager.show();*/
+            final FileChooser pluginChooser = new FileChooser();
+            Stage pluginChooserStage = new Stage();
+            pluginChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+            pluginChooser.setTitle("Select plugin");
+            pluginChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Jar Files", "*.jar"));
+            File jarFile = pluginChooser.showOpenDialog(pluginChooserStage);
+            PluginLoader pluginLoader = new PluginLoader();
+            try {
+                pluginLoader.load(
+                        jarFile.getAbsolutePath(),
+                        "com.company.CssLoader");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 

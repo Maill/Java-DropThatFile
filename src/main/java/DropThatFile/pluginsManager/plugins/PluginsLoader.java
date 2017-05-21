@@ -97,7 +97,7 @@ public class PluginsLoader {
 	}
 	
 	private void initializeLoader() throws Exception{
-		//Checking that the liste of plugins is initialized
+		//Checking that the list of plugins is initialized
 		if(this.files == null || this.files.length == 0 ){
 			throw new Exception("No file specified");
 		}
