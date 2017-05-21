@@ -1,15 +1,16 @@
 package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Nicol on 22/03/2017.
@@ -30,13 +31,17 @@ public class FilesJobs {
         // Zip name
         String fileNameWithoutExt = file.getName().replaceFirst("[.][^.]+$", "");
 
+        if(fileAlreadyExists(fileNameWithoutExt)){
+            return;
+        }
+
         // Zip location
         ZipFile zipFile = new ZipFile(tmpFilePath + "\\" + fileNameWithoutExt + ".zip");
 
         ArrayList<File> filesToAdd = new ArrayList();
         for (File filePath : filesPath) {
             filesToAdd.add(new File(filePath.getAbsolutePath()));
-            System.out.println("AbsolutePath : " + filePath.getAbsolutePath());
+            System.out.println("File AbsolutePath : " + filePath.getAbsolutePath());
         }
 
         ZipParameters parameters = new ZipParameters();
@@ -61,8 +66,6 @@ public class FilesJobs {
             zipFile.addFiles(filesToAdd, parameters);
         } catch(ZipException ex){
             System.out.println("ZipException : " + ex.getMessage());
-            File removeFile = new File(tmpFilePath + "\\" + fileNameWithoutExt);
-            removeFile.delete();
         }
 
         System.out.println("\nZipFile : " + zipFile.getFile().toString());
@@ -74,5 +77,33 @@ public class FilesJobs {
     private static boolean sendFileToServer(String pathFileToSend){
         System.out.println("\nPathFileToSend : " + pathFileToSend);
         return true;
+    }
+
+    private static boolean fileAlreadyExists(String fileNameWithoutExt){
+        File fileToOverwrite = new File(tmpFilePath + "\\" + fileNameWithoutExt + ".zip");
+        Alert alertOverwriteFile = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alertFileCantBeDeleted = new Alert(Alert.AlertType.ERROR);
+        if (fileToOverwrite.exists()){
+            if (fileToOverwrite.isFile() && fileToOverwrite.canExecute()){
+                alertOverwriteFile.setTitle("Confirmation Dialog");
+                alertOverwriteFile.setHeaderText("File already exists.");
+                alertOverwriteFile.setContentText("File already exists at the output destination. Overwrite it?");
+
+                Optional<ButtonType> result = alertOverwriteFile.showAndWait();
+                if (result.get().equals(ButtonType.OK)){
+                    fileToOverwrite.delete();
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                alertFileCantBeDeleted.setTitle("Error Dialog");
+                alertFileCantBeDeleted.setHeaderText("Operation aborted - File can not be deleted.");
+                alertFileCantBeDeleted.setContentText("Please check if the file does exist, if it's really a file and if you're allowed to execute/delete it.");
+                alertFileCantBeDeleted.showAndWait();
+                return true;
+            }
+        }
+        return false;
     }
 }

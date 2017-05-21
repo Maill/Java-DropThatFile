@@ -1,16 +1,13 @@
 package DropThatFile;
 
-import DropThatFile.engines.APIData.APIConnector;
 import DropThatFile.engines.KeyStoreFactory;
-import DropThatFile.engines.RSAEngine;
 import DropThatFile.engines.XMLReader;
-import DropThatFile.engines.windowsManager.forms.LoginForm;
 
+import DropThatFile.engines.windowsManager.WindowsHandler;
+import DropThatFile.engines.windowsManager.forms.LoginForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.encoders.Base64;
-
 import java.security.KeyPair;
 import java.security.Security;
 
@@ -27,8 +24,11 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         XMLReader xml = XMLReader.Instance();
-        KeyStoreFactory.setKeyPairToKeyStore("password");
+        // Decomment to set a Key Store for RSA encryption/decryption
+        //KeyStoreFactory.setKeyPairToKeyStore("password");
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
+
+        //region RSA test
         /*try{
             System.out.println("Clé privée : " + Base64.toBase64String(pair.getPrivate().getEncoded()));
             System.out.println("Clé publique : " + Base64.toBase64String(pair.getPublic().getEncoded()));
@@ -49,8 +49,14 @@ public class Main extends Application{
         catch(Exception e){
             e.printStackTrace();
         }*/
+        //endregion
 
+        // Entry point of the application
         LoginForm startForm = new LoginForm(primaryStage);
         startForm.showForm();
+
+        // TODO: Entry point of the application v2
+        //WindowsHandler windowsHandler = new WindowsHandler(primaryStage);
+        //windowsHandler.setAuthentication();
     }
 }

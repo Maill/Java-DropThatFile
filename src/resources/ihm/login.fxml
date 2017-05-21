@@ -24,7 +24,7 @@
                 <PasswordField id="passwdField" fx:id="password" layoutY="157.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" text="testtest"/>
                 <ImageView id="logo1" fx:id="logo1" fitHeight="78.0" fitWidth="72.0" layoutX="10.0" layoutY="-27.0" pickOnBounds="true">
                    <image>
-                      <Image url="@../../../logo.png" />
+                      <Image url="@../images/logo.png" />
                    </image>
                 </ImageView>
                 <Label id="logoLabel1" layoutX="82.0" layoutY="4.0" prefHeight="16.0" prefWidth="149.0" text="DropThatFile" />

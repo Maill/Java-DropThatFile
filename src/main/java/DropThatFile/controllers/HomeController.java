@@ -5,11 +5,11 @@ import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.windowsManager.TreeViewRepository;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.windowsManager.forms.HomeForm;
+import DropThatFile.pluginsManager.MainFrame;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,8 +17,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -71,7 +73,11 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @FXML
     private Button item_remove;
+
+    @FXML
+    private Button plugins;
     //endregion
+
     private final org.apache.log4j.Logger log = LogManagement.getInstanceLogger(this);
 
     private Desktop desktop = Desktop.getDesktop();
@@ -83,6 +89,7 @@ public class HomeController extends AnchorPane implements Initializable {
     private HomeForm application;
 
     public static String password = null;
+    public static String zipName = null;
 
     public void setApp(HomeForm application){
         this.application = application;
@@ -92,6 +99,10 @@ public class HomeController extends AnchorPane implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setBrowseButton();
         setTreeView_repository(treeView_repository);
+        plugins.setOnMouseClicked((MouseEvent event) -> {
+            MainFrame pluginManager = new MainFrame();
+            pluginManager.show();
+        });
     }
 
     private void modalPassword(){
@@ -99,25 +110,32 @@ public class HomeController extends AnchorPane implements Initializable {
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(windowsHandler.getJfxStage());
 
-        TextField passwordTextField = new TextField();
+        PasswordField passwordTextField = new PasswordField();
+        TextField zipNameTextField = new TextField();
+        passwordTextField.setPromptText("Password");
+        zipNameTextField.setPromptText("Zip name");
         Button btnValidate = new Button("Continue");
 
-        VBox dialogVbox = new VBox(20);
-        dialogVbox.getChildren().add(new Text("Type a password in the text field, or leave it blank: "));
-        dialogVbox.getChildren().add(passwordTextField);
-        dialogVbox.getChildren().add(btnValidate);
+        HBox dialogHbox = new HBox(5);
+        dialogHbox.getChildren().add(new Text("Type a fileName for the zip, and a password for your files: "));
+        dialogHbox.getChildren().add(btnValidate);
+        VBox dialogVox = new VBox(5);
+        dialogVox.getChildren().add(zipNameTextField);
+        dialogVox.getChildren().add(passwordTextField);
 
-        btnValidate.setOnMouseClicked(event -> {
+        btnValidate.setOnMouseClicked((MouseEvent event) -> {
+            zipName = zipNameTextField.getText();
             password = passwordTextField.getText();
             dialog.close();
         });
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(20)); // space between elements and window border
-        root.setCenter(dialogVbox);
+        root.setTop(dialogHbox);
+        root.setCenter(dialogVox);
         root.setBottom(btnValidate);
 
-        Scene dialogScene = new Scene(root, 400, 100);
+        Scene dialogScene = new Scene(root, 400, 200);
         dialog.setScene(dialogScene);
         dialog.showAndWait();
     }
@@ -127,6 +145,7 @@ public class HomeController extends AnchorPane implements Initializable {
         Stage fileChooserStage = new Stage();
         // set initial directory of the "browse window" to the user's dir
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.setTitle("Select files");
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
         browse.setOnAction((ActionEvent e) -> {
             modalPassword();
@@ -135,6 +154,10 @@ public class HomeController extends AnchorPane implements Initializable {
             // If there's no selected item || if selected item is the root item || or is null
             if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue().equals("root") || selectedTreeItem.getValue() == null) {
                 this.writeMessage("Please select a proper directory.");
+                return;
+            }
+            if (zipName == null || password == null){
+                this.writeMessage("Please set a proper password and zip name.");
                 return;
             }
             List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
@@ -158,10 +181,11 @@ public class HomeController extends AnchorPane implements Initializable {
                 return;
             }
         }
-        //TODO : Créer textField utilisateur pour avoir le nom de l'archive
-        DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, /*Nom archive*/ "NomArchive", "password", Date.from(Instant.now()), "TEST");
+        DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
         filesjobs.encryptFile(fileUpload, files);
     }
+
+
 
     //region TreeView
     /**

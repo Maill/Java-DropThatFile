@@ -49,14 +49,17 @@
         </Tab>
         <Tab closable="false" text="Parameters">
           <content>
-            <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0" />
+            <AnchorPane fx:id="pluginManagement" minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0">
+               <children>
+                  <Button fx:id="plugins" layoutX="489.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="123.0" text="Plugins" />
+               </children></AnchorPane>
           </content>
         </Tab>
-        <Tab closable="false" text="Exit Application">
+        <!--<Tab fx:id="exit_application" closable="false" text="Exit Application">
             <content>
                 <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0" />
             </content>
-        </Tab>
+        </Tab>-->
   </tabs>
     <stylesheets>
         <URL value="@style.css" />
