@@ -11,6 +11,7 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" styleClass="background" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="255.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.HomeController">
     <tabs>
@@ -51,8 +52,10 @@
           <content>
             <AnchorPane fx:id="pluginManagement" minHeight="100.0" minWidth="200.0" prefHeight="761.0" prefWidth="924.0">
                <children>
-                  <Button fx:id="plugins" layoutX="489.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="123.0" text="Plugins" />
-               </children></AnchorPane>
+                  <Button fx:id="add_plugin" layoutX="472.0" layoutY="14.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="156.0" text="Add Plugin" />
+                  <Button fx:id="clear_plugin" layoutX="472.0" layoutY="86.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="156.0" text="Clear Plugin" />
+               </children>
+            </AnchorPane>
           </content>
         </Tab>
         <!--<Tab fx:id="exit_application" closable="false" text="Exit Application">

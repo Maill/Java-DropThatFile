@@ -5,12 +5,12 @@ import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.windowsManager.TreeViewRepository;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.windowsManager.forms.HomeForm;
-import DropThatFile.pluginsManager.MainFrame;
+import DropThatFile.pluginsManager.PluginLoader;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -18,15 +18,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.log4j.Logger;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +46,10 @@ public class HomeController extends AnchorPane implements Initializable {
      * Open a hypertext link
      */
     public void openLink() throws URISyntaxException, IOException {
-        if (desktop.isSupported(Desktop.Action.BROWSE)) {
+        if(!desktop.isSupported(Desktop.Action.BROWSE)) return;
             desktop.browse(new URI("www.google.com"));
-        } else {
-            return;
-        }
     }
+
     @FXML
     private Button browse;
 
@@ -61,9 +58,6 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @FXML
     private TextArea message_textArea;
-
-    @FXML
-    private TextArea item_textArea;
 
     @FXML
     private TextField item_textField;
@@ -75,10 +69,16 @@ public class HomeController extends AnchorPane implements Initializable {
     private Button item_remove;
 
     @FXML
-    private Button plugins;
+    private Button add_plugin;
+
+    @FXML
+    private Button clear_plugin;
+
+    @FXML
+    private StackPane stackPane_plugin;
     //endregion
 
-    private final org.apache.log4j.Logger log = LogManagement.getInstanceLogger(this);
+    private final Logger log = LogManagement.getInstanceLogger(this);
 
     private Desktop desktop = Desktop.getDesktop();
 
@@ -90,6 +90,8 @@ public class HomeController extends AnchorPane implements Initializable {
 
     public static String password = null;
     public static String zipName = null;
+    private String jarPath = "C:\\Users\\Travail\\IdeaProjects\\SkinLoader\\out\\artifacts\\SkinLoader_jar\\SkinLoader.jar";
+    private String packageClassPath = "com.company.CssLoader";
 
     public void setApp(HomeForm application){
         this.application = application;
@@ -99,9 +101,17 @@ public class HomeController extends AnchorPane implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setBrowseButton();
         setTreeView_repository(treeView_repository);
-        plugins.setOnMouseClicked((MouseEvent event) -> {
-            MainFrame pluginManager = new MainFrame();
-            pluginManager.show();
+        initializePluginLoader();
+    }
+
+    private void initializePluginLoader(){
+        add_plugin.setOnMouseClicked((MouseEvent event) -> {
+            PluginLoader pluginLoader = new PluginLoader();
+            try {
+                pluginLoader.load(jarPath, packageClassPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 
@@ -184,8 +194,6 @@ public class HomeController extends AnchorPane implements Initializable {
         DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
         filesjobs.encryptFile(fileUpload, files);
     }
-
-
 
     //region TreeView
     /**
