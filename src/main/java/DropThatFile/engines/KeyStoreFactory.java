@@ -1,5 +1,6 @@
 package DropThatFile.engines;
 
+import DropThatFile.GlobalVariables;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -26,12 +27,19 @@ import java.util.Random;
 
 /**
  * Created by Nicol on 08/05/2017.
+ * Gère le coffre-fort de clés.
  */
 public class KeyStoreFactory {
 
+    //region Méthode : setKeyPairToKeyStore
+    /**
+     * Crée un lot de clé privée/publique et les stocke dans un coffre-fort.
+     * @param password
+     * @throws Exception
+     */
     public static void setKeyPairToKeyStore(String password) throws Exception {
         KeyPair pair = RSAEngine.generateKeyPair();
-        X509Certificate cert = KeyStoreFactory.generateCertificate(pair.getPublic(), pair.getPrivate(), "Nicolas Cornu");
+        X509Certificate cert = KeyStoreFactory.generateCertificate(pair.getPublic(), pair.getPrivate(), GlobalVariables.currentUser.getlName() + " " + GlobalVariables.currentUser.getfName());
         Certificate[] certificate = new Certificate[1];
         certificate[0] = cert;
         try {
@@ -39,7 +47,7 @@ public class KeyStoreFactory {
             ks.load(null, password.toCharArray());
             ks.setKeyEntry("user", pair.getPrivate(), password.toCharArray(), certificate);
             // Store away the keystore.
-            FileOutputStream fos = new FileOutputStream("./keystorename.jks");
+            FileOutputStream fos = new FileOutputStream("./keystoredtf.jks");
             ks.store(fos, password.toCharArray());
             fos.close();
         }
@@ -47,10 +55,12 @@ public class KeyStoreFactory {
             e.printStackTrace();
         }
     }
+    //endregion
 
+    //region Méthode : getKeyPairFromKeyStore
     /**
-     * Private and public RSA keys' generation from this Java command:
-     * keytool -genkeypair -alias mykey -storepass s3cr3t -keypass s3cr3t -keyalg RSA -keystore keystore.jks
+     * Retourne un KeyPair du coffre-fort.
+     * @param password
      * @return KeyPair
      * @throws Exception
      */
@@ -69,7 +79,23 @@ public class KeyStoreFactory {
 
         return new KeyPair(publicKey, privateKey);
     }
+    //endregion
 
+    //region Méthode : generateCertificate
+    /**
+     * Génère le certificat de la paire de clé.
+     * @param publicKey
+     * @param privateKey
+     * @param fullName
+     * @return X509Certificate
+     * @throws NoSuchAlgorithmException
+     * @throws CertificateException
+     * @throws NoSuchProviderException
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws IOException
+     * @throws OperatorCreationException
+     */
     public static X509Certificate generateCertificate(PublicKey publicKey, PrivateKey privateKey, String fullName) throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException, IOException, OperatorCreationException {
         //Définition de l'identité
         X500Name issuerName = new X500Name("CN="+ fullName + "[DTF], O=DTF, L=Paris, ST=France, C=FR");
@@ -99,7 +125,15 @@ public class KeyStoreFactory {
         return cert;
 
     }
+    //endregion
 
+    //region Méthode privée : createSubjectKeyIdentifier
+    /**
+     * [Méthode privée] Création du certificat de clé publique.
+     * @param publicKey
+     * @return SubjectKeyIdentifier
+     * @throws Exception
+     */
     private static SubjectKeyIdentifier createSubjectKeyIdentifier(PublicKey publicKey) throws IOException {
         ASN1InputStream is = null;
         try {
@@ -114,10 +148,19 @@ public class KeyStoreFactory {
         }
         return null;
     }
+    //endregion
 
+    //region Méthode privée : signCertificate
+    /**
+     * [Méthode privée] Création et signature du certificat de la clé privée.
+     * @param builder
+     * @param privateKey
+     * @return X509Certificate
+     * @throws Exception
+     */
     private static X509Certificate signCertificate(X509v3CertificateBuilder builder, PrivateKey privateKey) throws OperatorCreationException, CertificateException {
         ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME).build(privateKey);
         return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(builder.build(signer));
     }
-
+    //endregion
 }

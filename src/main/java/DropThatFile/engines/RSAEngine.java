@@ -1,7 +1,8 @@
 package DropThatFile.engines;
 
+import DropThatFile.GlobalVariables;
+
 import javax.crypto.Cipher;
-import java.io.InputStream;
 import java.security.*;
 import java.util.Base64;
 
@@ -13,8 +14,38 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Classe gérant l'aspect sécurité des mots de passe de la solution.
  */
 public class RSAEngine {
+
+    //region Attributs
+
+    //region Instance singleton
+    private RSAEngine instance = null;
+
+    public synchronized RSAEngine Instance(){
+        if(this.instance == null)
+            this.instance = new RSAEngine();
+        else
+            return this.instance;
+        return this.instance;
+    }
+    //endregion
+
+    //region User KeyPair
+    private KeyPair userKeyPair;
+
+    public KeyPair getKeyPair(){ return this.userKeyPair; }
+    //endregion
+
+    //endregion
+
+    //region Constructeur privé
+    private RSAEngine(){ this.userKeyPair = GlobalVariables.currentUser.getPassword(); }
+    //endregion
+
+    //region Méthodes
+
+    //region Méthode statique : generateKeyPair
     /**
-     * Private and public RSA keys' generation.
+     * Génération d'une paire clé publique/privée.
      * @return Keypair
      * @throws Exception
      */
@@ -25,65 +56,70 @@ public class RSAEngine {
 
         return pair;
     }
+    //endregion
 
+    //region Méthode : encrypt
     /**
-     * String message ciphering.
+     * Chiffrement du message.
      * @param message
-     * @param publicKey
      * @return String
      * @throws Exception
      */
-    public static String encrypt(String message, PublicKey publicKey) throws Exception {
+    public String encrypt(String message) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
-        encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        encryptCipher.init(Cipher.ENCRYPT_MODE, this.userKeyPair.getPublic());
 
         byte[] cipherText = encryptCipher.doFinal(message.getBytes(UTF_8));
 
         return Base64.getEncoder().encodeToString(cipherText);
     }
+    //endregion
 
+    //region Méthode : decrypt
     /**
-     * String message deciphering.
+     * Déchiffrement du message.
      * @param cipherText
-     * @param privateKey
      * @return String
      * @throws Exception
      */
-    public static String decrypt(String cipherText, PrivateKey privateKey) throws Exception {
+    public String decrypt(String cipherText) throws Exception {
         byte[] bytes = Base64.getDecoder().decode(cipherText);
 
         Cipher decryptCipher = Cipher.getInstance("RSA");
-        decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+        decryptCipher.init(Cipher.DECRYPT_MODE, this.userKeyPair.getPrivate());
 
         return new String(decryptCipher.doFinal(bytes), UTF_8);
     }
+    //endregion
 
+    //region Méthode : sign
     /**
-     * Sign the message with SHA256 and RSA protocols.
+     * Signature du message avec les protocole RSA et SHA256.
      * @param message
-     * @param privateKey
      * @return String
      * @throws Exception
      */
-    public static String sign(String message, PrivateKey privateKey) throws Exception {
+    public String sign(String message) throws Exception {
         Signature privateSignature = Signature.getInstance("SHA256withRSA");
-        privateSignature.initSign(privateKey);
+        privateSignature.initSign(this.userKeyPair.getPrivate());
         privateSignature.update(message.getBytes(UTF_8));
 
         byte[] signature = privateSignature.sign();
 
         return Base64.getEncoder().encodeToString(signature);
     }
+    //endregion
 
+    //region Méthode : verify
     /**
-     * Verify the signature of the message previously signed. Same protocols.
+     * Vérifie l'authentificité du message grâce à la signature.
      * @param message
      * @param signature
      * @param publicKey
      * @return boolean
      * @throws Exception
      */
-    public static boolean verify(String message, String signature, PublicKey publicKey) throws Exception {
+    public boolean verify(String message, String signature, PublicKey publicKey) throws Exception {
         Signature publicSignature = Signature.getInstance("SHA256withRSA");
         publicSignature.initVerify(publicKey);
         publicSignature.update(message.getBytes(UTF_8));
@@ -92,4 +128,11 @@ public class RSAEngine {
 
         return publicSignature.verify(signatureBytes);
     }
+
+    public boolean verify(String message, String signature) throws Exception {
+        return this.verify(message, signature, this.userKeyPair.getPublic());
+    }
+    //endregion
+
+    //endregion
 }

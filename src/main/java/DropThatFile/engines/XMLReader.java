@@ -43,41 +43,56 @@ public class XMLReader {
 
     public void readConfigXML() {
         Document dom;
-        // Make an  instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
-            // use the factory to take an instance of the document builder
+
+            //region Eléments du parser XML
             DocumentBuilder db = dbf.newDocumentBuilder();
-            // parse using the builder to get the DOM mapping of the
-            // XML file
             dom = db.parse("config.xml");
-
             Element doc = dom.getDocumentElement();
+            //endregion
 
+            //region <urlapi>
             String urlAPI = null;
             urlAPI = getTextValue(urlAPI, doc, "urlapi");
             if (urlAPI != null) {
                 if (!urlAPI.isEmpty())
                     elements.put("urlAPI", urlAPI);
             }
+            //endregion
+            //region <lasttoken>
             String lastToken = null;
             lastToken = getTextValue(lastToken, doc, "lasttoken");
             if (lastToken != null) {
                 if (!lastToken.isEmpty())
                     elements.put("lastToken", urlAPI);
             }
+            //endregion
+            //region <networkconfiguration> => <user>
             String netUser = null;
             netUser = getTextValue(netUser, doc, "user");
             if (netUser != null) {
                 if (!netUser.isEmpty())
                     elements.put("netUser", netUser);
             }
+            //endregion
+            //region <networkconfiguration> => <password>
             String netPassword = null;
             netPassword = getTextValue(netPassword, doc, "password");
             if (netPassword != null) {
                 if (!netPassword.isEmpty())
                     elements.put("netPassword", netPassword);
             }
+            //endregion
+            //region <networkconfiguration> => <port>
+            String netPort = null;
+            netPassword = getTextValue(netPassword, doc, "port");
+            if (netPassword != null) {
+                if (!netPassword.isEmpty())
+                    elements.put("netPort", netPassword);
+            }
+            //endregion
+
         } catch (ParserConfigurationException pce) {
             System.out.println(pce.getMessage());
         }  catch (IOException ioe) {
