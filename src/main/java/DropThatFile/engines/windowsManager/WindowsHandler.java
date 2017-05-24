@@ -7,12 +7,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import DropThatFile.engines.LogManagement;
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
 import java.beans.EventHandler;
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.Optional;
 
@@ -76,6 +78,20 @@ public class WindowsHandler {
             return false;
         }*/
         return true;
+    }
+
+    /**
+     *  Configure a FileChooser
+     * @param fileChooser a FileChooser
+     * @param initialDirectory First directory shown in the FileChooser
+     * @param title FileChooser' form title
+     * @param extDescription Extension description
+     * @param ext Example : "*.jar" or "*.*"
+     */
+    public void configureFileChooser(FileChooser fileChooser, String title, String initialDirectory, String extDescription, String ext){
+        fileChooser.setInitialDirectory(new File(initialDirectory));
+        fileChooser.setTitle(title);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter(extDescription, ext));
     }
 
     /**

@@ -2,20 +2,24 @@ package DropThatFile.controllers;
 
 import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
+import DropThatFile.engines.annotations.Level;
+import DropThatFile.engines.annotations._Todo;
 import DropThatFile.engines.windowsManager.TreeViewRepository;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.engines.windowsManager.forms.HomeForm;
 import DropThatFile.pluginsManager.PluginLoader;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.image.*;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -73,6 +77,7 @@ public class HomeController extends AnchorPane implements Initializable {
     @FXML
     private Button unload_all_Plugins;
     //endregion
+    private Image folderImage = new Image(getClass().getResourceAsStream("/images/folder.png"));
 
     private final Logger log = LogManagement.getInstanceLogger(this);
 
@@ -84,10 +89,13 @@ public class HomeController extends AnchorPane implements Initializable {
 
     private HomeForm application;
 
-    private ArrayList<Stage> pluginStage = new ArrayList<>();
+    private ArrayList<Stage> pluginStages = new ArrayList<>();
+    private HashMap<String, String> jarPaths = new HashMap<>();
 
     public static String password = null;
     public static String zipName = null;
+
+    //TODO : Transposer ces 2 variables en un FileChooser
     private String jarPath = "C:\\Users\\Travail\\IdeaProjects\\SkinLoader\\out\\artifacts\\SkinLoader_jar\\SkinLoader.jar";
     private String packageClassPath = "com.company.CssLoader";
 
@@ -106,14 +114,22 @@ public class HomeController extends AnchorPane implements Initializable {
         PluginLoader pluginLoader = new PluginLoader();
         load_plugin.setOnMouseClicked(event -> {
             try {
-                pluginStage.add(pluginLoader.load(jarPath, packageClassPath));
+                //final FileChooser pluginChooser = new FileChooser();
+                //windowsHandler.configureFileChooser(pluginChooser, System.getProperty("user.home"),"Select a jar file", "Jar Files", "*.jar");
+                //jarPaths.put(pluginChooser)
+                Stage tempStage = pluginLoader.load(jarPath, packageClassPath);
+                pluginStages.add(tempStage);
+                //windowsHandler.getJfxStage().initStyle(tempStage.getStyle());
             } catch (Exception ex) {
                 log.error("Erreur au chargement d'un plugin.\nMessage : \n" + ex.getMessage());
             }
         });
+
+        //TODO : Need further tests
+        //region Unload button
         /*unload_all_Plugins.setOnMouseClicked(event -> {
             try {
-                for (Stage stage : pluginStage) {
+                for (Stage stage : pluginStages) {
                     stage.close();
                 }
                 pluginLoader.unloadAll();
@@ -121,9 +137,14 @@ public class HomeController extends AnchorPane implements Initializable {
                 log.error("Erreur au déchargement d'un plugin.\nMessage : \n" + ex.getMessage());
             }
         });*/
+        //endregion
+
         //windowsHandler.getJfxStage().getScene().lookup("css");
     }
 
+    /**
+     * Create a modal allowing the user to choose a zip name and a password for it
+     */
     private void modalPassword(){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -159,14 +180,15 @@ public class HomeController extends AnchorPane implements Initializable {
         dialog.showAndWait();
     }
 
+    /**
+     * Initialize the main browse button in the Home tab
+     */
     private void setBrowseButton() {
         final FileChooser fileChooser = new FileChooser();
         Stage fileChooserStage = new Stage();
         // set initial directory of the "browse window" to the user's dir
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        fileChooser.setTitle("Select files");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.*"));
-        browse.setOnAction((ActionEvent e) -> {
+        browse.setOnAction(event -> {
+            // Initialization of the password's modal
             modalPassword();
             // Retrieve current selected item
             TreeItem selectedTreeItem = (TreeItem)treeView_repository.getSelectionModel().getSelectedItem();
@@ -183,7 +205,7 @@ public class HomeController extends AnchorPane implements Initializable {
             if (list != null) {
                 FilesJobs filesJobs = new FilesJobs();
                 try {
-                    processFiles(filesJobs, list);
+                    testFiles(filesJobs, list);
                 } catch(IOException | ZipException ex){
                     this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
                     log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
@@ -192,7 +214,14 @@ public class HomeController extends AnchorPane implements Initializable {
         });
     }
 
-    private void processFiles(FilesJobs filesjobs, List<File> files) throws IOException, ZipException {
+    /**
+     * Check for unreadable files
+     * @param filesjobs
+     * @param files
+     * @throws IOException
+     * @throws ZipException
+     */
+    private void testFiles(FilesJobs filesjobs, List<File> files) throws IOException, ZipException {
         // Check if the file exists and if it can be read
         for (File currentFile : files) {
             if (!currentFile.canRead()) {
@@ -201,7 +230,9 @@ public class HomeController extends AnchorPane implements Initializable {
             }
         }
 
+        //TODO : Add a description
         DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
+        // Add selected files into an encrypted zip file
         filesjobs.encryptFile(fileUpload, files);
     }
 
@@ -213,7 +244,7 @@ public class HomeController extends AnchorPane implements Initializable {
     private void setTreeView_repository(TreeView treeView){
         TreeViewRepository repo = new TreeViewRepository();
         ArrayList<TreeItem> all = repo.getAll();
-        TreeItem rootItem = new TreeItem("root");
+        TreeItem rootItem = new TreeItem("root", new ImageView(folderImage));
         // Expand the treeView
         rootItem.setExpanded(true);
         // Add children to the root
@@ -242,9 +273,9 @@ public class HomeController extends AnchorPane implements Initializable {
      * What happens on commit
      * @param event editOnCommit
      */
+    @_Todo(level = Level.EVOLUTION, comment = "EVENT - communication avec la BDD lorsque le nom est modifié")
     private void editCommit(TreeView.EditEvent event)
     {
-        //TODO : EVENT - communication avec la BDD lorsque le nom est modifié
         return;
     }
 

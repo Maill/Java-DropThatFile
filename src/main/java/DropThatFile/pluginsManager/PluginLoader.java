@@ -2,13 +2,16 @@ package DropThatFile.pluginsManager;
 
 import DropThatFile.engines.LogManagement;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Nicol on 21/03/2017.
@@ -21,50 +24,8 @@ public final class PluginLoader {
     private ArrayList<File> files = new ArrayList<>();
     private ArrayList<URL> urls = new ArrayList<>();
     private ArrayList<URLClassLoader> urlClassLoaders = new ArrayList<>();
+    private HashMap<String, Stage> pluginStages = new HashMap<>();
     private int count = 0;
-
-    //region GETTERS SETTERS
-    public ArrayList<String> getPluginClassNames() {
-        return pluginClassNames;
-    }
-
-    public void setPluginClassNames(ArrayList<String> pluginClassNames) {
-        this.pluginClassNames = pluginClassNames;
-    }
-
-    public ArrayList<File> getFiles() {
-        return files;
-    }
-
-    public void setFiles(ArrayList<File> files) {
-        this.files = files;
-    }
-
-    public ArrayList<URL> getUrls() {
-        return urls;
-    }
-
-    public void setUrls(ArrayList<URL> urls) {
-        this.urls = urls;
-    }
-
-    public ArrayList<URLClassLoader> getUrlClassLoaders() {
-        return urlClassLoaders;
-    }
-
-    public void setUrlClassLoaders(ArrayList<URLClassLoader> urlClassLoaders) {
-        this.urlClassLoaders = urlClassLoaders;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-    //endregion
-
 
     /**
      * Load a plugin from a jar files
@@ -79,12 +40,22 @@ public final class PluginLoader {
                 new URL[] {urls.get(count)},
                 this.getClass().getClassLoader()
         ));
-        Class classToLoad = Class.forName (packageClassPath, true, urlClassLoaders.get(count));
-        Method method = classToLoad.getDeclaredMethod("DropThatFile_Plugin_Launch", Stage.class);
+
+        Class classToLoad = Class.forName(packageClassPath, true, urlClassLoaders.get(count));
+        Method method = classToLoad.getDeclaredMethod("DropThatFile_Start", Stage.class);
         Object instance = classToLoad.newInstance();
-        return (Stage) method.invoke(instance, new Stage());
+        String className = getClassName(instance);
+        Stage pluginStage = getPluginStage(method, instance);
+
+        pluginClassNames.add(className);
+        pluginStages.put(className, pluginStage);
+
+        return pluginStages.get(className);
     }
 
+    /**
+     * Unload each loaded plugin
+     */
     public void unloadAll() {
         try {
             urlClassLoaders.clear();
@@ -97,7 +68,11 @@ public final class PluginLoader {
         }
     }
 
-    private void getClassName(Object instance){
-        pluginClassNames.add(instance.getClass().getSimpleName());
+    private Stage getPluginStage(Method method, Object instance) throws InvocationTargetException, IllegalAccessException {
+        return (Stage)method.invoke(instance, new Stage());
+    }
+
+    private String getClassName(Object instance){
+        return instance.getClass().getSimpleName();
     }
 }
