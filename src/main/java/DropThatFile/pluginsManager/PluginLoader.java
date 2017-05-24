@@ -1,47 +1,103 @@
 package DropThatFile.pluginsManager;
 
-import DropThatFile.engines.annotations.Level;
-import DropThatFile.engines.annotations._Todo;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import DropThatFile.engines.LogManagement;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 
 /**
  * Created by Nicol on 21/03/2017.
  *
  * Plugin loader
  */
-public class PluginLoader {
-    public String simpleClassName_plugin = null;
+public final class PluginLoader {
+    private Logger log = LogManagement.getInstanceLogger(this);
+    private ArrayList<String> pluginClassNames = new ArrayList<>();
+    private ArrayList<File> files = new ArrayList<>();
+    private ArrayList<URL> urls = new ArrayList<>();
+    private ArrayList<URLClassLoader> urlClassLoaders = new ArrayList<>();
+    private int count = 0;
 
-    public PluginLoader(){ }
+    //region GETTERS SETTERS
+    public ArrayList<String> getPluginClassNames() {
+        return pluginClassNames;
+    }
+
+    public void setPluginClassNames(ArrayList<String> pluginClassNames) {
+        this.pluginClassNames = pluginClassNames;
+    }
+
+    public ArrayList<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(ArrayList<File> files) {
+        this.files = files;
+    }
+
+    public ArrayList<URL> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(ArrayList<URL> urls) {
+        this.urls = urls;
+    }
+
+    public ArrayList<URLClassLoader> getUrlClassLoaders() {
+        return urlClassLoaders;
+    }
+
+    public void setUrlClassLoaders(ArrayList<URLClassLoader> urlClassLoaders) {
+        this.urlClassLoaders = urlClassLoaders;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+    //endregion
+
 
     /**
-     * Load a plugin from a jar file
+     * Load a plugin from a jar files
      * @param pluginJarPath absolute path to the jar
      * @param packageClassPath package class path
      * @throws Exception
      */
-    public void load(String pluginJarPath, String packageClassPath) throws Exception {
-        File file = new File(pluginJarPath);
-        URL url = file.toURI().toURL();
-        URLClassLoader child = new URLClassLoader (
-                new URL[] {url},
+    public Stage load(String pluginJarPath, String packageClassPath) throws Exception {
+        files.add(new File(pluginJarPath));
+        urls.add(new URL(files.get(count).toURI().toURL().toString()));
+        urlClassLoaders.add(new URLClassLoader(
+                new URL[] {urls.get(count)},
                 this.getClass().getClassLoader()
-        );
-        Class classToLoad = Class.forName (packageClassPath, true, child);
+        ));
+        Class classToLoad = Class.forName (packageClassPath, true, urlClassLoaders.get(count));
         Method method = classToLoad.getDeclaredMethod("DropThatFile_Plugin_Launch", Stage.class);
         Object instance = classToLoad.newInstance();
-        Object result = method.invoke(instance, new Stage());
-        //getClassName(instance);
+        return (Stage) method.invoke(instance, new Stage());
+    }
+
+    public void unloadAll() {
+        try {
+            urlClassLoaders.clear();
+            urls.clear();
+            files.clear();
+            pluginClassNames.clear();
+            count = 0;
+        }catch(NullPointerException ex){
+            log.warn(ex.getMessage(), ex);
+        }
     }
 
     private void getClassName(Object instance){
-        simpleClassName_plugin = instance.getClass().getSimpleName();
+        pluginClassNames.add(instance.getClass().getSimpleName());
     }
 }

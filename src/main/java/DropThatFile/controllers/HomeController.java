@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -69,13 +68,10 @@ public class HomeController extends AnchorPane implements Initializable {
     private Button item_remove;
 
     @FXML
-    private Button add_plugin;
+    private Button load_plugin;
 
     @FXML
-    private Button clear_plugin;
-
-    @FXML
-    private StackPane stackPane_plugin;
+    private Button unload_all_Plugins;
     //endregion
 
     private final Logger log = LogManagement.getInstanceLogger(this);
@@ -87,6 +83,8 @@ public class HomeController extends AnchorPane implements Initializable {
     private WindowsHandler windowsHandler = new WindowsHandler(stage);
 
     private HomeForm application;
+
+    private ArrayList<Stage> pluginStage = new ArrayList<>();
 
     public static String password = null;
     public static String zipName = null;
@@ -105,14 +103,25 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     private void initializePluginLoader(){
-        add_plugin.setOnMouseClicked((MouseEvent event) -> {
-            PluginLoader pluginLoader = new PluginLoader();
+        PluginLoader pluginLoader = new PluginLoader();
+        load_plugin.setOnMouseClicked(event -> {
             try {
-                pluginLoader.load(jarPath, packageClassPath);
-            } catch (Exception e) {
-                e.printStackTrace();
+                pluginStage.add(pluginLoader.load(jarPath, packageClassPath));
+            } catch (Exception ex) {
+                log.error("Erreur au chargement d'un plugin.\nMessage : \n" + ex.getMessage());
             }
         });
+        /*unload_all_Plugins.setOnMouseClicked(event -> {
+            try {
+                for (Stage stage : pluginStage) {
+                    stage.close();
+                }
+                pluginLoader.unloadAll();
+            } catch(Exception ex){
+                log.error("Erreur au déchargement d'un plugin.\nMessage : \n" + ex.getMessage());
+            }
+        });*/
+        //windowsHandler.getJfxStage().getScene().lookup("css");
     }
 
     private void modalPassword(){
@@ -126,10 +135,10 @@ public class HomeController extends AnchorPane implements Initializable {
         zipNameTextField.setPromptText("Zip name");
         Button btnValidate = new Button("Continue");
 
-        HBox dialogHbox = new HBox(5);
+        HBox dialogHbox = new HBox(10);
         dialogHbox.getChildren().add(new Text("Type a fileName for the zip, and a password for your files: "));
         dialogHbox.getChildren().add(btnValidate);
-        VBox dialogVox = new VBox(5);
+        VBox dialogVox = new VBox(10);
         dialogVox.getChildren().add(zipNameTextField);
         dialogVox.getChildren().add(passwordTextField);
 
@@ -140,7 +149,7 @@ public class HomeController extends AnchorPane implements Initializable {
         });
 
         BorderPane root = new BorderPane();
-        root.setPadding(new Insets(20)); // space between elements and window border
+        root.setPadding(new Insets(40)); // space between elements and window border
         root.setTop(dialogHbox);
         root.setCenter(dialogVox);
         root.setBottom(btnValidate);
@@ -177,7 +186,7 @@ public class HomeController extends AnchorPane implements Initializable {
                     processFiles(filesJobs, list);
                 } catch(IOException | ZipException ex){
                     this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
-                    log.trace("CUSTOM LOG - Error while trying to reach browsed file: \n" + ex.getMessage(), ex);
+                    log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
                 }
             }
         });
@@ -191,6 +200,7 @@ public class HomeController extends AnchorPane implements Initializable {
                 return;
             }
         }
+
         DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
         filesjobs.encryptFile(fileUpload, files);
     }

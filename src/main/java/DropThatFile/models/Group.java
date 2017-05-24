@@ -2,6 +2,7 @@ package DropThatFile.models;
 
 import DropThatFile.engines.RSAEngine;
 
+import java.security.PublicKey;
 import java.util.List;
 
 /**
@@ -12,26 +13,26 @@ public class Group {
     //region Attributs
     private int id;
     private String name;
-    private RSAEngine public_key;
+    private PublicKey public_key;
     private List<Group> childOf;
     private List<File> sharedFiles;
     //endregion
 
     //region Constructeurs
-    public Group(int id, String name, RSAEngine public_key) {
+    public Group(int id, String name, PublicKey public_key) {
         this.id = id;
         this.name = name;
         this.public_key = public_key;
     }
 
-    public Group(int id, String name, RSAEngine public_key, List<Group> childOf) {
+    public Group(int id, String name, PublicKey public_key, List<Group> childOf) {
         this.id = id;
         this.name = name;
         this.public_key = public_key;
         this.childOf = childOf;
     }
 
-    public Group(int id, String name, RSAEngine public_key, List<Group> childOf, List<File> sharedFiles) {
+    public Group(int id, String name, PublicKey public_key, List<Group> childOf, List<File> sharedFiles) {
         this.id = id;
         this.name = name;
         this.public_key = public_key;
@@ -49,7 +50,7 @@ public class Group {
         return name;
     }
 
-    public RSAEngine getPublic_key() {
+    public PublicKey getPublic_key() {
         return public_key;
     }
 

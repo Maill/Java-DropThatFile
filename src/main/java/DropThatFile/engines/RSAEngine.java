@@ -18,14 +18,14 @@ public class RSAEngine {
     //region Attributs
 
     //region Instance singleton
-    private RSAEngine instance = null;
+    private static RSAEngine instance = null;
 
-    public synchronized RSAEngine Instance(){
-        if(this.instance == null)
-            this.instance = new RSAEngine();
+    public static synchronized RSAEngine Instance(){
+        if(instance == null)
+            instance = new RSAEngine();
         else
-            return this.instance;
-        return this.instance;
+            return instance;
+        return instance;
     }
     //endregion
 
@@ -38,7 +38,7 @@ public class RSAEngine {
     //endregion
 
     //region Constructeur privé
-    private RSAEngine(){ this.userKeyPair = GlobalVariables.currentUser.getPassword(); }
+    private RSAEngine(){ this.userKeyPair = GlobalVariables.currentUser.getUserKeys(); }
     //endregion
 
     //region Méthodes

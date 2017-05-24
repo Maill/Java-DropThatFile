@@ -100,6 +100,8 @@ public class   User {
         return password;
     }
 
+    public KeyPair getUserKeys() { return userKeys; }
+
     public String getEmail() {
         return email;
     }
