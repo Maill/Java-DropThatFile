@@ -16,7 +16,7 @@ import java.nio.charset.Charset;
  */
 public class APIConnector {
 
-    public static JSONObject readFromUrl(String URL){
+    public JSONObject readFromUrl(String URL){
         JSONObject jsonObject = null;
 
         try {

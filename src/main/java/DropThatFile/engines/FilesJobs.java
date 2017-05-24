@@ -17,16 +17,25 @@ import java.util.Optional;
  */
 public class FilesJobs {
 
+    //region Attributs
     private static final String tmpFilePath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles";
+    //endregion
 
+    //region Bloc d'initialisation
     static {
         File f = new File(tmpFilePath);
         if (!f.exists() || !f.isDirectory()) {
             f.mkdirs();
         }
     }
+    //endregion
 
-    // Crypte et envoie le fichier au serveur de stockage
+    //region Méthode statique : encryptFile
+    /**
+     * Crypte et envoie le fichier au serveur de stockage.
+     * @param file
+     * @param filesPath
+     */
     public static void encryptFile(DropThatFile.models.File file, List<java.io.File> filesPath) throws ZipException {
         // Zip name
         String fileNameWithoutExt = file.getName().replaceFirst("[.][^.]+$", "");
@@ -72,13 +81,25 @@ public class FilesJobs {
 
         sendFileToServer(zipFile.getFile().getPath());
     }
+    //endregion
 
-    //SFTP
+    //region Méthode privée : sendFileToServer
+    /**
+     * [Méthode privée] Envoie le fichier en paramètre vers le serveur de stockage. <Protocole SFTP>
+     * @param pathFileToSend
+     */
     private static boolean sendFileToServer(String pathFileToSend){
         System.out.println("\nPathFileToSend : " + pathFileToSend);
         return true;
     }
+    //endregion
 
+    //region Méthode privée : fileAlreadyExists
+    /**
+     * [Méthode privée] Verifie si le nom du fichier existe déjà.
+     * Note : la méthode ne sera peut être pas utilisée.
+     * @param fileNameWithoutExt
+     */
     private static boolean fileAlreadyExists(String fileNameWithoutExt){
         File fileToOverwrite = new File(tmpFilePath + "\\" + fileNameWithoutExt + ".zip");
         Alert alertOverwriteFile = new Alert(Alert.AlertType.CONFIRMATION);
@@ -106,4 +127,5 @@ public class FilesJobs {
         }
         return false;
     }
+    //endregion
 }

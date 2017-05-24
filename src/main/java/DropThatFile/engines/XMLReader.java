@@ -19,19 +19,22 @@ import java.util.HashMap;
  */
 public class XMLReader {
 
+    //region Attributs
     //Singleton
     private static XMLReader instance;
 
     private Logger log = LogManagement.getInstanceLogger(this);
 
     private HashMap<String, String> elements = new HashMap<>();
+    //endregion
 
-    //Constructeur privé
+    //region Constructeur privé
     private XMLReader(){
         readConfigXML();
     }
+    //endregion
 
-    //synchronised ==> 1 seul thread à la fois
+    //region Méthode statique : Instance
     public static synchronized XMLReader Instance(){
         if(instance != null){
             return instance;
@@ -40,7 +43,12 @@ public class XMLReader {
             return instance;
         }
     }
+    //endregion
 
+    //region Méthode : readConfigXML
+    /**
+     * Lit et garde les attributs XML en mémoire.
+     */
     public void readConfigXML() {
         Document dom;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -101,7 +109,15 @@ public class XMLReader {
             e.printStackTrace();
         }
     }
+    //endregion
 
+    //region Méthode privée : getTexteValue
+    /**
+     * [Méthode privée] Récupère la donnée tu tag XML.
+     * @param def
+     * @param doc
+     * @param tag
+     */
     private String getTextValue(String def, Element doc, String tag) {
         String value = def;
         NodeList nl;
@@ -111,4 +127,5 @@ public class XMLReader {
         }
         return value;
     }
+    //endregion
 }
