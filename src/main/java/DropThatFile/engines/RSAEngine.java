@@ -29,16 +29,10 @@ public class RSAEngine {
     }
     //endregion
 
-    //region User KeyPair
-    private KeyPair userKeyPair;
-
-    public KeyPair getKeyPair(){ return this.userKeyPair; }
-    //endregion
-
     //endregion
 
     //region Constructeur privé
-    private RSAEngine(){ this.userKeyPair = GlobalVariables.currentUser.getUserKeys(); }
+    private RSAEngine(){ }
     //endregion
 
     //region Méthodes
@@ -62,16 +56,48 @@ public class RSAEngine {
     /**
      * Chiffrement du message.
      * @param message
+     * @param publicKey
      * @return String
      * @throws Exception
      */
-    public String encrypt(String message) throws Exception {
+    private String encrypt(String message, PublicKey publicKey) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
-        encryptCipher.init(Cipher.ENCRYPT_MODE, this.userKeyPair.getPublic());
+        encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
         byte[] cipherText = encryptCipher.doFinal(message.getBytes(UTF_8));
 
         return Base64.getEncoder().encodeToString(cipherText);
+    }
+
+    /**
+     * Chiffrement du message avec la clé publique de l'utilisateur courrant.
+     * @param message
+     * @return String
+     * @throws Exception
+     */
+    public String encrypt(String message) throws Exception {
+        return this.encrypt(message, GlobalVariables.currentUser.getUserKeys().getPublic());
+    }
+
+    /**
+     * Chiffrement du mot de passe de l'utilisateur avec la clé publique du serveur.
+     * Renvoie le mot de passe encrypté au bon format pour l'API.
+     * @param nonEncryptedPassword
+     * @return String
+     * @throws Exception
+     */
+    public String getEncryptedPasswdForAPI(String nonEncryptedPassword) throws Exception{
+        return this.encrypt(nonEncryptedPassword, GlobalVariables.public_key_server);
+    }
+
+    /**
+     * Chiffrement du mot de passe de l'utilisateur avec la clé publique de l'utilisateur courrant.
+     * Permet de se servir du mot de passe de l'utilisateur avec le bon chiffrement.
+     * @param nonEncryptedPassword
+     * @throws Exception
+     */
+    public void setEncryptedPasswdForLocalUsage(String nonEncryptedPassword) throws Exception{
+        GlobalVariables.currentUser.setPassword(this.encrypt(nonEncryptedPassword));
     }
     //endregion
 
@@ -86,7 +112,7 @@ public class RSAEngine {
         byte[] bytes = Base64.getDecoder().decode(cipherText);
 
         Cipher decryptCipher = Cipher.getInstance("RSA");
-        decryptCipher.init(Cipher.DECRYPT_MODE, this.userKeyPair.getPrivate());
+        decryptCipher.init(Cipher.DECRYPT_MODE, GlobalVariables.currentUser.getUserKeys().getPrivate());
 
         return new String(decryptCipher.doFinal(bytes), UTF_8);
     }
@@ -101,7 +127,7 @@ public class RSAEngine {
      */
     public String sign(String message) throws Exception {
         Signature privateSignature = Signature.getInstance("SHA256withRSA");
-        privateSignature.initSign(this.userKeyPair.getPrivate());
+        privateSignature.initSign(GlobalVariables.currentUser.getUserKeys().getPrivate());
         privateSignature.update(message.getBytes(UTF_8));
 
         byte[] signature = privateSignature.sign();
@@ -130,7 +156,7 @@ public class RSAEngine {
     }
 
     public boolean verify(String message, String signature) throws Exception {
-        return this.verify(message, signature, this.userKeyPair.getPublic());
+        return this.verify(message, signature, GlobalVariables.currentUser.getUserKeys().getPublic());
     }
     //endregion
 
