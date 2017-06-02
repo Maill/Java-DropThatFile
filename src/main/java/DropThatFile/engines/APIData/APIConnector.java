@@ -31,19 +31,17 @@ public class APIConnector {
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
-            String jsonString = "";
+            StringBuilder jsonString = new StringBuilder();
             String output;
             System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
-                jsonString += output;
+                jsonString.append(output);
             }
 
-            jsonObject = new JSONObject(jsonString);
+            jsonObject = new JSONObject(jsonString.toString());
 
             conn.disconnect();
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
