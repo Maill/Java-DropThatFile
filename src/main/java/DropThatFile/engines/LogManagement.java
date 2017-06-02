@@ -18,7 +18,7 @@ public class LogManagement {
     //region Contructeur privé
     /**
      * Création du template Log4J.
-     * @param caller
+     * @param caller Instance de l'objet concerné.
      */
     private LogManagement(Object caller){
         // On ne fait pas la gestion de la clé de registre ici, on la fait pendant l'installation
@@ -34,7 +34,7 @@ public class LogManagement {
     //region Méthode : getInstanceLogger
     /**
      * Récupération du logger Log4J pour l'écriture dans le journal d'évenements.
-     * @param caller
+     * @param caller Instance de l'objet concerné.
      * @return Logger
      */
     public static Logger getInstanceLogger(Object caller){

@@ -41,24 +41,23 @@ public class RSAEngine {
     /**
      * Génération d'une paire clé publique/privée.
      * @return Keypair
-     * @throws Exception
+     * @throws Exception Java Exception
      */
-    public static KeyPair generateKeyPair() throws Exception {
+    static KeyPair generateKeyPair() throws Exception {
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(2048, new SecureRandom());
-        KeyPair pair = generator.generateKeyPair();
 
-        return pair;
+        return generator.generateKeyPair();
     }
     //endregion
 
     //region Méthode : encrypt
     /**
      * Chiffrement du message.
-     * @param message
-     * @param publicKey
+     * @param message Message à chiffrer.
+     * @param publicKey Clé publique servant au cryptage
      * @return String
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     private String encrypt(String message, PublicKey publicKey) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
@@ -71,9 +70,9 @@ public class RSAEngine {
 
     /**
      * Chiffrement du message avec la clé publique de l'utilisateur courrant.
-     * @param message
+     * @param message Message à chiffrer.
      * @return String
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     public String encrypt(String message) throws Exception {
         return this.encrypt(message, GlobalVariables.currentUser.getUserKeys().getPublic());
@@ -82,9 +81,9 @@ public class RSAEngine {
     /**
      * Chiffrement du mot de passe de l'utilisateur avec la clé publique du serveur.
      * Renvoie le mot de passe encrypté au bon format pour l'API.
-     * @param nonEncryptedPassword
+     * @param nonEncryptedPassword Mot de passe utilisateur en clair.
      * @return String
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     public String getEncryptedPasswdForAPI(String nonEncryptedPassword) throws Exception{
         return this.encrypt(nonEncryptedPassword, GlobalVariables.public_key_server);
@@ -93,8 +92,8 @@ public class RSAEngine {
     /**
      * Chiffrement du mot de passe de l'utilisateur avec la clé publique de l'utilisateur courrant.
      * Permet de se servir du mot de passe de l'utilisateur avec le bon chiffrement.
-     * @param nonEncryptedPassword
-     * @throws Exception
+     * @param nonEncryptedPassword Mot de passe utilisateur en clair.
+     * @throws Exception Java Exception
      */
     public void setEncryptedPasswdForLocalUsage(String nonEncryptedPassword) throws Exception{
         GlobalVariables.currentUser.setPassword(this.encrypt(nonEncryptedPassword));
@@ -104,9 +103,9 @@ public class RSAEngine {
     //region Méthode : decrypt
     /**
      * Déchiffrement du message.
-     * @param cipherText
+     * @param cipherText Message chiffré.
      * @return String
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     public String decrypt(String cipherText) throws Exception {
         byte[] bytes = Base64.getDecoder().decode(cipherText);
@@ -121,9 +120,9 @@ public class RSAEngine {
     //region Méthode : sign
     /**
      * Signature du message avec les protocole RSA et SHA256.
-     * @param message
+     * @param message Message chiffré.
      * @return String
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     public String sign(String message) throws Exception {
         Signature privateSignature = Signature.getInstance("SHA256withRSA");
@@ -139,11 +138,11 @@ public class RSAEngine {
     //region Méthode : verify
     /**
      * Vérifie l'authentificité du message grâce à la signature.
-     * @param message
-     * @param signature
-     * @param publicKey
+     * @param message Message chiffré.
+     * @param signature Signature du message chiffré.
+     * @param publicKey Clé publique servant à la verification
      * @return boolean
-     * @throws Exception
+     * @throws Exception Java Exception
      */
     public boolean verify(String message, String signature, PublicKey publicKey) throws Exception {
         Signature publicSignature = Signature.getInstance("SHA256withRSA");
@@ -155,6 +154,14 @@ public class RSAEngine {
         return publicSignature.verify(signatureBytes);
     }
 
+    /**
+     * Vérifie l'authentificité du message grâce à la signature.
+     * En utilisant la clé publique de l'utilisateur.
+     * @param message Message chiffré.
+     * @param signature Signature du message chiffré.
+     * @return boolean
+     * @throws Exception Java Exception
+     */
     public boolean verify(String message, String signature) throws Exception {
         return this.verify(message, signature, GlobalVariables.currentUser.getUserKeys().getPublic());
     }
