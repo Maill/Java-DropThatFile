@@ -96,7 +96,7 @@ public class HomeController extends AnchorPane implements Initializable {
     public static String zipName = null;
 
     //TODO : Transposer ces 2 variables en un FileChooser
-    private String jarPath = "C:\\Users\\Travail\\IdeaProjects\\SkinLoader\\out\\artifacts\\SkinLoader_jar\\SkinLoader.jar";
+    private String jarPath = "C:/Users/Travail/IdeaProjects/SkinLoader/out/artifacts/SkinLoader_jar/SkinLoader.jar";
     private String packageClassPath = "com.company.CssLoader";
 
     public void setApp(HomeForm application){
