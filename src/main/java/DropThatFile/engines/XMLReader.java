@@ -1,6 +1,5 @@
 package DropThatFile.engines;
 
-import jdk.internal.org.xml.sax.SAXException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,7 +48,7 @@ public class XMLReader {
     /**
      * Lit et garde les attributs XML en mémoire.
      */
-    public void readConfigXML() {
+    private void readConfigXML() {
         Document dom;
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
@@ -61,43 +60,43 @@ public class XMLReader {
             //endregion
 
             //region <urlapi>
-            String urlAPI = null;
-            urlAPI = getTextValue(urlAPI, doc, "urlapi");
+            String urlAPI;
+            urlAPI = getTextValue(doc, "urlapi");
             if (urlAPI != null) {
                 if (!urlAPI.isEmpty())
                     elements.put("urlAPI", urlAPI);
             }
             //endregion
             //region <lasttoken>
-            String lastToken = null;
-            lastToken = getTextValue(lastToken, doc, "lasttoken");
+            String lastToken;
+            lastToken = getTextValue(doc, "lasttoken");
             if (lastToken != null) {
                 if (!lastToken.isEmpty())
                     elements.put("lastToken", urlAPI);
             }
             //endregion
             //region <networkconfiguration> => <user>
-            String netUser = null;
-            netUser = getTextValue(netUser, doc, "user");
+            String netUser;
+            netUser = getTextValue(doc, "user");
             if (netUser != null) {
                 if (!netUser.isEmpty())
                     elements.put("netUser", netUser);
             }
             //endregion
             //region <networkconfiguration> => <password>
-            String netPassword = null;
-            netPassword = getTextValue(netPassword, doc, "password");
+            String netPassword;
+            netPassword = getTextValue(doc, "password");
             if (netPassword != null) {
                 if (!netPassword.isEmpty())
                     elements.put("netPassword", netPassword);
             }
             //endregion
             //region <networkconfiguration> => <port>
-            String netPort = null;
-            netPassword = getTextValue(netPassword, doc, "port");
-            if (netPassword != null) {
-                if (!netPassword.isEmpty())
-                    elements.put("netPort", netPassword);
+            String netPort;
+            netPort = getTextValue(doc, "port");
+            if (netPort != null) {
+                if (!netPort.isEmpty())
+                    elements.put("netPort", netPort);
             }
             //endregion
 
@@ -114,12 +113,11 @@ public class XMLReader {
     //region Méthode privée : getTexteValue
     /**
      * [Méthode privée] Récupère la donnée tu tag XML.
-     * @param def
-     * @param doc
-     * @param tag
+     * @param doc Pointeur du document XML.
+     * @param tag Nom de la balise XML.
      */
-    private String getTextValue(String def, Element doc, String tag) {
-        String value = def;
+    private String getTextValue(Element doc, String tag) {
+        String value = null;
         NodeList nl;
         nl = doc.getElementsByTagName(tag);
         if (nl.getLength() > 0 && nl.item(0).hasChildNodes()) {

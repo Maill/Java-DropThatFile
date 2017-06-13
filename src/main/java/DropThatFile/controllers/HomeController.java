@@ -45,9 +45,6 @@ import java.util.List;
 public class HomeController extends AnchorPane implements Initializable {
     //region FXML
     @FXML
-    /**
-     * Open a hypertext link
-     */
     public void openLink() throws URISyntaxException, IOException {
         if(!desktop.isSupported(Desktop.Action.BROWSE)) return;
             desktop.browse(new URI("www.google.com"));

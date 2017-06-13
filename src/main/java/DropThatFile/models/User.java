@@ -21,7 +21,7 @@ public class   User {
     private String email;
     private Date lastLogin;
     private String phoneNumber;
-    private List<Group> isMemberOf = new ArrayList<Group>();
+    private List<Group> isMemberOf = new ArrayList<>();
     private UUID token;
     //endregion
 
