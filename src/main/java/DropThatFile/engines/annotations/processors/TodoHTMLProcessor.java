@@ -26,7 +26,7 @@ public class TodoHTMLProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        list = new ArrayList<_Todo>();
+        list = new ArrayList<>();
 
         //Adding annotations into a list
         for (TypeElement te : annotations) {
@@ -86,8 +86,8 @@ public class TodoHTMLProcessor extends AbstractProcessor {
                     break;
             }
 
-            html.append("<td " + style + "><b>" + todo.level() + "</b></td>");
-            html.append("<td " + style + ">" + todo.comment() + "</td>");
+            html.append("<td ").append(style).append("><b>").append(todo.level()).append("</b></td>");
+            html.append("<td ").append(style).append(">").append(todo.comment()).append("</td>");
             html.append("</tr>");
         }
 

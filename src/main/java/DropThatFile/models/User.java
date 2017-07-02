@@ -2,6 +2,7 @@ package DropThatFile.models;
 
 import DropThatFile.engines.RSAEngine;
 
+import java.security.KeyPair;
 import java.sql.Time;
 import java.time.Instant;
 import java.util.*;
@@ -9,25 +10,28 @@ import java.util.*;
 /**
  * Created by Nicol on 21/03/2017.
  */
-public class User {
+public class   User {
+
     //region Attributs
     private int id;
     private String fName;
     private String lName;
-    private RSAEngine password;
+    private String password;
+    private KeyPair userKeys;
     private String email;
     private Date lastLogin;
     private String phoneNumber;
-    private List<Group> isMemberOf = new ArrayList<Group>();
+    private List<Group> isMemberOf = new ArrayList<>();
     private UUID token;
     //endregion
 
     //region Contructeurs
-    public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
+    public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
                 String phoneNumber, List<Group> isMemberOf, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.userKeys = userKeys;
         this.fName = fName;
         this.lName = lName;
         this.lastLogin = lastLogin;
@@ -36,11 +40,12 @@ public class User {
         this.token = token;
     }
 
-    public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
+    public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
                 String phoneNumber, Group isMemberOf, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.userKeys = userKeys;
         this.fName = fName;
         this.lName = lName;
         this.lastLogin = lastLogin;
@@ -50,11 +55,12 @@ public class User {
     }
 
     //Constructeur de test sans BDD
-    public User(int id, String email, RSAEngine password, String fName, String lName, Date lastLogin,
+    public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
                 String phoneNumber, UUID token) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.userKeys = userKeys;
         this.fName = fName;
         this.lName = lName;
         this.lastLogin = lastLogin;
@@ -63,9 +69,10 @@ public class User {
     }
     //endregion
 
+    //region A supprimer plus tard
     private static final Map<String, User> users = new HashMap<>();
 
-    public static User of(int id, String email, RSAEngine password) {
+    /*public static User of(int id, String email, KeyPair password) {
         User user = users.get(id);
         if (user == null) {
             user = new User(id, email, password, null, null,
@@ -73,7 +80,8 @@ public class User {
             users.put(Integer.toString(id), user);
         }
         return user;
-    }
+    }*/
+    //endregion
 
     //region Getters
     public int getId() {
@@ -88,9 +96,11 @@ public class User {
         return lName;
     }
 
-    public RSAEngine getPassword() {
+    public String getPassword() {
         return password;
     }
+
+    public KeyPair getUserKeys() { return userKeys; }
 
     public String getEmail() {
         return email;
@@ -118,6 +128,10 @@ public class User {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public void setPassword(String password) {
+         this.password = password;
     }
     //endregion
 

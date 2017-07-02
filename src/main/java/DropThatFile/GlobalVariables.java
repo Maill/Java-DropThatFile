@@ -1,6 +1,7 @@
 package DropThatFile;
 
 
+import DropThatFile.models.User;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.security.Key;
@@ -34,4 +35,6 @@ public class GlobalVariables {
     // On stocke globalement la clé publique du serveur afin de ne pas surcharger les appels API
     // Init : au démarrage.
     public static PublicKey public_key_server;
+
+    public static User currentUser;
 }

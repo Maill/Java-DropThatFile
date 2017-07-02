@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!-- URL complète de l'API | exemple : http://mycompanyapi:3000/ -->
     <urlapi>localhost</urlapi>
+    <!-- Argument auto-géré par l'application -->
     <lasttoken>00000-000000-000-00000</lasttoken>
     <networkconfiguration>
+        <!-- Arguments auto-géré par l'application -->
         <user>user</user>
         <password>1234</password>
+        <port>22</port>
     </networkconfiguration>
 </configuration>
