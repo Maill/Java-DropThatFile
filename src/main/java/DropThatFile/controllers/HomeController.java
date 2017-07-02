@@ -1,5 +1,6 @@
 package DropThatFile.controllers;
 
+import DropThatFile.GlobalVariables;
 import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.annotations.Level;
@@ -23,6 +24,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -72,8 +74,12 @@ public class HomeController extends AnchorPane implements Initializable {
     private Button load_plugin;
 
     @FXML
+    private Button download_path;
+
+    @FXML
     private Button unload_all_Plugins;
     //endregion
+
     private Image folderImage = new Image(getClass().getResourceAsStream("/images/folder.png"));
 
     private final Logger log = LogManagement.getInstanceLogger(this);
@@ -111,15 +117,24 @@ public class HomeController extends AnchorPane implements Initializable {
         PluginLoader pluginLoader = new PluginLoader();
         load_plugin.setOnMouseClicked(event -> {
             try {
-                //final FileChooser pluginChooser = new FileChooser();
-                //windowsHandler.configureFileChooser(pluginChooser, System.getProperty("user.home"),"Select a jar file", "Jar Files", "*.jar");
-                //jarPaths.put(pluginChooser)
-                Stage tempStage = pluginLoader.load(jarPath, packageClassPath);
-                pluginStages.add(tempStage);
-                //windowsHandler.getJfxStage().initStyle(tempStage.getStyle());
+                final FileChooser pluginChooser = new FileChooser();
+                windowsHandler.configureFileChooser(pluginChooser, System.getProperty("user.home"),"Select a jar file", "Jar Files", "*.jar");
+                //jarPaths.put(pluginChooser, null);
+                //Stage tempStage = pluginLoader.load(jarPath, packageClassPath);
+                //pluginStages.add(tempStage);
             } catch (Exception ex) {
                 log.error("Erreur au chargement d'un plugin.\nMessage : \n" + ex.getMessage());
             }
+        });
+
+        download_path.setOnMouseClicked(event -> {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Download path");
+            File defaultDirectory = new File(System.getenv("user.home"));
+            chooser.setInitialDirectory(defaultDirectory);
+            File selectedDirectory = chooser.showDialog(windowsHandler.getJfxStage());
+            chooser.setInitialDirectory(selectedDirectory);
+            GlobalVariables.outputZipPath = chooser.getInitialDirectory().getPath();
         });
 
         //TODO : Need further tests
@@ -149,9 +164,20 @@ public class HomeController extends AnchorPane implements Initializable {
 
         PasswordField passwordTextField = new PasswordField();
         TextField zipNameTextField = new TextField();
-        passwordTextField.setPromptText("Password");
-        zipNameTextField.setPromptText("Zip name");
+        passwordTextField.setPromptText(null);
+        zipNameTextField.setPromptText(null);
         Button btnValidate = new Button("Continue");
+        btnValidate.setOnMouseClicked((e) -> {
+            zipName = zipNameTextField.getText();
+            password = passwordTextField.getText();
+
+            if((zipName != null || password != null) || (zipName.length() > 0 || password.length() > 0)){
+                dialog.close();
+            } else {
+                zipNameTextField.setPromptText("Please fill in this field.");
+                passwordTextField.setPromptText("Please fill in this field.");
+            }
+        });
 
         HBox dialogHbox = new HBox(10);
         dialogHbox.getChildren().add(new Text("Type a fileName for the zip, and a password for your files: "));
@@ -159,12 +185,6 @@ public class HomeController extends AnchorPane implements Initializable {
         VBox dialogVox = new VBox(10);
         dialogVox.getChildren().add(zipNameTextField);
         dialogVox.getChildren().add(passwordTextField);
-
-        btnValidate.setOnMouseClicked((MouseEvent event) -> {
-            zipName = zipNameTextField.getText();
-            password = passwordTextField.getText();
-            dialog.close();
-        });
 
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(40)); // space between elements and window border
@@ -184,7 +204,7 @@ public class HomeController extends AnchorPane implements Initializable {
         final FileChooser fileChooser = new FileChooser();
         Stage fileChooserStage = new Stage();
         // set initial directory of the "browse window" to the user's dir
-        browse.setOnAction(event -> {
+        browse.setOnAction(e -> {
             // Initialization of the password's modal
             modalPassword();
             // Retrieve current selected item
@@ -194,18 +214,19 @@ public class HomeController extends AnchorPane implements Initializable {
                 this.writeMessage("Please select a proper directory.");
                 return;
             }
-            if (zipName == null || password == null){
+            else if (zipName == null || password == null){
                 this.writeMessage("Please set a proper password and zip name.");
                 return;
-            }
-            List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
-            if (list != null) {
-                FilesJobs filesJobs = new FilesJobs();
-                try {
-                    testFiles(filesJobs, list);
-                } catch(IOException | ZipException ex){
-                    this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
-                    log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
+            } else {
+                List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
+                if (list != null) {
+                    FilesJobs filesJobs = new FilesJobs();
+                    try {
+                        testFiles(filesJobs, list);
+                    } catch(IOException | ZipException ex){
+                        this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
+                        log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
+                    }
                 }
             }
         });
@@ -226,8 +247,6 @@ public class HomeController extends AnchorPane implements Initializable {
                 return;
             }
         }
-
-        //TODO : Add a description
         DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
         // Add selected files into an encrypted zip file
         filesjobs.encryptFile(fileUpload, files);
@@ -277,7 +296,7 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     /**
-     * Method for Adding an TreeItem
+     * Method for Adding a TreeItem
      * @param value TreeItem name
      */
     private void addItem(String value)
@@ -300,7 +319,7 @@ public class HomeController extends AnchorPane implements Initializable {
             return;
         }
 
-        TreeItem newItem = new TreeItem(value);
+        TreeItem newItem = new TreeItem(value, new ImageView(folderImage));
         parent.getChildren().add(newItem);
 
         if (!parent.isExpanded())

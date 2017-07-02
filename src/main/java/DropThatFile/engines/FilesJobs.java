@@ -1,5 +1,6 @@
 package DropThatFile.engines;
 
+import DropThatFile.GlobalVariables;
 import DropThatFile.controllers.HomeController;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonType;
@@ -18,12 +19,12 @@ import java.util.Optional;
 public class FilesJobs {
 
     //region Attributs
-    private static final String tmpFilePath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles";
+    //private static final String tmpFilePath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles";
     //endregion
 
     //region Bloc d'initialisation
     static {
-        File f = new File(tmpFilePath);
+        File f = new File(GlobalVariables.outputZipPath);
         if (!f.exists() || !f.isDirectory()) {
             f.mkdirs();
         }
@@ -45,7 +46,7 @@ public class FilesJobs {
         }
 
         // Zip location
-        ZipFile zipFile = new ZipFile(tmpFilePath + "\\" + fileNameWithoutExt + ".zip");
+        ZipFile zipFile = new ZipFile(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
 
         ArrayList<File> filesToAdd = new ArrayList();
         for (File filePath : filesPath) {
@@ -101,7 +102,7 @@ public class FilesJobs {
      * @param fileNameWithoutExt
      */
     private static boolean fileAlreadyExists(String fileNameWithoutExt){
-        File fileToOverwrite = new File(tmpFilePath + "\\" + fileNameWithoutExt + ".zip");
+        File fileToOverwrite = new File(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
         Alert alertOverwriteFile = new Alert(Alert.AlertType.CONFIRMATION);
         Alert alertFileCantBeDeleted = new Alert(Alert.AlertType.ERROR);
         if (fileToOverwrite.exists()){
