@@ -51,7 +51,7 @@ public class RSAEngine {
     }
     //endregion
 
-    //region Méthode : encrypt
+    //region Méthodes : [Privée] encrypt & encrypt & getEncryptedPasswdForAPI & setEncryptedPasswdForLocalUsage
     /**
      * Chiffrement du message.
      * @param message Message à chiffrer.

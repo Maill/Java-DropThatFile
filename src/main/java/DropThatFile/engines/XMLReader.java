@@ -61,42 +61,42 @@ public class XMLReader {
 
             //region <urlapi>
             String urlAPI;
-            urlAPI = getTextValue(doc, "urlapi");
+            urlAPI = getTextValue(doc, XMLFields.URL_API);
             if (urlAPI != null) {
                 if (!urlAPI.isEmpty())
-                    elements.put("urlAPI", urlAPI);
+                    elements.put(XMLFields.URL_API, urlAPI);
             }
             //endregion
             //region <lasttoken>
             String lastToken;
-            lastToken = getTextValue(doc, "lasttoken");
+            lastToken = getTextValue(doc, XMLFields.LAST_TOKEN);
             if (lastToken != null) {
                 if (!lastToken.isEmpty())
-                    elements.put("lastToken", urlAPI);
+                    elements.put(XMLFields.LAST_TOKEN, urlAPI);
             }
             //endregion
             //region <networkconfiguration> => <user>
             String netUser;
-            netUser = getTextValue(doc, "user");
+            netUser = getTextValue(doc, XMLFields.SFTP_USER);
             if (netUser != null) {
                 if (!netUser.isEmpty())
-                    elements.put("netUser", netUser);
+                    elements.put(XMLFields.SFTP_USER, netUser);
             }
             //endregion
             //region <networkconfiguration> => <password>
             String netPassword;
-            netPassword = getTextValue(doc, "password");
+            netPassword = getTextValue(doc, XMLFields.SFTP_PASSSWD);
             if (netPassword != null) {
                 if (!netPassword.isEmpty())
-                    elements.put("netPassword", netPassword);
+                    elements.put(XMLFields.SFTP_PASSSWD, netPassword);
             }
             //endregion
             //region <networkconfiguration> => <port>
             String netPort;
-            netPort = getTextValue(doc, "port");
+            netPort = getTextValue(doc, XMLFields.SFTP_PORT);
             if (netPort != null) {
                 if (!netPort.isEmpty())
-                    elements.put("netPort", netPort);
+                    elements.put(XMLFields.SFTP_PORT, netPort);
             }
             //endregion
 
@@ -126,4 +126,8 @@ public class XMLReader {
         return value;
     }
     //endregion
+
+    public String get(String field){
+        return this.elements.get(field);
+    }
 }

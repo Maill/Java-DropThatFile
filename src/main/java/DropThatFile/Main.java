@@ -1,9 +1,6 @@
 package DropThatFile;
 
-import DropThatFile.engines.KeyStoreFactory;
-import DropThatFile.engines.LogManagement;
-import DropThatFile.engines.RSAEngine;
-import DropThatFile.engines.XMLReader;
+import DropThatFile.engines.*;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
 import DropThatFile.models.Group;
 import DropThatFile.models.User;
@@ -30,10 +27,11 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Logger log = LogManagement.getInstanceLogger(this);
+        //Logger log = LogManagement.getInstanceLogger(this);
 
         XMLReader xml = XMLReader.Instance();
-        // Uncomment to set a Key Store for RSA encryption/decryption
+        System.out.println(xml.get(XMLFields.URL_API));
+        // Decomment to set a Key Store for RSA encryption/decryption
         //KeyStoreFactory.setKeyPairToKeyStore("password");
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
 
@@ -59,7 +57,7 @@ public class Main extends Application{
             //System.out.println("Clé publique du serveur : " + Base64.toBase64String(GlobalVariables.public_key_server.getEncoded()));
         }
         catch(Exception ex){
-            log.error("Erreur en lors de l'encryptage RSA.\nMessage : \n" + ex.getMessage());
+            //log.error("Erreur en lors de l'encryptage RSA.\nMessage : \n" + ex.getMessage());
         }
         //endregion
 

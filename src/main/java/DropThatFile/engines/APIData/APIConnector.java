@@ -1,5 +1,8 @@
 package DropThatFile.engines.APIData;
 
+import DropThatFile.engines.XMLFields;
+import DropThatFile.engines.XMLReader;
+import com.sun.org.apache.xerces.internal.impl.dv.dtd.XML11DTDDVFactoryImpl;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +17,9 @@ import java.nio.charset.Charset;
  *
  * Classe d'initialisation / de préparation de la connexion.
  */
-public class APIConnector {
+public abstract class APIConnector {
+
+    protected String baseURL = XMLReader.Instance().get(XMLFields.URL_API);
 
     public JSONObject readFromUrl(String URL){
         JSONObject jsonObject = null;
