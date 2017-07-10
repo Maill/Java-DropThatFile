@@ -127,7 +127,21 @@ public class XMLReader {
     }
     //endregion
 
+    //region Méthode : get
     public String get(String field){
         return this.elements.get(field);
     }
+    //endregion
+
+    //region Méthode : set
+    public void set(String field, String value){
+        this.elements.put(field, value);
+    }
+    //endregion
+
+    //region Méthode : writeXML
+    public synchronized void writeXML(){
+
+    }
+    //endregion
 }
