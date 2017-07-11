@@ -3,8 +3,6 @@ package DropThatFile.models;
 import DropThatFile.engines.RSAEngine;
 
 import java.security.KeyPair;
-import java.sql.Time;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -21,13 +19,13 @@ public class   User {
     private String email;
     private Date lastLogin;
     private String phoneNumber;
-    private List<Group> isMemberOf = new ArrayList<>();
-    private UUID token;
+    private Group[] isMemberOf;
+    private String token;
     //endregion
 
     //region Contructeurs
     public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, List<Group> isMemberOf, UUID token) {
+                String phoneNumber, Group[] isMemberOf, String token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -41,7 +39,7 @@ public class   User {
     }
 
     public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, Group isMemberOf, UUID token) {
+                String phoneNumber, Group isMemberOf, String token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -50,13 +48,13 @@ public class   User {
         this.lName = lName;
         this.lastLogin = lastLogin;
         this.phoneNumber = phoneNumber;
-        this.isMemberOf.add(isMemberOf);
+        //this.isMemberOf.add(isMemberOf);
         this.token = token;
     }
 
     //Constructeur de test sans BDD
     public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, UUID token) {
+                String phoneNumber, String token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -114,11 +112,11 @@ public class   User {
         return phoneNumber;
     }
 
-    public List<Group> getIsMemberOf() {
+    public Group[] getIsMemberOf() {
         return isMemberOf;
     }
 
-    public UUID getToken() { return token; }
+    public String getToken() { return token; }
     //endregion
 
     //region Setters

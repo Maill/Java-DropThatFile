@@ -1,5 +1,6 @@
 package DropThatFile.engines.APIData;
 
+import DropThatFile.GlobalVariables;
 import DropThatFile.engines.XMLFields;
 import DropThatFile.engines.XMLReader;
 import com.sun.org.apache.xerces.internal.impl.dv.dtd.XML11DTDDVFactoryImpl;
@@ -29,6 +30,7 @@ public abstract class APIConnector {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setRequestProperty("Authorization", GlobalVariables.currentUser.getToken());
 
             if (conn.getResponseCode() != 200) {
                 throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
@@ -38,7 +40,6 @@ public abstract class APIConnector {
 
             StringBuilder jsonString = new StringBuilder();
             String output;
-            System.out.println("Output from Server .... \n");
             while ((output = br.readLine()) != null) {
                 jsonString.append(output);
             }
@@ -52,5 +53,9 @@ public abstract class APIConnector {
         } finally {
             return jsonObject;
         }
+    }
+
+    public static void login(){
+
     }
 }

@@ -4,9 +4,7 @@ package DropThatFile;
 import DropThatFile.models.User;
 import org.bouncycastle.util.encoders.Base64;
 
-import java.security.Key;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;

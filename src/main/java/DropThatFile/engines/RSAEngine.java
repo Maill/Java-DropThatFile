@@ -59,7 +59,7 @@ public class RSAEngine {
      * @return String
      * @throws Exception Java Exception
      */
-    private String encrypt(String message, PublicKey publicKey) throws Exception {
+    public String encrypt(String message, PublicKey publicKey) throws Exception {
         Cipher encryptCipher = Cipher.getInstance("RSA");
         encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
 

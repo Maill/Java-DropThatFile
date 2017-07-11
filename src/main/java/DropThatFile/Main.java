@@ -36,8 +36,8 @@ public class Main extends Application{
         KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
 
         //region RSA test
-        GlobalVariables.currentUser = new User(1, "test@test.com", "testtest", pair, "Prenom", "Nom",
-                new Date(), "0645464534", new Group(1, "Groupe 1", GlobalVariables.public_key_server), UUID.randomUUID());
+        //GlobalVariables.currentUser = new User(1, "test@test.com", "testtest", pair, "Prenom", "Nom",
+                //new Date(), "0645464534", new Group(1, "Groupe 1", GlobalVariables.public_key_server), UUID.randomUUID());
         try{
             RSAEngine rsaEngine = RSAEngine.Instance();
             //System.out.println("Clé privée : " + Base64.toBase64String(pair.getPrivate().getEncoded()));
