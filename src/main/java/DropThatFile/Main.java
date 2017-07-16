@@ -1,6 +1,7 @@
 package DropThatFile;
 
 import DropThatFile.engines.*;
+import DropThatFile.engines.APIData.APIModels.APIUser;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
 import DropThatFile.models.Group;
 import DropThatFile.models.User;
@@ -11,6 +12,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.Security;
 import java.util.Date;
 import java.util.UUID;
@@ -28,17 +30,18 @@ public class Main extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception{
         //Logger log = LogManagement.getInstanceLogger(this);
-
-        XMLReader xml = XMLReader.Instance();
-        System.out.println(xml.get(XMLFields.URL_API));
+        //PublicKey test = GlobalVariables.public_key_server;
+        boolean tes = APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa");
+        //XMLReader xml = XMLReader.Instance();
+        //System.out.println(xml.get(XMLFields.URL_API));
         // Decomment to set a Key Store for RSA encryption/decryption
-        //KeyStoreFactory.setKeyPairToKeyStore("password");
-        KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
+
+        //KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
 
         //region RSA test
-        //GlobalVariables.currentUser = new User(1, "test@test.com", "testtest", pair, "Prenom", "Nom",
-                //new Date(), "0645464534", new Group(1, "Groupe 1", GlobalVariables.public_key_server), UUID.randomUUID());
-        try{
+        //GlobalVariables.currentUser = new User(1, "nicolas.demoncourt@gmail.com", "aaaa", "Nicolas", "Cornu", new Date(), "opopo");
+        //KeyStoreFactory.setKeyPairToKeyStore("aaaa");
+        /*try{
             RSAEngine rsaEngine = RSAEngine.Instance();
             //System.out.println("Clé privée : " + Base64.toBase64String(pair.getPrivate().getEncoded()));
             //System.out.println("Clé publique : " + Base64.toBase64String(pair.getPublic().getEncoded()));
@@ -58,7 +61,7 @@ public class Main extends Application{
         }
         catch(Exception ex){
             //log.error("Erreur en lors de l'encryptage RSA.\nMessage : \n" + ex.getMessage());
-        }
+        }*/
         //endregion
 
         // Entry point of the application

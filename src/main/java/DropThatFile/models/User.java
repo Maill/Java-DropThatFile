@@ -18,14 +18,13 @@ public class   User {
     private KeyPair userKeys;
     private String email;
     private Date lastLogin;
-    private String phoneNumber;
-    private Group[] isMemberOf;
+    private ArrayList<Group> isMemberOf;
     private String token;
     //endregion
 
     //region Contructeurs
     public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, Group[] isMemberOf, String token) {
+                String token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -33,28 +32,12 @@ public class   User {
         this.fName = fName;
         this.lName = lName;
         this.lastLogin = lastLogin;
-        this.phoneNumber = phoneNumber;
-        this.isMemberOf = isMemberOf;
-        this.token = token;
-    }
-
-    public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, Group isMemberOf, String token) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.userKeys = userKeys;
-        this.fName = fName;
-        this.lName = lName;
-        this.lastLogin = lastLogin;
-        this.phoneNumber = phoneNumber;
-        //this.isMemberOf.add(isMemberOf);
         this.token = token;
     }
 
     //Constructeur de test sans BDD
-    public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
-                String phoneNumber, String token) {
+    public User(int id, String email, String password,String fName, String lName, Date lastLogin,
+                String token) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -62,7 +45,6 @@ public class   User {
         this.fName = fName;
         this.lName = lName;
         this.lastLogin = lastLogin;
-        this.phoneNumber = phoneNumber;
         this.token = token;
     }
     //endregion
@@ -108,11 +90,7 @@ public class   User {
         return lastLogin;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public Group[] getIsMemberOf() {
+    public ArrayList<Group> getIsMemberOf() {
         return isMemberOf;
     }
 
@@ -124,12 +102,12 @@ public class   User {
         this.email = email;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public void setPassword(String password) {
          this.password = password;
+    }
+
+    public void setIsMemberOf(ArrayList<Group> userGroups) {
+        this.isMemberOf = userGroups;
     }
     //endregion
 
@@ -143,7 +121,6 @@ public class   User {
                 ", password=" + password +
                 ", email='" + email + '\'' +
                 ", lastLogin=" + lastLogin +
-                ", phoneNumber='" + phoneNumber + '\'' +
                 ", isMemberOf=" + isMemberOf + '\'' +
                 ", token=" + token +
                 '}';
@@ -162,7 +139,6 @@ public class   User {
         if (!password.equals(user.password)) return false;
         if (!email.equals(user.email)) return false;
         if (lastLogin != null ? !lastLogin.equals(user.lastLogin) : user.lastLogin != null) return false;
-        if (phoneNumber != null ? !phoneNumber.equals(user.phoneNumber) : user.phoneNumber != null) return false;
         if (isMemberOf != null ? !isMemberOf.equals(user.isMemberOf) : user.isMemberOf != null) return false;
         return token.equals(user.token);
     }
@@ -175,7 +151,6 @@ public class   User {
         result = 31 * result + password.hashCode();
         result = 31 * result + email.hashCode();
         result = 31 * result + (lastLogin != null ? lastLogin.hashCode() : 0);
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + (isMemberOf != null ? isMemberOf.hashCode() : 0);
         result = 31 * result + token.hashCode();
         return result;

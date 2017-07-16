@@ -8,15 +8,20 @@ import DropThatFile.engines.RSAEngine;
 import DropThatFile.models.Group;
 import DropThatFile.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.docx4j.dml.CTGraphicalObjectFrameLocking;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.security.KeyPair;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -28,16 +33,20 @@ public class APIUser extends APIConnector {
 
     private Logger log = LogManagement.getInstanceLogger(this);
 
-    private APIUser instance = null;
+    private static APIUser instance = null;
 
-    public boolean login(String formattedEncryptedCredentials, String password){
+    public boolean login(String email, String password){
         boolean returnVal;
+        JSONObject toAPI = new JSONObject();
+        toAPI.append("email", email).append("password", password);
         try{
-            JSONObject response = this.readFromUrl(this.route + "login/" + formattedEncryptedCredentials);
+            String jsonStringEncrypted = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
+            List<NameValuePair> postContents = this.buildPOSTList(null, "credentials", jsonStringEncrypted);
+            JSONObject response = this.readFromUrl(this.route + "login", postContents);
             if(response.get("token").toString() == null){
                 return false;
             }
-            returnVal = getUserInfo(response.get("token").toString(), formattedEncryptedCredentials, password);
+            returnVal = setUserInfo(response, password);
         }catch (Exception ex){
             log.error(String.format("Error on APIUser on login method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
             return false;
@@ -45,15 +54,24 @@ public class APIUser extends APIConnector {
         return returnVal;
     }
 
-    public boolean getUserInfo(String tokenJWT, String formattedEncryptedCredentials, String password){
+    public boolean setUserInfo(JSONObject response, String password){
         try{
-            JSONObject response = this.readFromUrl(this.route + "get/" + formattedEncryptedCredentials);
-            if(response.get("id") == null && response.get("mail") == null){
-                return false;
-            }
-            GlobalVariables.currentUser = new User(Integer.parseInt(response.get("id").toString()), response.get("email").toString(), response.get("password").toString(),
-                    KeyStoreFactory.getKeyPairFromKeyStore(password), response.get("fname").toString(), response.get("lname").toString(),
-                    getDateFrommString(response.get("lastlogin").toString()), response.get("phonenumber").toString(), createGroupFromJSON(response.getJSONArray("members")), tokenJWT);
+            KeyPair userKeyPair = KeyStoreFactory.getKeyPairFromKeyStore(password);
+            JSONObject userObject = new JSONObject(response.get("user").toString());
+
+            GlobalVariables.currentUser = new User(
+                    Integer.parseInt(userObject.get("id").toString()),
+                    userObject.get("mail").toString(),
+                    RSAEngine.Instance().encrypt(password, userKeyPair.getPublic()),
+                    userKeyPair,
+                    userObject.get("fname").toString(),
+                    userObject.get("lname").toString(),
+                    getDateFrommString(userObject.get("lastlogin").toString()),
+                    response.get("token").toString()
+            );
+
+            GlobalVariables.currentUser.setIsMemberOf(APIGroup.Instance().getGroupsForUser());
+
         } catch(Exception ex){
             log.error(String.format("Error on APIUser on login method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
             return false;
@@ -61,21 +79,15 @@ public class APIUser extends APIConnector {
         return true;
     }
 
-    private Group[] createGroupFromJSON(JSONArray members){
-        Group[] ret = null;
-
-        return ret;
-    }
-
     private java.util.Date getDateFrommString(String date) throws Exception{
-        DateFormat format = new SimpleDateFormat("dd/mm/yyyy", Locale.FRANCE);
-        return format.parse(date);
+        DateFormat format = new SimpleDateFormat("yyyy-M-dd", Locale.FRANCE);
+        return format.parse(date.substring(0, 10));
     }
 
     public boolean saveProfile(){
         ObjectMapper mapper = new ObjectMapper();
         try{
-            JSONObject response = this.readFromUrl(this.route + "saveprofile/" + RSAEngine.Instance().encrypt(mapper.writeValueAsString(GlobalVariables.currentUser), GlobalVariables.public_key_server));
+            JSONObject response = this.readFromUrl(this.route + "saveprofile/" + RSAEngine.Instance().encrypt(mapper.writeValueAsString(GlobalVariables.currentUser), GlobalVariables.public_key_server), null);
             if(response.get("status").toString() == null){
                 return false;
             }
@@ -86,12 +98,12 @@ public class APIUser extends APIConnector {
         return true;
     }
 
-    public APIUser Instance(){
-        if(this.instance == null){
-            this.instance = new APIUser();
-            return this.instance;
+    public static APIUser Instance(){
+        if(instance == null){
+            instance = new APIUser();
+            return instance;
         } else {
-            return this.instance;
+            return instance;
         }
     }
 }

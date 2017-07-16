@@ -15,12 +15,15 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.util.encoders.Base64;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.cert.*;
 import java.security.cert.Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Date;
 import java.util.Random;
 
@@ -64,7 +67,7 @@ public class KeyStoreFactory {
      * @throws Exception Java Exceptions
      */
     public static KeyPair getKeyPairFromKeyStore(String password) throws Exception {
-        InputStream ins = new FileInputStream("./keystorename.jks");
+        InputStream ins = new FileInputStream("./keystoredtf.jks");
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(ins, password.toCharArray());   //Keystore password
         KeyStore.PasswordProtection keyPassword = //Key password
@@ -150,4 +153,22 @@ public class KeyStoreFactory {
         return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(builder.build(signer));
     }
     //endregion
+
+    public static PublicKey getPublicKeyFromString(String key){
+        byte[] publicBytes = Base64.decode(key);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
+        KeyFactory keyFactory = null;
+        PublicKey ret = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            ret = keyFactory.generatePublic(keySpec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+        return ret;
+    }
 }
