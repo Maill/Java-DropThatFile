@@ -3,25 +3,19 @@ package DropThatFile.controllers;
 import DropThatFile.GlobalVariables;
 import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
-import DropThatFile.engines.annotations.Level;
-import DropThatFile.engines.annotations._Todo;
-import DropThatFile.engines.windowsManager.TreeViewRepository;
 import DropThatFile.engines.windowsManager.WindowsHandler;
-import DropThatFile.engines.windowsManager.forms.HomeForm;
 import DropThatFile.pluginsManager.PluginLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
@@ -38,8 +32,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
+
+import static DropThatFile.engines.windowsManager.TreeViewer.*;
 
 /**
  * Created by Travail on 02/05/2017.
@@ -53,19 +50,31 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     @FXML
-    private Button browse;
+    private Button button_archiveBrowse;
 
     @FXML
-    private TreeView treeView_repository;
+    private Button button_browse;
+
+    @FXML
+    private Button synchronize;
+
+    @FXML
+    private TreeView<File> treeView_repository;
+
+    @FXML
+    private CheckBox checkBox_autoRefresh;
 
     @FXML
     private TextArea message_textArea;
 
     @FXML
+    private TextArea preview_textArea;
+
+    @FXML
     private TextField item_textField;
 
     @FXML
-    private Button item_add;
+    private Button item_create;
 
     @FXML
     private Button item_remove;
@@ -75,44 +84,57 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @FXML
     private Button download_path;
-
-    @FXML
-    private Button unload_all_Plugins;
     //endregion
 
-    private Image folderImage = new Image(getClass().getResourceAsStream("/images/folder.png"));
+    // Dropdown menu, on right-click, in the TreeView
+    private ContextMenu contextMenu = new ContextMenu();
+    private MenuItem preview_menuItem = new MenuItem("Preview");
+    private MenuItem addFolder_menuItem = new MenuItem("Add folder");
+    private MenuItem delete_menuItem = new MenuItem("Delete");
 
+    // Icons used for the nodes in the TreeView
+    private Image[] icons = new Image[]{
+        new Image(getClass().getResourceAsStream("/images/opFolder.png")),
+        new Image(getClass().getResourceAsStream("/images/clFolder.png")),
+        new Image(getClass().getResourceAsStream("/images/file.png"))
+    };
+
+    // Log4j instance
     private final Logger log = LogManagement.getInstanceLogger(this);
 
+    // Launch the default web browser
     private Desktop desktop = Desktop.getDesktop();
 
     private Stage stage = new Stage();
 
     private WindowsHandler windowsHandler = new WindowsHandler(stage);
 
-    private HomeForm application;
-
     private ArrayList<Stage> pluginStages = new ArrayList<>();
     private HashMap<String, String> jarPaths = new HashMap<>();
 
-    public static String password = null;
+    public static String zipPassword = null;
     public static String zipName = null;
-
-    //TODO : Transposer ces 2 variables en un FileChooser
-    private String jarPath = "C:/Users/Travail/IdeaProjects/SkinLoader/out/artifacts/SkinLoader_jar/SkinLoader.jar";
-    private String packageClassPath = "com.company.CssLoader";
-
-    public void setApp(HomeForm application){
-        this.application = application;
-    }
+    public static String zipDescription = null;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        setArchiveBrowseButton();
         setBrowseButton();
-        setTreeView_repository(treeView_repository);
-        initializePluginLoader();
+        contextMenu.getItems().addAll(preview_menuItem, addFolder_menuItem, delete_menuItem);
+        setTreeView(treeView_repository, icons, item_textField, synchronize,
+                item_create, item_remove, contextMenu, checkBox_autoRefresh);
+        // Preview MenuItem
+        contextMenu.getItems().get(0).setOnAction(e -> {});
+        // Add folder MenuItem
+        contextMenu.getItems().get(1).setOnAction(e -> addFolderNode(treeView_repository, new File("New folder"), icons));
+        // Delete MenuItem
+        contextMenu.getItems().get(2).setOnAction(e -> userRemoveNode(treeView_repository));
     }
 
+
+    /**
+     * Initialize loaded plugins. INCOMPLETE
+     */
     private void initializePluginLoader(){
         PluginLoader pluginLoader = new PluginLoader();
         load_plugin.setOnMouseClicked(event -> {
@@ -136,94 +158,93 @@ public class HomeController extends AnchorPane implements Initializable {
             chooser.setInitialDirectory(selectedDirectory);
             GlobalVariables.outputZipPath = chooser.getInitialDirectory().getPath();
         });
-
-        //TODO : Need further tests
-        //region Unload button
-        /*unload_all_Plugins.setOnMouseClicked(event -> {
-            try {
-                for (Stage stage : pluginStages) {
-                    stage.close();
-                }
-                pluginLoader.unloadAll();
-            } catch(Exception ex){
-                log.error("Erreur au déchargement d'un plugin.\nMessage : \n" + ex.getMessage());
-            }
-        });*/
-        //endregion
-
-        //windowsHandler.getJfxStage().getScene().lookup("css");
     }
 
     /**
-     * Create a modal allowing the user to choose a zip name and a password for it
+     * Create a modal that allows the user to choose an archive name and a password for it
      */
-    private void modalPassword(){
+    private void modalSetArchiveFile(){
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(windowsHandler.getJfxStage());
 
-        PasswordField passwordTextField = new PasswordField();
+        Label zipNameLabel = new Label("Archive name*:");
         TextField zipNameTextField = new TextField();
-        passwordTextField.setPromptText(null);
-        zipNameTextField.setPromptText(null);
+        zipNameTextField.setPromptText("Name...");
+        Label zipPasswordLabel = new Label("Archive password*:");
+        PasswordField zipPasswordTextField = new PasswordField();
+        zipPasswordTextField.setPromptText("Password...");
+        Label zipDescriptionLabel = new Label("Archive description:");
+        TextField zipDescriptionTextField = new TextField();
+        zipDescriptionTextField.setPromptText("Description...");
+
         Button btnValidate = new Button("Continue");
+
         btnValidate.setOnMouseClicked((e) -> {
             zipName = zipNameTextField.getText();
-            password = passwordTextField.getText();
+            zipPassword = zipPasswordTextField.getText();
+            zipDescription = zipDescriptionTextField.getText();
 
-            if((zipName != null || password != null) || (zipName.length() > 0 || password.length() > 0)){
-                dialog.close();
-            } else {
-                zipNameTextField.setPromptText("Please fill in this field.");
-                passwordTextField.setPromptText("Please fill in this field.");
+            if (zipName != null && zipPassword != null) {
+                if(zipName.length() >= 1 && zipPassword.length() >= 1){
+                    if(zipDescriptionTextField.getText().trim().isEmpty())
+                        zipDescription = "No description available";
+                    dialog.close();
+                } else {
+                    if(zipNameTextField.getText() == null)
+                        zipNameTextField.setPromptText("Please set a name to the archive.");
+                    if(zipPasswordTextField.getText() == null)
+                        zipPasswordTextField.setPromptText("Please set a password.");
+                }
             }
         });
 
         HBox dialogHbox = new HBox(10);
-        dialogHbox.getChildren().add(new Text("Type a fileName for the zip, and a password for your files: "));
+        dialogHbox.getChildren().add(new Text("To set an archive: enter a fileName, a password, plus an optional description: "));
         dialogHbox.getChildren().add(btnValidate);
         VBox dialogVox = new VBox(10);
-        dialogVox.getChildren().add(zipNameTextField);
-        dialogVox.getChildren().add(passwordTextField);
+        dialogVox.getChildren().addAll(
+            zipNameLabel, zipNameTextField,
+            zipPasswordLabel, zipPasswordTextField,
+            zipDescriptionLabel, zipDescriptionTextField
+        );
 
         BorderPane root = new BorderPane();
-        root.setPadding(new Insets(40)); // space between elements and window border
+        root.setPadding(new Insets(30)); // space between elements and window border
         root.setTop(dialogHbox);
         root.setCenter(dialogVox);
         root.setBottom(btnValidate);
 
-        Scene dialogScene = new Scene(root, 400, 200);
+        Scene dialogScene = new Scene(root, 500, 275);
         dialog.setScene(dialogScene);
         dialog.showAndWait();
     }
 
     /**
-     * Initialize the main browse button in the Home tab
+     * Initialize the archive browse button
      */
-    private void setBrowseButton() {
-        final FileChooser fileChooser = new FileChooser();
+    private void setArchiveBrowseButton() {
+        // File browser
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
         Stage fileChooserStage = new Stage();
-        // set initial directory of the "browse window" to the user's dir
-        browse.setOnAction(e -> {
-            // Initialization of the password's modal
-            modalPassword();
+        button_archiveBrowse.setOnAction(e -> {
+            modalSetArchiveFile();
             // Retrieve current selected item
-            TreeItem selectedTreeItem = (TreeItem)treeView_repository.getSelectionModel().getSelectedItem();
-            // If there's no selected item || if selected item is the root item || or is null
-            if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue().equals("root") || selectedTreeItem.getValue() == null) {
+            TreeItem selectedTreeItem = treeView_repository.getSelectionModel().getSelectedItem();
+
+            if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue() == null) {
                 this.writeMessage("Please select a proper directory.");
-                return;
             }
-            else if (zipName == null || password == null){
-                this.writeMessage("Please set a proper password and zip name.");
-                return;
+            else if (zipName == null || zipPassword == null){
+                this.writeMessage("Please set proper archive name and password .");
             } else {
+                // Allows multiple selection of files in the file browser
                 List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
                 if (list != null) {
-                    FilesJobs filesJobs = new FilesJobs();
                     try {
-                        testFiles(filesJobs, list);
-                    } catch(IOException | ZipException ex){
+                        processFile(list, true);
+                    } catch(IOException ex){
                         this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
                         log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
                     }
@@ -233,130 +254,75 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     /**
-     * Check for unreadable files
-     * @param filesjobs
-     * @param files
+     * Initialize the normal file browse button
+     */
+    private void setBrowseButton() {
+        // File browser
+        final FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
+        Stage fileChooserStage = new Stage();
+
+        button_browse.setOnAction(e -> {
+            // Retrieve current selected item
+            TreeItem selectedTreeItem = treeView_repository.getSelectionModel().getSelectedItem();
+
+            if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue() == null) {
+                this.writeMessage("Please select a proper directory.");
+            } else {
+                // Allows multiple selection of files in the file browser
+                List<File> list = fileChooser.showOpenMultipleDialog(fileChooserStage);
+                if (list != null) {
+                    try {
+                        processFile(list, false);
+                    } catch(IOException ex){
+                        this.writeMessage("Error while trying to reach browsed file."  + ex.getMessage());
+                        log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Check for unreadable files before sending them to the server
+     * @param files List of files to send
+     * @param isArchive Determines if the application will send an encrypted archive or not
      * @throws IOException
      * @throws ZipException
      */
-    private void testFiles(FilesJobs filesjobs, List<File> files) throws IOException, ZipException {
-        // Check if the file exists and if it can be read
+    private void processFile(List<File> files, boolean isArchive) throws IOException {
+        // Check if the files exist and if they can be read
         for (File currentFile : files) {
             if (!currentFile.canRead()) {
                 this.writeMessage("Error while trying to reach one of the browsed files.");
                 return;
             }
         }
-        DropThatFile.models.File fileUpload = new DropThatFile.models.File(1, zipName, password, Date.from(Instant.now()), "TEST");
-        // Add selected files into an encrypted zip file
-        filesjobs.encryptFile(fileUpload, files);
+        if(isArchive){
+            DropThatFile.models.File archiveToUpload = new DropThatFile.models.File(1, zipName, zipPassword, Date.from(Instant.now()), zipDescription);
+
+            // Add selected files into an encrypted zip file
+            try {
+                FilesJobs.sendEncryptedArchive(archiveToUpload, files);
+            } catch (ZipException ex) {
+                ex.printStackTrace();
+                log.error("Erreur en tentant de créer une archive encryptée.\nMessage : \n" + ex.getMessage());
+            }
+        } else {
+            for (File f : files) {
+                DropThatFile.models.File fileToUpload = new DropThatFile.models.File(1, f.getName(), null, Date.from(Instant.now()), null);
+                FilesJobs.sendFiles(f);
+            }
+        }
+
     }
 
-    //region TreeView
     /**
-     * Configuration of the TreeView
-     * @param treeView fx:id of a TreeView element
+     * Inform the user of the result from his actions in the application
      */
-    private void setTreeView_repository(TreeView treeView){
-        TreeViewRepository repo = new TreeViewRepository();
-        ArrayList<TreeItem> all = repo.getAll();
-        TreeItem rootItem = new TreeItem("root", new ImageView(folderImage));
-        // Expand the treeView
-        rootItem.setExpanded(true);
-        // Add children to the root
-        rootItem.getChildren().addAll(all);
-        // Set the Root File
-        treeView.setRoot(rootItem);
-        // Set a cell factory to use TextFieldTreeCell
-        treeView.setCellFactory(TextFieldTreeCell.forTreeView());
-        // Trigger treeView events
-        treeView_events(treeView);
-    }
-
-    /**
-     * Events of the treeView
-     */
-    private void treeView_events(TreeView treeView){
-        // Set editing related event handlers (OnEditCommit)
-        treeView.setOnEditCommit(event -> editCommit((TreeView.EditEvent) event));
-        // Create the item with the typed name
-        item_add.setOnAction(event -> addItem(item_textField.getText()));
-        // Remove the selected item
-        item_remove.setOnAction(event -> removeItem());
-    }
-
-    /**
-     * What happens on commit
-     * @param event editOnCommit
-     */
-    @_Todo(level = Level.EVOLUTION, comment = "EVENT - communication avec la BDD lorsque le nom est modifié")
-    private void editCommit(TreeView.EditEvent event)
-    {
-        return;
-    }
-
-    /**
-     * Method for Adding a TreeItem
-     * @param value TreeItem name
-     */
-    private void addItem(String value)
-    {
-        if (value == null || value.trim().equals(""))
-        {
-            this.writeMessage("Directory name cannot be empty.");
-            return;
-        }
-
-        TreeItem parent = (TreeItem) treeView_repository.getSelectionModel().getSelectedItem();
-
-        if (parent == null)
-        {
-            this.writeMessage("Select a directory to add this directory to.");
-            return;
-        }
-        if (((TreeItem) treeView_repository.getSelectionModel().getSelectedItem()).getValue().equals("root")){
-            this.writeMessage("Cannot create a directory from the root directory.");
-            return;
-        }
-
-        TreeItem newItem = new TreeItem(value, new ImageView(folderImage));
-        parent.getChildren().add(newItem);
-
-        if (!parent.isExpanded())
-        {
-            parent.setExpanded(true);
-        }
-    }
-
-    /**
-     * Method for Removing an TreeItem
-     */
-    private void removeItem()
-    {
-        TreeItem item = (TreeItem) treeView_repository.getSelectionModel().getSelectedItem();
-
-        if (item == null)
-        {
-            this.writeMessage("Select a directory to remove.");
-            return;
-        }
-
-        TreeItem parent = item.getParent();
-        if (parent == null || item.getValue().equals("My Files") || item.getValue().equals("Shared Files"))
-        {
-            this.writeMessage("Cannot remove main directories.");
-        } else
-        {
-            parent.getChildren().remove(item);
-        }
-    }
-
-    /**
-     * User's logs in the textArea
-      */
     private void writeMessage(String msg)
     {
-        this.message_textArea.appendText(msg + "\n");
+        this.message_textArea.appendText(LocalDateTime.now().toString() + "\n" + msg + "\n");
     }
-    //endregion
 }

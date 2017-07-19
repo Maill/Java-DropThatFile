@@ -28,7 +28,7 @@ public final class PluginLoader {
     private int count = 0;
 
     /**
-     * Load a plugin from a jar files
+     * Load a plugin from a jar file
      * @param pluginJarPath absolute path to the jar
      * @param packageClassPath package class path
      * @throws Exception
@@ -42,7 +42,14 @@ public final class PluginLoader {
         ));
 
         Class classToLoad = Class.forName(packageClassPath, true, urlClassLoaders.get(count));
-        Method method = classToLoad.getDeclaredMethod("DropThatFile_Start", Stage.class);
+        Method method = null;
+        try{
+            method = classToLoad.getDeclaredMethod("DropThatFile_Start", Stage.class);
+        }
+        catch (NullPointerException ex){ // If no such method is found
+            log.warn(ex.getMessage(), ex);
+            return new Stage();
+        }
         Object instance = classToLoad.newInstance();
         String className = getClassName(instance);
         Stage pluginStage = getPluginStage(method, instance);
@@ -50,11 +57,12 @@ public final class PluginLoader {
         pluginClassNames.add(className);
         pluginStages.put(className, pluginStage);
 
+
         return pluginStages.get(className);
     }
 
     /**
-     * Unload each loaded plugin
+     * Unload loaded plugins
      */
     public void unloadAll() {
         try {

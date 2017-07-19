@@ -55,7 +55,7 @@ public class RSAEngine {
     /**
      * Chiffrement du message.
      * @param message Message à chiffrer.
-     * @param publicKey Clé publique servant au cryptage
+     * @param publicKey Clé publique servant à l'encryptage
      * @return String
      * @throws Exception Java Exception
      */
@@ -69,7 +69,7 @@ public class RSAEngine {
     }
 
     /**
-     * Chiffrement du message avec la clé publique de l'utilisateur courrant.
+     * Chiffrement du message avec la clé publique de l'utilisateur actuel.
      * @param message Message à chiffrer.
      * @return String
      * @throws Exception Java Exception

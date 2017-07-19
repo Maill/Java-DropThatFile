@@ -1,14 +1,13 @@
 package DropThatFile.models;
 
-import DropThatFile.engines.RSAEngine;
 import java.util.Date;
 
 /**
  * Created by Nicol on 21/03/2017.
  */
-public class File /*extends java.io.File*/{
+public class File {
 
-    //region Attributs
+    //region Attributes
     private int id;
     private String name;
     private String password;
@@ -16,9 +15,8 @@ public class File /*extends java.io.File*/{
     private String description;
     //endregion
 
-    //region Constructeur
-    public File(/*java.io.File file,*/ int id, String name, String password, Date created, String description) {
-        //super(file.getAbsolutePath());
+    //region Constructor
+    public File(int id, String name, String password, Date created, String description) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -40,9 +38,7 @@ public class File /*extends java.io.File*/{
         return password;
     }
 
-    public Date getCreated() {
-        return created;
-    }
+    public Date getCreated() { return created; }
 
     public String getDescription() {
         return description;

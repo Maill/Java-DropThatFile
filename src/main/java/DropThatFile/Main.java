@@ -1,21 +1,10 @@
 package DropThatFile;
 
-import DropThatFile.engines.*;
-import DropThatFile.engines.APIData.APIModels.APIUser;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
-import DropThatFile.models.Group;
-import DropThatFile.models.User;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.util.encoders.Base64;
-
-import java.security.KeyPair;
-import java.security.PublicKey;
 import java.security.Security;
-import java.util.Date;
-import java.util.UUID;
 
 public class Main extends Application{
 
@@ -31,12 +20,11 @@ public class Main extends Application{
     public void start(Stage primaryStage) throws Exception{
         //Logger log = LogManagement.getInstanceLogger(this);
         //PublicKey test = GlobalVariables.public_key_server;
-        boolean tes = APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa");
         //XMLReader xml = XMLReader.Instance();
         //System.out.println(xml.get(XMLFields.URL_API));
-        // Decomment to set a Key Store for RSA encryption/decryption
 
-        //KeyPair pair = KeyStoreFactory.getKeyPairFromKeyStore("password");
+        // Uncomment to set a Key Store for RSA encryption/decryption
+        //KeyPair userKeyPair = KeyStoreFactory.getKeyPairFromKeyStore(password);
 
         //region RSA test
         //GlobalVariables.currentUser = new User(1, "nicolas.demoncourt@gmail.com", "aaaa", "Nicolas", "Cornu", new Date(), "opopo");
@@ -63,6 +51,10 @@ public class Main extends Application{
             //log.error("Erreur en lors de l'encryptage RSA.\nMessage : \n" + ex.getMessage());
         }*/
         //endregion
+
+        // API tests
+        //System.out.println(RSAEngine.Instance().encrypt("{\"fname\":\"Olivier\", \"lname\":\"Lefebvre\", \"mail\":\"olivier.lefebvre@akeonet.com\", \"password\":\"eeee\", \"lastlogin\":\"2017-05-28\"}", GlobalVariables.public_key_server));
+        //System.out.println(RSAEngine.Instance().encrypt("{\"name\":\"Group 10\"}", GlobalVariables.public_key_server));
 
         // Entry point of the application
         LoginForm startForm = new LoginForm(primaryStage);

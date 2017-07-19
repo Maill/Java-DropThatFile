@@ -2,6 +2,8 @@ package DropThatFile.engines;
 
 import DropThatFile.GlobalVariables;
 import DropThatFile.controllers.HomeController;
+import DropThatFile.engines.annotations.Level;
+import DropThatFile.engines.annotations._Todo;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonType;
 import net.lingala.zip4j.core.ZipFile;
@@ -9,20 +11,15 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * Created by Nicol on 22/03/2017.
  */
 public class FilesJobs {
-
-    //region Attributs
-    //private static final String tmpFilePath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles";
-    //endregion
-
-    //region Bloc d'initialisation
+    //region init
     static {
         File f = new File(GlobalVariables.outputZipPath);
         if (!f.exists() || !f.isDirectory()) {
@@ -31,46 +28,49 @@ public class FilesJobs {
     }
     //endregion
 
-    //region Méthode statique : encryptFile
     /**
-     * Crypte et envoie le fichier au serveur de stockage.
-     * @param file
-     * @param filesPath
+     * Send the file to the storage server
+     * @param file DropThatFile.models.File file model describing the file
      */
-    public static void encryptFile(DropThatFile.models.File file, List<java.io.File> filesPath) throws ZipException {
-        // Zip name
-        String fileNameWithoutExt = file.getName().replaceFirst("[.][^.]+$", "");
+    public static void sendFiles(File file) {
+        // File future location
+        if (!new File(GlobalVariables.outputZipPath + "\\" + file.getName()).exists()){
+            new File(GlobalVariables.outputZipPath + "\\" + file.getName());
+            //sendFileToServer("blabla");
+        } else {
+            //TODO: liste de fichiers qui n'ont pas envoyés
 
-        if(fileAlreadyExists(fileNameWithoutExt)){
-            return;
         }
+    }
 
-        // Zip location
+    /**
+     * Encrypt and send the archive to the storage server
+     * @param fileModel DropThatFile.models.File file model describing the actual file
+     * @param filesInArchive List of files to add in the archive
+     */
+    public static void sendEncryptedArchive(DropThatFile.models.File fileModel, List<File> filesInArchive) throws ZipException {
+        // Zip name
+        String fileNameWithoutExt = fileModel.getName().replaceFirst("[.][^.]+$", "");
+
+        if(fileAlreadyExists(fileNameWithoutExt)) return;
+
+        // Zip future location
         ZipFile zipFile = new ZipFile(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
 
-        ArrayList<File> filesToAdd = new ArrayList();
-        for (File filePath : filesPath) {
-            filesToAdd.add(new File(filePath.getAbsolutePath()));
-            //System.out.println("File AbsolutePath : " + filePath.getAbsolutePath());
+        ArrayList<File> filesToAdd = new ArrayList<>();
+        for (File f : filesInArchive) {
+            filesToAdd.add(new File(f.getAbsolutePath()));
         }
 
         ZipParameters parameters = new ZipParameters();
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE); // set compression method to deflate compression
 
-        //DEFLATE_LEVEL_FASTEST     - Lowest compression level but higher speed of compression
-        //DEFLATE_LEVEL_FAST        - Low compression level but higher speed of compression
         //DEFLATE_LEVEL_NORMAL  - Optimal balance between compression level/speed
-        //DEFLATE_LEVEL_MAXIMUM     - High compression level with a compromise of speed
-        //DEFLATE_LEVEL_ULTRA       - Highest compression level but low speed
         parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-
         parameters.setEncryptFiles(true);
-
         parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-
         parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-
-        parameters.setPassword(HomeController.password);
+        parameters.setPassword(HomeController.zipPassword);
 
         try{
             zipFile.addFiles(filesToAdd, parameters);
@@ -78,28 +78,32 @@ public class FilesJobs {
             System.out.println("ZipException : " + ex.getMessage());
         }
 
-        //System.out.println("\nZipFile : " + zipFile.getFile().toString());
-
-        sendFileToServer(zipFile.getFile().getPath());
+        //sendFileToServer(zipFile.getFile().getPath());
     }
-    //endregion
 
-    //region Méthode privée : sendFileToServer
     /**
-     * [Méthode privée] Envoie le fichier en paramètre vers le serveur de stockage. <Protocole SFTP>
-     * @param pathFileToSend
+     * Submit the file, found in the path' parameter, to the storage server <Protocol SFTP>
+     * @param pathFileToSend Path of the file to send
      */
-    private static boolean sendFileToServer(String pathFileToSend){
-        //System.out.println("\nPathFileToSend : " + pathFileToSend);
-        return true;
-    }
-    //endregion
+    @_Todo(level = Level.EVOLUTION, comment = "Pouvoir envoyer les fichiers au serveur de stockage.")
+    private static void sendFileToServer(String pathFileToSend){
 
-    //region Méthode privée : fileAlreadyExists
+        return;
+    }
+
     /**
-     * [Méthode privée] Verifie si le nom du fichier existe déjà.
-     * Note : la méthode ne sera peut être pas utilisée.
-     * @param fileNameWithoutExt
+     * Submit the file, found in the path' parameter, to the storage server <Protocol SFTP>
+     * @param pathFileToGet Path of the file to get
+     */
+    @_Todo(level = Level.EVOLUTION, comment = "Pouvoir recevoir les fichiers depuis le serveur de stockage.")
+    private static void getFileFromServer(String pathFileToGet){
+
+        return;
+    }
+
+    /**
+     * Check if the file already exists at the destination
+     * @param fileNameWithoutExt file name without its extension
      */
     private static boolean fileAlreadyExists(String fileNameWithoutExt){
         File fileToOverwrite = new File(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
@@ -128,5 +132,4 @@ public class FilesJobs {
         }
         return false;
     }
-    //endregion
 }

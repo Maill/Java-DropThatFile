@@ -5,23 +5,21 @@ import org.apache.log4j.nt.NTEventLogAppender;
 /**
  * Created by Nicol on 21/03/2017.
  *
- * Classe pour le logger log4j
+ * Logger Log4J' class
  */
 public class LogManagement {
 
-    //region Attributs
+    //region Attributes
 
     private Logger logger;
 
     //endregion
 
-    //region Contructeur privé
     /**
-     * Création du template Log4J.
-     * @param caller Instance de l'objet concerné.
+     * Creation of the Log4J' template
+     * @param caller Instance of the object concerned
      */
     private LogManagement(Object caller){
-        // On ne fait pas la gestion de la clé de registre ici, on la fait pendant l'installation
         logger = Logger.getLogger(caller.getClass());
         String mySource = "DropThatFile";
         PatternLayout myLayout = new PatternLayout("[%c][%l][%p][%thread]: %m%n");
@@ -29,16 +27,14 @@ public class LogManagement {
         logger.addAppender(eventLogAppender);
         logger.setLevel(Level.WARN);
     }
-    //endregion
 
-    //region Méthode : getInstanceLogger
     /**
      * Récupération du logger Log4J pour l'écriture dans le journal d'évenements.
-     * @param caller Instance de l'objet concerné.
+     * Retrieve the Log4J' logger to write in the event log
+     * @param caller Instance of the object concerned
      * @return Logger
      */
     public static Logger getInstanceLogger(Object caller){
         return new LogManagement(caller).logger;
     }
-    //endregion
 }

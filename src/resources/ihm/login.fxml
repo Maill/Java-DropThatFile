@@ -10,33 +10,26 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="353.0" prefWidth="301.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.LoginController">
-  <children>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="353.0" prefWidth="388.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.LoginController">
+    <stylesheets>
+        <URL value="@style.css" />
+    </stylesheets>
     <AnchorPane id="anchorPane2" prefHeight="250.0" prefWidth="389.0" styleClass="top-segment" AnchorPane.bottomAnchor="103.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <children>
         <VBox id="VBox" alignment="CENTER" prefHeight="300.0" prefWidth="428.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
-          <children>
             <AnchorPane id="AnchorPane" prefHeight="180.0" prefWidth="430.0">
-              <children>
                 <Label id="label1" layoutX="14.0" layoutY="67.0" text="Email :" />
-                <TextField id="emailField" fx:id="email" layoutY="86.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" text="test@test.com"/>
+                <TextField id="emailField" fx:id="email" layoutY="86.0" prefWidth="415.0" text="nicolas.demoncourt@gmail.com" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
                 <Label id="label1" layoutX="14.0" layoutY="139.0" text="Mot de passe :" />
-                <PasswordField id="passwordField" fx:id="password" layoutY="157.0" prefWidth="415.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" text="testtest"/>
-                <ImageView id="logo1" fx:id="logo1" fitHeight="78.0" fitWidth="72.0" layoutX="10.0" layoutY="-27.0" pickOnBounds="true">
-                   <image>
-                      <Image fx:id="image_logo" url="@../images/logo.png" />
-                   </image>
+                <PasswordField id="passwordField" fx:id="password" layoutY="157.0" prefWidth="415.0" text="aaaa" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+                <ImageView id="logo1" fx:id="imageView_logo" fitHeight="78.0" fitWidth="72.0" layoutX="10.0" layoutY="-27.0" pickOnBounds="true">
+                    <Image fx:id="image_logo" url="@../images/logo.png" />
                 </ImageView>
                 <Label id="logoLabel1" layoutX="82.0" layoutY="4.0" prefHeight="16.0" prefWidth="149.0" text="DropThatFile" />
-              </children>
+                <ImageView id="logo1" fx:id="imageView_login" fitHeight="78.0" fitWidth="72.0" layoutX="266.0" layoutY="-19.0" pickOnBounds="true">
+                    <Image fx:id="image_login" url="@../images/login.png" />
+                </ImageView>
             </AnchorPane>
-          </children>
         </VBox>
-      </children>
     </AnchorPane>
-    <Button id="button1" fx:id="login" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="41.0" layoutY="272.0" onAction="#loginVerification" prefHeight="51.0" prefWidth="219.0" text="Connexion" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="41.0" AnchorPane.rightAnchor="41.0" />
-  </children>
-  <stylesheets>
-    <URL value="@style.css" />
-  </stylesheets>
+    <Button id="button_login" fx:id="button_login" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="41.0" layoutY="272.0" onAction="#loginVerification" prefHeight="51.0" prefWidth="219.0" text="Connexion" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="41.0" AnchorPane.rightAnchor="41.0" />
 </AnchorPane>
