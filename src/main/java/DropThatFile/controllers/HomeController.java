@@ -304,7 +304,7 @@ public class HomeController extends AnchorPane implements Initializable {
 
             // Add selected files into an encrypted zip file
             try {
-                FilesJobs.sendEncryptedArchive(archiveToUpload, files);
+                FilesJobs.Instance().sendEncryptedArchive(archiveToUpload, files);
             } catch (ZipException ex) {
                 ex.printStackTrace();
                 log.error("Erreur en tentant de créer une archive encryptée.\nMessage : \n" + ex.getMessage());
@@ -312,7 +312,7 @@ public class HomeController extends AnchorPane implements Initializable {
         } else {
             for (File f : files) {
                 DropThatFile.models.File fileToUpload = new DropThatFile.models.File(1, f.getName(), null, Date.from(Instant.now()), null);
-                FilesJobs.sendFiles(f);
+                FilesJobs.Instance().sendFiles(f);
             }
         }
 

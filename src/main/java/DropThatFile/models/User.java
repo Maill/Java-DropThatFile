@@ -18,7 +18,8 @@ public class   User {
     private KeyPair userKeys;
     private String email;
     private Date lastLogin;
-    private ArrayList<Group> isMemberOf;
+    private HashMap<Integer, Group> isMemberOf;
+    private HashMap<String, File> files;
     private String token;
     //endregion
 
@@ -90,9 +91,11 @@ public class   User {
         return lastLogin;
     }
 
-    public ArrayList<Group> getIsMemberOf() {
+    public HashMap<Integer, Group> getIsMemberOf() {
         return isMemberOf;
     }
+
+    public HashMap<String, File> getFiles() { return files; }
 
     public String getToken() { return token; }
     //endregion
@@ -106,9 +109,11 @@ public class   User {
          this.password = password;
     }
 
-    public void setIsMemberOf(ArrayList<Group> userGroups) {
+    public void setIsMemberOf(HashMap<Integer, Group> userGroups) {
         this.isMemberOf = userGroups;
     }
+
+    public void setFiles(HashMap<String, File> userFiles) { files = userFiles; }
     //endregion
 
     //region Overrided methods

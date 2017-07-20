@@ -50,5 +50,6 @@
     <orderEntry type="library" name="Maven: antlr:antlr:2.7.7" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:19.0" level="project" />
     <orderEntry type="library" name="Maven: com.thedeanda:lorem:2.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-net:commons-net:3.4" level="project" />
   </component>
 </module>

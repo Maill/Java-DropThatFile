@@ -66,22 +66,21 @@ public class APIUser extends APIConnector {
                     userKeyPair,
                     userObject.get("fname").toString(),
                     userObject.get("lname").toString(),
-                    getDateFrommString(userObject.get("lastlogin").toString()),
+                    this.getDateFrommString(userObject.get("lastlogin").toString()),
                     response.get("token").toString()
             );
 
             GlobalVariables.currentUser.setIsMemberOf(APIGroup.Instance().getGroupsForUser());
+
+            GlobalVariables.currentUser.setFiles(APIFile.Instance().getFilesUser());
+
+            APIFile.Instance().getFilesGroups();
 
         } catch(Exception ex){
             log.error(String.format("Error on APIUser on login method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
             return false;
         }
         return true;
-    }
-
-    private java.util.Date getDateFrommString(String date) throws Exception{
-        DateFormat format = new SimpleDateFormat("yyyy-M-dd", Locale.FRANCE);
-        return format.parse(date.substring(0, 10));
     }
 
     public boolean saveProfile(){

@@ -29,5 +29,5 @@ public class GlobalVariables {
 
     public static User currentUser;
 
-    public static String outputZipPath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles";
+    public static String outputZipPath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles\\";
 }

@@ -21,35 +21,35 @@ public class APIGroup extends APIConnector {
 
     private static APIGroup instance = null;
 
-    public ArrayList<Group> getGroupsForUser(){
-        ArrayList<Group> ret;
+    public HashMap<Integer, Group>  getGroupsForUser(){
+        HashMap<Integer, Group> ret;
         try{
             JSONObject response = this.readFromUrl(this.route + "getUserGroups", null);
             if(response.get("result").toString() == null){
-                return new ArrayList<>();
+                return new HashMap<Integer, Group> ();
             }
 
             ret = buildGroupsFromResponse(response);
 
         }catch (Exception ex){
             log.error(String.format("Error on APIGroup on getGroupsForUser method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
-            return new ArrayList<>();
+            return new HashMap<Integer, Group>();
         }
 
         return ret;
     }
 
-    private ArrayList<Group> buildGroupsFromResponse(JSONObject response){
+    private HashMap<Integer, Group> buildGroupsFromResponse(JSONObject response){
         //Récupération des données
         JSONArray getResult = response.getJSONArray("result");
         JSONObject getMemberof = getResult.getJSONObject(0);
         JSONArray getList = getMemberof.getJSONArray("memberof");
         //Initialisation de la liste
-        ArrayList<Group> ret = new ArrayList<>();
+        HashMap<Integer, Group> ret = new HashMap<>();
 
         for(Object rawGroup : getList){
             JSONObject groupJSON = new JSONObject(rawGroup.toString());
-            ret.add(new Group(Integer.parseInt(groupJSON.get("id").toString()), groupJSON.get("name").toString(), KeyStoreFactory.getPublicKeyFromString(groupJSON.get("public_key").toString())));
+            ret.put(Integer.parseInt(groupJSON.get("id").toString()) ,new Group(Integer.parseInt(groupJSON.get("id").toString()), groupJSON.get("name").toString(), KeyStoreFactory.getPublicKeyFromString(groupJSON.get("public_key").toString())));
         }
 
         return ret;

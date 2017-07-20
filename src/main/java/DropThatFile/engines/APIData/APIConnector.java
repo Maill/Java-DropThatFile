@@ -16,8 +16,11 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Nicol on 21/03/2017.
@@ -86,6 +89,11 @@ public abstract class APIConnector {
         }
         listArguments.add(new BasicNameValuePair(contentName, contentPOST));
         return listArguments;
+    }
+
+    public java.util.Date getDateFrommString(String date) throws Exception{
+        DateFormat format = new SimpleDateFormat("yyyy-M-dd", Locale.FRANCE);
+        return format.parse(date.substring(0, 10));
     }
 
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {

@@ -65,5 +65,10 @@
             <artifactId>docx4j</artifactId>
             <version>3.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.4</version>
+        </dependency>
     </dependencies>
 </project>
