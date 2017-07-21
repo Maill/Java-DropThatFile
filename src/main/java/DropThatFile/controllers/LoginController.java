@@ -2,14 +2,9 @@ package DropThatFile.controllers;
 
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.APIData.APIModels.APIUser;
-import DropThatFile.engines.windowsManager.forms.LoginForm;
 import DropThatFile.engines.windowsManager.WindowsHandler;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
@@ -34,15 +29,9 @@ public class LoginController extends AnchorPane implements Initializable {
 
     private Logger log = LogManagement.getInstanceLogger(this);
 
-    private LoginForm application;
-
     private Stage stage = new Stage();
 
     private WindowsHandler windowsHandler = new WindowsHandler(stage);
-
-    public void setApp(LoginForm application){
-        this.application = application;
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -54,16 +43,15 @@ public class LoginController extends AnchorPane implements Initializable {
         String email = this.email.getText();
         String password = this.password.getText();
         try{
-            if(!APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa")){
-                setMessage("Credentials error", "Unknown credentials.");
-                log.info("Des identifiants inconnus ont été saisis.\n");
+            // Use email and password in the release
+            if(!APIUser.Instance().login(email, password)){
                 return false;
             } else {
                 return true;
             }
         }
         catch(NullPointerException ex){
-            log.error("Erreur anormale lors de la concordance entre les identifiants saisis et la récupération depuis la BDD.'.\nMessage : \n" + ex);
+            log.error("Error with retrieved credentials from the database.'.\nMessage : \n" + ex);
         }
         return false;
     }
@@ -71,27 +59,17 @@ public class LoginController extends AnchorPane implements Initializable {
     /**
      * OnClick on the "Login" button.
      */
-    public void loginVerification(ActionEvent actionEvent) throws Exception {
-            if(userLogging()){
-                Parent root = null;
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ihm/home.fxml"));
-            try {
-                root = loader.load();
-            } catch (IOException ex) {
-                log.error("Erreur au chargement du FXML de 'Home'.\nMessage : \n" + ex);
-            }
-            stage.setScene(new Scene(root));
-            stage.show();
-            ((Stage)button_login.getScene().getWindow()).close();
-
+    public void loginVerification() throws Exception {
+        if(userLogging()){
             try {
                 windowsHandler.goToForm("HomeForm", true);
-            } catch (Exception ex) {
-                log.error("Erreur de 'goToForm' avec 'HomeForm' dans 'LoginController'.\nMessage : \n" + ex);
+            } catch (IOException ex) {
+                log.error("Error while loading the 'Home' form.\nMessage : \n" + ex);
             }
+            ((Stage)button_login.getScene().getWindow()).close();
         } else {
-            setMessage("Unknown error", "Unhandled error");
-            log.error("Erreur inconnue dans 'LoginController'.\n");
+            setMessage("Credentials error", "Unknown credentials.");
+            log.error("Credentials error in the 'LoginController' form.\n");
         }
     }
 }

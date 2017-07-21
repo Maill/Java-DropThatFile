@@ -1,23 +1,15 @@
 package DropThatFile.engines.windowsManager;
 
-import com.sun.javafx.css.Style;
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import DropThatFile.engines.LogManagement;
 import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
-import java.beans.EventHandler;
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.util.Optional;
 
 /**
  * Created by Nicolas on 02/03/2017.
@@ -26,12 +18,12 @@ import java.util.Optional;
 public class WindowsHandler {
     private final Logger log = LogManagement.getInstanceLogger(this);
 
-    public static Pair<String, String> auth;
-
     protected Stage jfxStage;
 
     public WindowsHandler(Stage jfxStage){
         this.jfxStage = jfxStage;
+        // Application icon
+        jfxStage.getIcons().add(new Image(this.getClass().getResourceAsStream( "/images/logo.png" )));
     }
 
     public Stage getJfxStage() {
@@ -46,22 +38,20 @@ public class WindowsHandler {
 
     public void closeForm(){ jfxStage.close(); }
 
-    public void goToForm(String formName, Boolean showForm) throws Exception {
+    public void goToForm(String formName, Boolean show) throws Exception {
         try {
-            // Instantiate the choosen form according to the input and its package
+            // Instantiate the chosen form according to the input and its package
             Class<?> clazz = Class.forName("DropThatFile.engines.windowsManager.".concat(formName.equals("LoginForm") ? formName : "forms.".concat(formName)));
-            //Class<?> clazz = Class.forName("DropThatFile.engines.windowsManager.forms.".concat(formName));
             Constructor<?> constructor = clazz.getConstructor(jfxStage.getClass());
             constructor.newInstance(jfxStage);
         } catch (Exception ex) {
             log.error("Unable to load \"" + formName + "\" Form.");
         }
-        // Show it or not
-        if (showForm == true) {
-            jfxStage.show();
-        } else {
-            jfxStage.hide();
-        }
+        // Show the form or not yet
+        if (show)
+            showForm();
+        else
+            hideForm();
     }
 
     /**
@@ -74,10 +64,7 @@ public class WindowsHandler {
         } else if(password.getText() == null || password.getText().contains(" ") || password.getText().length() < 8){
             setMessage("Error password", "Entered password is not valid.");
             return false;
-        }/*else if (!application.userLogging(userEmail.getText(), password.getText())) {
-            setMessage("L'adresse électronique et/ou le mot de passe sont inconnus.");
-            return false;
-        }*/
+        }
         return true;
     }
 

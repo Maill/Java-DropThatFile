@@ -21,35 +21,42 @@ public class APIGroup extends APIConnector {
 
     private static APIGroup instance = null;
 
-    public HashMap<Integer, Group>  getGroupsForUser(){
+    public HashMap<Integer, Group> getGroupsForUser(){
         HashMap<Integer, Group> ret;
         try{
             JSONObject response = this.readFromUrl(this.route + "getUserGroups", null);
             if(response.get("result").toString() == null){
-                return new HashMap<Integer, Group> ();
+                return new HashMap<>();
             }
 
             ret = buildGroupsFromResponse(response);
 
         }catch (Exception ex){
-            log.error(String.format("Error on APIGroup on getGroupsForUser method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
-            return new HashMap<Integer, Group>();
+            log.error(String.format("Error on APIGroup on getGroupsForUser method\nMessage:\n%s\nStacktrace:\n%s",
+                    ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+            return new HashMap<>();
         }
 
         return ret;
     }
 
     private HashMap<Integer, Group> buildGroupsFromResponse(JSONObject response){
-        //Récupération des données
+        // Get data
         JSONArray getResult = response.getJSONArray("result");
         JSONObject getMemberof = getResult.getJSONObject(0);
         JSONArray getList = getMemberof.getJSONArray("memberof");
-        //Initialisation de la liste
+        // Initializing the list
         HashMap<Integer, Group> ret = new HashMap<>();
 
         for(Object rawGroup : getList){
             JSONObject groupJSON = new JSONObject(rawGroup.toString());
-            ret.put(Integer.parseInt(groupJSON.get("id").toString()) ,new Group(Integer.parseInt(groupJSON.get("id").toString()), groupJSON.get("name").toString(), KeyStoreFactory.getPublicKeyFromString(groupJSON.get("public_key").toString())));
+            ret.put(Integer.parseInt(
+                    groupJSON.get("id").toString()),
+                    new Group(Integer.parseInt(groupJSON.get("id").toString()),
+                        groupJSON.get("name").toString(),
+                        KeyStoreFactory.getPublicKeyFromString(groupJSON.get("public_key").toString())
+                    )
+            );
         }
 
         return ret;

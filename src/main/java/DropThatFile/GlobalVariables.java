@@ -1,15 +1,12 @@
 package DropThatFile;
 
-
 import DropThatFile.engines.APIData.APIModels.APIConfig;
 import DropThatFile.engines.KeyStoreFactory;
+import DropThatFile.models.Group;
 import DropThatFile.models.User;
-import org.bouncycastle.util.encoders.Base64;
 
-import java.security.KeyFactory;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 
 /**
  * Created by Nicol on 22/03/2017.
@@ -29,5 +26,18 @@ public class GlobalVariables {
 
     public static User currentUser;
 
-    public static String outputZipPath = System.getenv("APPDATA") + "\\DropThatFile\\tmpfiles\\";
+    public static ArrayList<Group> currentGroups = new ArrayList<>();
+
+    // Groups of the current user
+    public static ArrayList<String> groupPaths = new ArrayList<>();
+
+    public static String appDataPath = System.getenv("APPDATA");
+
+    public static String repositoriesMainPath = appDataPath.concat("\\DropThatFile\\repositories\\");
+
+    public static String groupRepoMainPath = repositoriesMainPath.concat("groupFiles\\");
+
+    public static String userRepoMainPath = repositoriesMainPath.concat("userFiles\\");
+
+    public static String currentUserRepoPath;
 }

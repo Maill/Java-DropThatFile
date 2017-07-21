@@ -1,16 +1,14 @@
 package DropThatFile.models;
 
-import DropThatFile.engines.RSAEngine;
-
 import java.security.KeyPair;
 import java.util.*;
 
 /**
  * Created by Nicol on 21/03/2017.
  */
-public class   User {
+public class User {
 
-    //region Attributs
+    //region Attributes
     private int id;
     private String fName;
     private String lName;
@@ -23,7 +21,7 @@ public class   User {
     private String token;
     //endregion
 
-    //region Contructeurs
+    //region Constructors
     public User(int id, String email, String password, KeyPair userKeys,String fName, String lName, Date lastLogin,
                 String token) {
         this.id = id;
@@ -36,7 +34,7 @@ public class   User {
         this.token = token;
     }
 
-    //Constructeur de test sans BDD
+    // Constructeur de test sans BDD
     public User(int id, String email, String password,String fName, String lName, Date lastLogin,
                 String token) {
         this.id = id;
@@ -48,20 +46,6 @@ public class   User {
         this.lastLogin = lastLogin;
         this.token = token;
     }
-    //endregion
-
-    //region A supprimer plus tard
-    private static final Map<String, User> users = new HashMap<>();
-
-    /*public static User of(int id, String email, KeyPair password) {
-        User user = users.get(id);
-        if (user == null) {
-            user = new User(id, email, password, null, null,
-                    Time.from(Instant.now()), null, UUID.randomUUID());
-            users.put(Integer.toString(id), user);
-        }
-        return user;
-    }*/
     //endregion
 
     //region Getters

@@ -6,9 +6,12 @@ import javafx.scene.input.KeyCode;
 
 import java.io.File;
 
+/**
+ * Created by Olivier on 18/06/2017.
+ */
 public class TreeTextFieldEditor extends TreeCell<File> {
-    // TextField generated on double-click on a TreeItem
-    private TextField textField;
+    // TextField generated on a TreeItem to edit
+     private TextField textField;
 
     /**
      * Called after a double-click on a TreeItem
@@ -38,7 +41,7 @@ public class TreeTextFieldEditor extends TreeCell<File> {
     /**
      * Update the TreeItem's name
      * @param item TreeItem to update
-     * @param empty If the node was already empty or not (?)
+     * @param empty If the node is empty or not (?)
      */
     @Override
     public void updateItem(File item, boolean empty) {
@@ -58,6 +61,7 @@ public class TreeTextFieldEditor extends TreeCell<File> {
             } else {
                 setText(getString());
                 setGraphic(getTreeItem().getGraphic());
+
             }
         }
     }

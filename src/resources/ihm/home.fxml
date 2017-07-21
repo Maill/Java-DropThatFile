@@ -13,34 +13,37 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="255.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.HomeController">
+<TabPane fx:id="home_tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" tabMinHeight="50.0" tabMinWidth="255.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.HomeController">
     <stylesheets>
         <URL value="@style.css" />
     </stylesheets>
-    <Tab closable="false" text="Repository">
+    <Tab closable="false" text="Repositories">
         <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
             <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0">
-                    <TextField fx:id="item_textField" layoutX="14.0" layoutY="36.0" prefHeight="31.0" prefWidth="253.0" />
-                    <Button fx:id="item_create" layoutX="17.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Create" />
+                    <TextField fx:id="folderName_textField" layoutX="14.0" layoutY="36.0" prefHeight="31.0" prefWidth="253.0" />
+                    <Button fx:id="createFolder_button" layoutX="17.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Create" />
                     <TextArea fx:id="preview_textArea" editable="false" layoutX="13.0" layoutY="143.0" prefHeight="383.0" prefWidth="480.0" wrapText="true" AnchorPane.bottomAnchor="180.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="143.0" />
                     <TextArea fx:id="message_textArea" editable="false" layoutX="14.0" layoutY="534.0" prefHeight="158.0" prefWidth="480.0" wrapText="true" />
-                    <Button fx:id="item_remove" layoutX="145.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Remove" />
+                    <Button fx:id="removeFolder_button" layoutX="145.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Remove" />
                     <Label layoutX="15.0" layoutY="14.0" prefHeight="16.0" prefWidth="100.0" text="Folder name" />
                 </AnchorPane>
             </ScrollPane>
             <ScrollPane layoutX="20.0" layoutY="14.0" prefHeight="710.0" prefWidth="515.0">
-                <AnchorPane prefHeight="706.0" prefWidth="506.0">
-                    <TreeView fx:id="treeView_repository" layoutX="13.0" layoutY="15.0" prefHeight="586.0" prefWidth="508.0" AnchorPane.bottomAnchor="97.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="15.0" />
-                    <Pane layoutX="3.0" layoutY="615.0" prefHeight="82.0" prefWidth="496.0">
-                        <Button id="synchronize" fx:id="synchronize" layoutX="253.0" layoutY="3.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
-                        <Button id="webSite" fx:id="webSite" layoutX="315.0" layoutY="6.0" onMouseClicked="#openLink" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
-                        <Button id="archiveBrowse" fx:id="button_archiveBrowse" layoutX="442.0" layoutY="4.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
-                        <Button id="browse" fx:id="button_browse" layoutX="379.0" layoutY="5.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
-                       <CheckBox fx:id="checkBox_autoRefresh" layoutX="14.0" layoutY="17.0" mnemonicParsing="false" text="Auto refresh" />
-                    </Pane>
-                </AnchorPane>
+                <TabPane fx:id="repositories_tabPane" prefHeight="706.0" prefWidth="506.0">
+                    <Tab fx:id="myRepository_tab" closable="false" text="My repository"/>
+                </TabPane>
             </ScrollPane>
+             <AnchorPane layoutX="25.0" layoutY="40.0" prefHeight="662.0" prefWidth="490.0">
+                 <TreeView fx:id="treeView_repository" layoutX="13.0" layoutY="15.0" prefHeight="586.0" prefWidth="508.0" AnchorPane.bottomAnchor="97.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="15.0" />
+                 <Pane layoutX="3.0" layoutY="615.0" prefHeight="82.0" prefWidth="496.0">
+                     <Button id="button_synchronize" fx:id="button_synchronize" layoutX="248.0" layoutY="5.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
+                     <Button id="button_website" fx:id="button_website" layoutX="311.0" layoutY="5.0" onMouseClicked="#openLink" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
+                     <Button id="button_archiveBrowse" fx:id="button_archiveBrowse" layoutX="437.0" layoutY="4.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
+                     <Button id="button_browse" fx:id="button_browse" layoutX="374.0" layoutY="4.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
+                    <CheckBox fx:id="checkBox_autoRefresh" layoutX="14.0" layoutY="17.0" mnemonicParsing="false" text="Auto refresh" />
+                 </Pane>
+             </AnchorPane>
         </AnchorPane>
     </Tab>
 </TabPane>

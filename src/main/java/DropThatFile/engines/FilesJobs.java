@@ -1,8 +1,9 @@
 package DropThatFile.engines;
 
-import DropThatFile.GlobalVariables;
 import DropThatFile.controllers.HomeController;
-import DropThatFile.models.*;
+import DropThatFile.engines.annotations.Level;
+import DropThatFile.engines.annotations._Todo;
+import DropThatFile.models.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonType;
 import net.lingala.zip4j.core.ZipFile;
@@ -16,6 +17,8 @@ import java.io.*;
 import java.io.File;
 import java.util.*;
 
+import static DropThatFile.GlobalVariables.*;
+
 /**
  * Created by Nicol on 22/03/2017.
  */
@@ -24,8 +27,11 @@ public class FilesJobs {
     public static FilesJobs instance = null;
 
     //region init
+    /**
+     *
+     */
     static {
-        File f = new File(GlobalVariables.outputZipPath);
+        File f = new File(userRepoMainPath);
         if (!f.exists() || !f.isDirectory()) {
             f.mkdirs();
         }
@@ -34,10 +40,20 @@ public class FilesJobs {
 
     /**
      * Send the file to the storage server
-     * @param file DropThatFile.models.File file model describing the file
+     * @param file File to send
      */
-    public void sendFiles(File file) {
+    public static boolean sendFile(File file) {
+        File test = new File(userRepoMainPath + "\\" + file.getName());
+        // File future location
+        if (!test.exists() || !test.isDirectory()){
+            //new File(userRepoMainPath + "\\" + file.getName());
+            //sendFileToServer("blabla");
+            return true;
+        } else {
+            //TODO: Ajout à une liste de fichiers qui n'ont pas envoyés
 
+            return false;
+        }
     }
 
     /**
@@ -52,7 +68,7 @@ public class FilesJobs {
         if(fileAlreadyExists(fileNameWithoutExt)) return;
 
         // Zip future location
-        ZipFile zipFile = new ZipFile(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
+        ZipFile zipFile = new ZipFile(userRepoMainPath + "\\" + fileNameWithoutExt + ".zip");
 
         ArrayList<File> filesToAdd = new ArrayList<>();
         for (File f : filesInArchive) {
@@ -78,8 +94,22 @@ public class FilesJobs {
         //sendFileToServer(zipFile.getFile().getPath());
     }
 
+    /**
+     * Submit the file, found in the path' parameter, to the storage server <Protocol SFTP>
+     * @param pathFileToSend Path of the file to send
+     */
+    @_Todo(level = Level.EVOLUTION, comment = "Pouvoir envoyer les fichiers au serveur de stockage.")
+    private static void sendFileToServer(String pathFileToSend){
+
+        return;
+    }
+
+    /**
+     *
+     * @return
+     */
     public ThreadGroup retrieveFilesFromServer(){
-        Set<Integer> keysOfGroups = GlobalVariables.currentUser.getIsMemberOf().keySet();
+        Set<Integer> keysOfGroups = currentUser.getIsMemberOf().keySet();
         Integer[] integerIdGroups = keysOfGroups.toArray(new Integer[keysOfGroups.size()]);
         final ArrayList<Integer> groupsPart1 = new ArrayList<>();
         final ArrayList<Integer> groupsPart2 = new ArrayList<>();
@@ -100,36 +130,53 @@ public class FilesJobs {
         return thdGrp;
     }
 
-
-    public void retrieveUserFilesFromServer(){
+    /**
+     *
+     */
+    public void retrieveUserFilesFromServer() {
         FTPClient ftpClient = null;
+        int userId = currentUser.getId();
+
         try {
             ftpClient = getFTPConnexion();
 
-            FTPFile[] files = ftpClient.listFiles("/userfiles/" + GlobalVariables.currentUser.getId());
-            ftpClient.changeWorkingDirectory("/userfiles/" + GlobalVariables.currentUser.getId());
+            FTPFile[] files = ftpClient.listFiles("/userfiles/" + userId);
+            ftpClient.changeWorkingDirectory("/userfiles/" + userId);
 
             for (FTPFile file : files) {
-                if (file.isDirectory()) {
-                    continue;
+                if (file.isDirectory()) continue;
+
+                new File(currentUserRepoPath).mkdirs();
+                File downloadFile = new File(
+                        currentUserRepoPath + file.getName()
+                );
+
+                if(downloadFile.exists()) continue;
+
+                try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
+                    ftpClient.retrieveFile("/userfiles/" + userId + "\\" + file.getName(), outputStream);
                 }
-                new File(GlobalVariables.outputZipPath + "user_" + GlobalVariables.currentUser.getId()).mkdirs();
-                File downloadFile = new File(GlobalVariables.outputZipPath + "user_" + GlobalVariables.currentUser.getId() + "\\" + file.getName());
-                if(downloadFile.exists()){
-                    continue;
-                }
-                OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
-                boolean success = ftpClient.retrieveFile("/userfiles/" + GlobalVariables.currentUser.getId() + "\\" + file.getName(), outputStream);
-                outputStream.close();
             }
-            ftpClient.logout();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if(ftpClient != null)
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
-    public void retrieveGroupFilesFromServer(ArrayList<Integer> listOfGroups){
+    /**
+     *
+     * @param listOfGroups
+     */
+    public void retrieveGroupFilesFromServer(ArrayList<Integer> listOfGroups) {
         FTPClient ftpClient = null;
+        HashMap<Integer, Group> userGroups = currentUser.getIsMemberOf();
+
         try {
             for(Integer idGroup : listOfGroups){
                 ftpClient = getFTPConnexion();
@@ -137,26 +184,38 @@ public class FilesJobs {
                 FTPFile[] files = ftpClient.listFiles("/groupfiles/" + idGroup);
                 ftpClient.changeWorkingDirectory("/groupfiles/" + idGroup);
 
+                String groupName = userGroups.get(idGroup).getName();
+
                 for (FTPFile file : files) {
-                    if (file.isDirectory()) {
-                        continue;
+                    if (file.isDirectory()) continue;
+
+                    new File(groupRepoMainPath + groupName).mkdirs();
+                    File downloadFile = new File(groupRepoMainPath + groupName + "\\" + file.getName());
+
+                    if(downloadFile.exists()) continue;
+
+                    try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))){
+                        ftpClient.retrieveFile("/groupfiles/" + idGroup + "\\" + file.getName(), outputStream);
                     }
-                    new File(GlobalVariables.outputZipPath + "group_" + idGroup).mkdirs();
-                    File downloadFile = new File(GlobalVariables.outputZipPath + "group_" + idGroup + "\\" + file.getName());
-                    if(downloadFile.exists()){
-                        continue;
-                    }
-                    OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
-                    boolean success = ftpClient.retrieveFile("/groupfiles/" + idGroup + "\\" + file.getName(), outputStream);
-                    outputStream.close();
                 }
-                ftpClient.logout();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if(ftpClient != null)
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         }
     }
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
     public FTPClient getFTPConnexion() throws IOException {
         FTPClient ftpClient = new FTPClient();
         ftpClient.connect("localhost");
@@ -170,7 +229,7 @@ public class FilesJobs {
      * @param fileNameWithoutExt file name without its extension
      */
     private boolean fileAlreadyExists(String fileNameWithoutExt){
-        File fileToOverwrite = new File(GlobalVariables.outputZipPath + "\\" + fileNameWithoutExt + ".zip");
+        File fileToOverwrite = new File(userRepoMainPath + "\\" + fileNameWithoutExt + ".zip");
         Alert alertOverwriteFile = new Alert(Alert.AlertType.CONFIRMATION);
         Alert alertFileCantBeDeleted = new Alert(Alert.AlertType.ERROR);
         if (fileToOverwrite.exists()){
@@ -197,6 +256,10 @@ public class FilesJobs {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     public static FilesJobs Instance(){
         if(instance == null){
             instance = new FilesJobs();

@@ -1,4 +1,4 @@
-#synchronize {
+#button_synchronize {
     -fx-background-image: url("../images/synchronize.png");
     -fx-background-size: 100% 100%;
     -fx-background-repeat: no-repeat;
@@ -6,7 +6,15 @@
     -fx-background-color: transparent;
 }
 
-#archiveBrowse {
+#button_website {
+    -fx-background-image: url("../images/webSite.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:center;
+    -fx-background-color: transparent;
+}
+
+#button_archiveBrowse {
     -fx-background-image: url("../images/zip-flat.png");
     -fx-background-size: 100% 100%;
     -fx-background-repeat: no-repeat;
@@ -14,16 +22,8 @@
     -fx-background-color: transparent;
 }
 
-#browse {
+#button_browse {
     -fx-background-image: url("../images/browse.png");
-    -fx-background-size: 100% 100%;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position:center;
-    -fx-background-color: transparent;
-}
-
-#webSite {
-    -fx-background-image: url("../images/webSite.png");
     -fx-background-size: 100% 100%;
     -fx-background-repeat: no-repeat;
     -fx-background-position:center;
