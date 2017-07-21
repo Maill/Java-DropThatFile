@@ -96,8 +96,12 @@ public class HomeController extends AnchorPane implements Initializable {
 
     // Icons used for the nodes in the TreeView
     private Image[] icons = new Image[]{
-            new Image(getClass().getResourceAsStream("/images/opFolder.png")),
-            new Image(getClass().getResourceAsStream("/images/file.png"))
+            new Image(getClass().getResourceAsStream("/images/folder.png")),
+            new Image(getClass().getResourceAsStream("/images/file.png")),
+            new Image(getClass().getResourceAsStream("/images/zip.png")),
+            new Image(getClass().getResourceAsStream("/images/text.png")),
+            new Image(getClass().getResourceAsStream("/images/image.png")),
+            new Image(getClass().getResourceAsStream("/images/word.png"))
     };
 
     // Log4j instance
@@ -116,6 +120,9 @@ public class HomeController extends AnchorPane implements Initializable {
     public static String zipPassword = null;
     public static String zipName = null;
     public static String zipDescription = null;
+
+    private DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private LocalDateTime now;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -179,13 +186,13 @@ public class HomeController extends AnchorPane implements Initializable {
         contextMenu.getItems().get(2).setOnAction(e ->
                 this.writeMessage(userAddFolderNode(treeView_repository, icons, "New_folder")));
         // Delete MenuItem
-        contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(userRemoveNode(treeView_repository)));
+        contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(alertDeletion()));
 
         // Button events
         button_synchronize.setOnAction(null);
         button_synchronize.setOnAction(e -> setNodes(treeView_repository, icons, currentUserRepoPath));
-        createFolder_button.setOnAction(e -> userAddFolderNode(treeView_repository, icons, folderName_textField.getText()));
-        removeFolder_button.setOnAction(e -> userRemoveNode(treeView_repository));
+        createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, folderName_textField.getText())));
+        removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion()));
     }
 
     /**
@@ -364,11 +371,29 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     /**
+     * Create an alert that demands confirmation from the user to delete the selected node and its potential children
+     */
+    private String alertDeletion(){
+        treeView_repository.setEditable(false);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirming dialog");
+        alert.setHeaderText("Delete this?");
+        alert.setContentText("Are you sure you want to delete this?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        treeView_repository.setEditable(true);
+        if (result.isPresent() && result.get() == ButtonType.OK){
+            return userRemoveNode(treeView_repository);
+        } else {
+            return "Element deletion aborted.";
+        }
+    }
+
+    /**
      * Inform the user of the result from his actions in the application
      */
     private void writeMessage(String msg) {
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dtformatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        this.message_textArea.appendText(now.format(dtformatter) + "\n" + msg + "\n");
+        now = LocalDateTime.now();
+        message_textArea.appendText(now.format(dtFormatter) + "\n" + msg + "\n");
     }
 }

@@ -7,6 +7,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -31,12 +33,10 @@ import static DropThatFile.GlobalVariables.*;
  */
 
 public final class TreeViewer{
-    //private static String fileNameExt_matchRgx = "^[a-zA-Z0-9.-]+\\.[a-zA-Z0-9.-]+$";
-    //private static String folderName_matchRgx = "^[^a-zA-Z0-9-]+$";
     private static String specialCharsFolder_replaceRgx = "[^a-zA-Z0-9-\\p{L}\\p{M}*]";
     private static String specialCharsFile_replaceRgx = "[^a-zA-Z0-9-.\\p{L}\\p{M}*]";
-    //private static String checkForExtension_matchRgx = "([?^\\\\])*\\.\\w+(\\.*)$";
 
+    //region TreeView and nodes construction
     /**
      * Main method which sets and configure the TreeView
      * @param treeView FXML TreeView field
@@ -98,12 +98,28 @@ public final class TreeViewer{
      */
     private static TreeItem<File> getNodesForDirectory(File rootDirectory, Image[] icons) {
         TreeItem<File> root = new TreeItem<>(rootDirectory, new ImageView(icons[0]));
+        String nodeName;
         try{
             for(File node : rootDirectory.listFiles()) {
                 if(node.isDirectory()) // Recursive function to get folders/files
                     root.getChildren().add(getNodesForDirectory(node, icons));
-                else
-                    root.getChildren().add(new TreeItem<>(node, new ImageView(icons[1])));
+                else {
+                    nodeName = node.getName();
+
+                    if(nodeName.endsWith(".zip"))
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[2])));
+                    else if(nodeName.endsWith(".txt"))
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[3])));
+                    else if(nodeName.endsWith(".png") || nodeName.endsWith(".jpg") || nodeName.endsWith(".jpeg")
+                            || nodeName.endsWith(".bmp")) {
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[4])));
+                    }
+                    else if(nodeName.endsWith(".doc") || nodeName.endsWith(".docx"))
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[5])));
+                    else
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[1])));
+
+                }
             }
             return root;
         } catch (NullPointerException ex) {
@@ -111,28 +127,7 @@ public final class TreeViewer{
             return root;
         }
     }
-
-    /**
-     * Set a routine timer to automatically update the content of the TreeView
-     * @param treeView FXML TreeView field to refresh
-     * @param icons Image array for the TreeItem icons
-     * @param autoRefresh FXML CheckBox field to play/pause the timer
-     */
-    private static void setTimelineTreeView(TreeView<File> treeView, Image[] icons, CheckBox autoRefresh, String repoPath){
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.millis(60000),
-                        event -> setNodes(treeView, icons, repoPath))
-        );
-        // No end to the timer
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.pause();
-
-        // CheckBox selected = timer's on
-        autoRefresh.setOnAction(e -> {
-            if (autoRefresh.isSelected()) timeline.play();
-            else timeline.pause();
-        });
-    }
+    //endregion
 
     //region Expanded nodes
     /**
@@ -231,15 +226,26 @@ public final class TreeViewer{
         TreeItem<File> selectedNode = treeView.getSelectionModel().getSelectedItem();
 
         if (event.getCode().equals(KeyCode.DELETE) && selectedNode != null) {
-            removeNode(treeView);
+            treeView.setEditable(false);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirming dialog");
+            alert.setHeaderText("Delete this?");
+            alert.setContentText("Are you sure you want to delete this?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            treeView.setEditable(true);
+            if (result.isPresent() && result.get() == ButtonType.OK){
+                userRemoveNode(treeView);
+            }
         }
         // If double-click primary button if detected on a node file
         if(event.getCode().equals(KeyCode.ENTER) && selectedNode != null) {
             try {
+                File file = selectedNode.getValue();
                 // We open the actual file with the default program installed on the OS
-                if(selectedNode.getValue().isFile() && selectedNode.isLeaf()){
-                    if(selectedNode.getValue().exists() && selectedNode.getValue().canExecute()){
-                        Desktop.getDesktop().open(selectedNode.getValue());
+                if(file.isFile() && selectedNode.isLeaf()){
+                    if(file.canExecute()){
+                        Desktop.getDesktop().open(file);
                     }
                 }
             } catch (IOException ex) {
@@ -251,8 +257,8 @@ public final class TreeViewer{
 
     //region Remove Node
     /**
-     * Method for the user to remove a TreeItem folder from a TreeView
-     * @param treeView FXML TreeView field where the TreeItem will be deleted
+     * Method for the user to remove a TreeItem node, from a TreeView, and its associated file
+     * @param treeView FXML TreeView field where the TreeItem is located
      * @return String log of the situation
      */
     public static String userRemoveNode(TreeView<File> treeView) {
@@ -264,26 +270,55 @@ public final class TreeViewer{
 
         if (parent == null) return "Cannot delete a root element.";
         else {
+            try {
+                if(node.getValue().isDirectory()){
+                    Path rootPath = Paths.get(node.getValue().getAbsolutePath());
+                    Files.walk(rootPath) // Recursively get all child files
+                            .sorted(Comparator.reverseOrder()) // Reverse the order of the list
+                            .map(Path::toFile) // Transform each Path object to a File object
+                            .forEach(File::delete); // Delete each File object
+                } else
+                    node.getValue().delete();
 
-            parent.getChildren().remove(node);
+                parent.getChildren().remove(node);
+                return "Element deleted.";
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                return "Element could not be deleted due to an unknown error.";
+            }
         }
-
-        return "Element deleted.";
     }
 
     /**
-     * Method to remove a TreeItem from a TreeView
-     * @param treeView FXML TreeView field where the TreeItem will be deleted
+     * Method to remove a TreeItem node, from a TreeView, and its associated file
+     * @param treeView FXML TreeView field where the TreeItem is located
      */
-    public static void removeNode(TreeView<File> treeView) {
+    public static boolean removeNode(TreeView<File> treeView) {
         TreeItem<File> node = treeView.getSelectionModel().getSelectedItem();
 
-        if (node == null) return;
+        if (node == null) return false;
 
         TreeItem<File> parent = node.getParent();
 
-        if (parent == null) return;
-        parent.getChildren().remove(node);
+        if (parent == null) return false;
+        else {
+            try {
+                if(node.getValue().isDirectory()){
+                    Path rootPath = Paths.get(node.getValue().getAbsolutePath());
+                    Files.walk(rootPath) // Recursively get all child files
+                            .sorted(Comparator.reverseOrder()) // Reverse the order of the list
+                            .map(Path::toFile) // Transform each Path object to a File object
+                            .forEach(File::delete); // Delete each File object
+                } else
+                    node.getValue().delete();
+
+                parent.getChildren().remove(node);
+                return true;
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                return false;
+            }
+        }
     }
 
     /**
@@ -559,6 +594,29 @@ public final class TreeViewer{
 
     //endregion
 
+    //region Misc
+    /**
+     * Set a routine timer to automatically update the content of the TreeView
+     * @param treeView FXML TreeView field to refresh
+     * @param icons Image array for the TreeItem icons
+     * @param autoRefresh FXML CheckBox field to play/pause the timer
+     */
+    private static void setTimelineTreeView(TreeView<File> treeView, Image[] icons, CheckBox autoRefresh, String repoPath){
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.millis(60000),
+                        event -> setNodes(treeView, icons, repoPath))
+        );
+        // No end to the timer
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.pause();
+
+        // CheckBox selected = timer's on
+        autoRefresh.setOnAction(e -> {
+            if (autoRefresh.isSelected()) timeline.play();
+            else timeline.pause();
+        });
+    }
+
     /**
      * Open a selected file via primary mouse button click or enter key
      * @param treeView FXML TreeView field where the selected node is located
@@ -586,4 +644,5 @@ public final class TreeViewer{
         }
         return "'" + selectedFile.getName() + "' file successfully opened.";
     }
+    //endregion
 }
