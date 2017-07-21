@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import static DropThatFile.GlobalVariables.currentUser;
+import static DropThatFile.GlobalVariables.currentUserRepoPath;
+import static DropThatFile.GlobalVariables.userRepoMainPath;
 import static DropThatFile.engines.windowsManager.WindowsHandler.setMessage;
 
 public class LoginController extends AnchorPane implements Initializable {
@@ -47,6 +50,9 @@ public class LoginController extends AnchorPane implements Initializable {
             if(!APIUser.Instance().login(email, password)){
                 return false;
             } else {
+                String firstCharFName = currentUser.getfName().substring(0,1);
+                String lName = currentUser.getlName();
+                currentUserRepoPath = userRepoMainPath.concat(firstCharFName + lName + "\\");
                 return true;
             }
         }

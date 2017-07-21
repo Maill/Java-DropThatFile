@@ -97,9 +97,11 @@ public class APIFile extends APIConnector {
             JSONObject toAPI = new JSONObject();
             toAPI.append("name", fileName).append("descrption", description);
             String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
-            String encryptedFilePasswordJSON = RSAEngine.Instance().encrypt(password);
             List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
-            postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
+            if(password == null){
+                String encryptedFilePasswordJSON = RSAEngine.Instance().encrypt(password);
+                postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
+            }
             JSONObject responseFile = this.readFromUrl(this.route + "addFile", postContent);
         }catch (Exception ex){
             log.error(String.format("Error on APIFile on addFile method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
