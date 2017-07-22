@@ -10,6 +10,8 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
@@ -21,17 +23,17 @@
         <AnchorPane minHeight="100.0" minWidth="200.0" prefHeight="100.0" prefWidth="300.0">
             <ScrollPane layoutX="571.0" layoutY="14.0" prefHeight="711.0" prefWidth="510.0">
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="706.0" prefWidth="506.0">
-                    <TextField fx:id="folderName_textField" layoutX="14.0" layoutY="36.0" prefHeight="31.0" prefWidth="253.0" />
-                    <Button fx:id="createFolder_button" layoutX="17.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Create" />
+                    <TextField fx:id="folderName_textField" layoutX="13.0" layoutY="36.0" prefHeight="31.0" prefWidth="253.0" />
+                    <Button fx:id="createFolder_button" layoutX="16.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Create" />
                     <TextArea fx:id="preview_textArea" editable="false" layoutX="13.0" layoutY="143.0" prefHeight="383.0" prefWidth="480.0" wrapText="true" AnchorPane.bottomAnchor="180.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="143.0" />
-                    <TextArea fx:id="message_textArea" editable="false" layoutX="14.0" layoutY="534.0" prefHeight="158.0" prefWidth="480.0" wrapText="true" />
+                    <TextArea fx:id="message_textArea" editable="false" layoutX="13.0" layoutY="534.0" prefHeight="158.0" prefWidth="480.0" wrapText="true" />
                     <Button fx:id="removeFolder_button" layoutX="145.0" layoutY="76.0" mnemonicParsing="false" prefHeight="43.0" prefWidth="120.0" text="Remove" />
-                    <Label layoutX="15.0" layoutY="14.0" prefHeight="16.0" prefWidth="100.0" text="Folder name" />
+                    <Label layoutX="13.0" layoutY="14.0" prefHeight="16.0" prefWidth="100.0" text="Folder name" />
                 </AnchorPane>
             </ScrollPane>
             <ScrollPane layoutX="20.0" layoutY="14.0" prefHeight="710.0" prefWidth="515.0">
                 <TabPane fx:id="repositories_tabPane" prefHeight="706.0" prefWidth="506.0">
-                    <Tab fx:id="myRepository_tab" closable="false" text="My repository"/>
+                    <Tab fx:id="myRepository_tab" closable="false" text="My repository" />
                 </TabPane>
             </ScrollPane>
              <AnchorPane layoutX="25.0" layoutY="40.0" prefHeight="662.0" prefWidth="490.0">
@@ -41,7 +43,17 @@
                      <Button id="button_website" fx:id="button_website" layoutX="311.0" layoutY="5.0" onMouseClicked="#openLink" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
                      <Button id="button_archiveBrowse" fx:id="button_archiveBrowse" layoutX="437.0" layoutY="4.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
                      <Button id="button_browse" fx:id="button_browse" layoutX="374.0" layoutY="4.0" prefHeight="52.0" prefWidth="48.0" scaleX="1.2" />
-                    <CheckBox fx:id="checkBox_autoRefresh" layoutX="14.0" layoutY="17.0" mnemonicParsing="false" text="Auto refresh" />
+                    <CheckBox fx:id="checkBox_autoRefresh" layoutX="15.0" layoutY="17.0" mnemonicParsing="false" text="Auto refresh" />
+               <ImageView id="flagOn" fx:id="imageView_flagEN" fitHeight="15.0" fitWidth="30.0" layoutX="14.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@../images/EN_flag.png" />
+                  </image>
+               </ImageView>
+               <ImageView id="flagOff" fx:id="imageView_flagFR" fitHeight="15.0" fitWidth="30.0" layoutX="49.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true">
+                  <image>
+                     <Image url="@../images/FR_flag.png" />
+                  </image>
+               </ImageView>
                  </Pane>
              </AnchorPane>
         </AnchorPane>

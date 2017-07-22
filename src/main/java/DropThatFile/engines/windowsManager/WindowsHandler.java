@@ -1,15 +1,18 @@
 package DropThatFile.engines.windowsManager;
 
+import DropThatFile.engines.annotations.processors.Translator;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import DropThatFile.engines.LogManagement;
-import javafx.util.Pair;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 
 /**
  * Created by Nicolas on 02/03/2017.
@@ -27,19 +30,38 @@ public class WindowsHandler {
         jfxStage.setResizable(false);
     }
 
+    /**
+     * Get the Stage of the instantiate form
+     * @return The Stage
+     */
     public Stage getJfxStage() {
         return jfxStage;
     }
 
+    /**
+     * Show the form
+     */
     public void showForm(){
         jfxStage.show();
     }
 
+    /**
+     * Hide the form
+     */
     public void hideForm() { jfxStage.hide(); }
 
+    /**
+     * Close the form
+     */
     public void closeForm(){ jfxStage.close(); }
 
-    public void goToForm(String formName, Boolean show) throws Exception {
+    /**
+     * Method for form switching
+     * @param formName Simple name of the requested form
+     * @param show Show the form or not yet
+     * @throws Exception
+     */
+    public boolean goToForm(String formName, boolean show) throws Exception {
         try {
             // Instantiate the chosen form according to the input and its package
             Class<?> clazz = Class.forName("DropThatFile.engines.windowsManager.".concat(formName.equals("LoginForm") ? formName : "forms.".concat(formName)));
@@ -47,17 +69,18 @@ public class WindowsHandler {
             constructor.newInstance(jfxStage);
         } catch (Exception ex) {
             log.error("Unable to load \"" + formName + "\" Form.");
+            return false;
         }
         // Show the form or not yet
-        if (show)
-            showForm();
-        else
-            hideForm();
+        if (show) showForm();
+        else hideForm();
+        return true;
     }
 
     /**
      * OnClick on the "Login" button.
      */
+    @Deprecated
     public boolean loginVerification(TextField email, PasswordField password) throws Exception {
         if (!email.getText().matches("^(?:(?:[a-z0-9]+\\.[a-z0-9]+)|(?:[a-z0-9]+))@(?:[a-z0-9]+(?:\\.[a-z0-9]+)+)$") || email.getText() == null){
             setMessage("Error email address", "Entered email address is incorrect.");
@@ -93,5 +116,14 @@ public class WindowsHandler {
         alert.setHeaderText(headerText);
         alert.setContentText(text);
         alert.showAndWait();
+    }
+
+    public void languageListening(Initializable instance, ArrayList<ImageView> langFlags){
+        for (ImageView flag : langFlags) {
+            flag.setOnMouseClicked(e -> {
+                if(flag.getId().equals("flagOff"))
+                    Translator.inject(instance);
+            });
+        }
     }
 }

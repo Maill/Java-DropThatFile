@@ -20,7 +20,6 @@ public class File {
         this.id = id;
         this.name = name;
         this.password = password;
-        this.created = created;
         this.description = description;
     }
     //endregion

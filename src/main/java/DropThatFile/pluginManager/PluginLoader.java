@@ -1,8 +1,7 @@
-package DropThatFile.pluginsManager;
+package DropThatFile.pluginManager;
 
 import DropThatFile.engines.LogManagement;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -18,6 +17,7 @@ import java.util.HashMap;
  *
  * Plugin loader
  */
+@Deprecated
 public final class PluginLoader {
     private Logger log = LogManagement.getInstanceLogger(this);
     private ArrayList<String> pluginClassNames = new ArrayList<>();

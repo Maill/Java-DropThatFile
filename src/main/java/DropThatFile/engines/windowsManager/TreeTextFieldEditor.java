@@ -61,7 +61,6 @@ public class TreeTextFieldEditor extends TreeCell<File> {
             } else {
                 setText(getString());
                 setGraphic(getTreeItem().getGraphic());
-
             }
         }
     }
@@ -70,14 +69,14 @@ public class TreeTextFieldEditor extends TreeCell<File> {
      * Create the TextField to edit the name of a TreeItem
      */
     private void createTextField() {
-        textField = new TextField(getString());
+        /*textField = new TextField(getString());
         textField.setOnKeyReleased(t -> {
             if (t.getCode() == KeyCode.ENTER) {
                 commitEdit(new File(textField.getText()));
             } else if (t.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }
-        });
+        });*/
     }
 
     /**

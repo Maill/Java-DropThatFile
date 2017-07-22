@@ -7,6 +7,7 @@ import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.RSAEngine;
 import DropThatFile.models.File;
 import DropThatFile.models.Group;
+import com.sun.istack.internal.Nullable;
 import org.apache.http.NameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -91,20 +92,31 @@ public class APIFile extends APIConnector {
         }
     }
 
-    public void addFileUser(String fileName, String password, String description){
+    public void addFileUser(String fileName, String description){
         //ajout des informations du fichier lors de l'ajout d'un fichier
         try{
             JSONObject toAPI = new JSONObject();
-            toAPI.append("name", fileName).append("descrption", description);
+            toAPI.append("name", fileName).append("description", description);
             String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
             List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
-            if(password == null){
-                String encryptedFilePasswordJSON = RSAEngine.Instance().encrypt(password);
-                postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
-            }
-            JSONObject responseFile = this.readFromUrl(this.route + "addFile", postContent);
+            JSONObject responseFile = this.readFromUrl(this.route + "accounts/addFile", postContent);
         }catch (Exception ex){
             log.error(String.format("Error on APIFile on addFile method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+        }
+    }
+
+    public void addArchiveUser(String fileName, String description, String password){
+        //ajout des informations du fichier lors de l'ajout d'un fichier
+        try{
+            JSONObject toAPI = new JSONObject();
+            toAPI.append("name", fileName).append("description", description);
+            String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
+            List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
+            String encryptedFilePasswordJSON = RSAEngine.Instance().encrypt(password);
+            postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
+            JSONObject responseFile = this.readFromUrl(this.route + "accounts/addArchive", postContent);
+        }catch (Exception ex){
+            log.error(String.format("Error on APIFile on addArchive method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }
     }
 

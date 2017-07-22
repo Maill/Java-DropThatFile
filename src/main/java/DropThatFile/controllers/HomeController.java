@@ -5,6 +5,7 @@ import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.models.Group;
+import DropThatFile.pluginManager.Expander;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -16,6 +17,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -30,7 +32,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -40,45 +41,39 @@ import static DropThatFile.engines.windowsManager.TreeViewer.*;
 import static DropThatFile.GlobalVariables.*;
 
 /**
- * Created by Travail on 02/05/2017.
+ * Created by Olivier on 02/05/2017.
  */
 public class HomeController extends AnchorPane implements Initializable {
     //region FXML
-    @FXML
-    private TabPane repositories_tabPane;
+    @FXML private TabPane repositories_tabPane;
+
+    @FXML private Tab myRepository_tab;
+
+    @FXML private Button button_archiveBrowse;
+
+    @FXML private Button button_browse;
+
+    @FXML private Button button_synchronize;
+
+    @FXML public TreeView<File> treeView_repository;
+
+    @FXML private CheckBox checkBox_autoRefresh;
+
+    @FXML private TextArea message_textArea;
+
+    @FXML private TextArea preview_textArea;
+
+    @FXML private TextField folderName_textField;
+
+    @FXML private Button createFolder_button;
+
+    @FXML private Button removeFolder_button;
 
     @FXML
-    private Tab myRepository_tab;
+    ImageView imageView_flagEN;
 
     @FXML
-    private Button button_archiveBrowse;
-
-    @FXML
-    private Button button_browse;
-
-    @FXML
-    private Button button_synchronize;
-
-    @FXML
-    public TreeView<File> treeView_repository;
-
-    @FXML
-    private CheckBox checkBox_autoRefresh;
-
-    @FXML
-    private TextArea message_textArea;
-
-    @FXML
-    private TextArea preview_textArea;
-
-    @FXML
-    private TextField folderName_textField;
-
-    @FXML
-    private Button createFolder_button;
-
-    @FXML
-    private Button removeFolder_button;
+    ImageView imageView_flagFR;
 
     @FXML
     public void openLink() throws URISyntaxException, IOException {
@@ -101,7 +96,8 @@ public class HomeController extends AnchorPane implements Initializable {
             new Image(getClass().getResourceAsStream("/images/zip.png")),
             new Image(getClass().getResourceAsStream("/images/text.png")),
             new Image(getClass().getResourceAsStream("/images/image.png")),
-            new Image(getClass().getResourceAsStream("/images/word.png"))
+            new Image(getClass().getResourceAsStream("/images/word.png")),
+            new Image(getClass().getResourceAsStream("/images/excel.png"))
     };
 
     // Log4j instance
@@ -114,8 +110,7 @@ public class HomeController extends AnchorPane implements Initializable {
 
     private WindowsHandler windowsHandler = new WindowsHandler(stage);
 
-    //private ArrayList<Stage> pluginStages = new ArrayList<>();
-    //private HashMap<String, String> jarPaths = new HashMap<>();
+    private Expander pluginExpander = new Expander();
 
     public static String zipPassword = null;
     public static String zipName = null;
@@ -126,6 +121,11 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        ArrayList<ImageView> langFlags = new ArrayList<>();
+        langFlags.add(imageView_flagEN);
+        langFlags.add(imageView_flagFR);
+        windowsHandler.languageListening(this, langFlags);
+        pluginExpander.loadFilePreviewers();
         buildTreeView(treeView_repository, icons, contextMenu, checkBox_autoRefresh, currentUserRepoPath);
         setAllControls();
         setUserGroupsTabPanes();
@@ -179,7 +179,11 @@ public class HomeController extends AnchorPane implements Initializable {
 
         contextMenu.getItems().addAll(preview_menuItem, open_menuItem, addFolder_menuItem, delete_menuItem);
         // Preview MenuItem
-        contextMenu.getItems().get(0).setOnAction(e -> {});
+        contextMenu.getItems().get(0).setOnAction(e ->
+            alertFilePreview(
+                    pluginExpander.getFilePreview(treeView_repository.getSelectionModel().getSelectedItem())
+            )
+        );
         // Open MenuItem
         contextMenu.getItems().get(1).setOnAction(e -> this.writeMessage(openFile(treeView_repository)));
         // Add folder MenuItem
@@ -314,6 +318,10 @@ public class HomeController extends AnchorPane implements Initializable {
                     } catch(IOException ex){
                         this.writeMessage("Error while trying to reach the file."  + ex.getMessage());
                         log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
+                    } finally {
+                        zipName = null;
+                        zipPassword = null;
+                        zipDescription = null;
                     }
                 }
             }
@@ -335,16 +343,24 @@ public class HomeController extends AnchorPane implements Initializable {
             }
         }
 
-        DropThatFile.models.File archiveToUpload = new DropThatFile.models.File(1, zipName, zipPassword, Date.from(Instant.now()), zipDescription);
-
         // Add selected files into an encrypted zip file
         try {
-            FilesJobs.Instance().sendEncryptedArchive(archiveToUpload, files);
-            //TODO: Send the File model Object to the database
+            TreeItem<File> selectedFolder = treeView_repository.getSelectionModel().getSelectedItem();
+
+            if(FilesJobs.Instance().sendEncryptedArchive(files)){
+                /*APIFile.Instance().addArchiveUser(
+                        selectedFolder.getValue().getName() + "\\" + zipName, zipDescription, zipPassword
+                );*/
+            }
+
             this.writeMessage("Archive successfully uploaded.");
         } catch (ZipException ex) {
             ex.printStackTrace();
             log.error("Erreur en tentant de créer une archive encryptée.\nMessage : \n" + ex.getMessage());
+        } finally {
+            zipName = null;
+            zipPassword = null;
+            zipDescription = null;
         }
     }
 
@@ -360,28 +376,31 @@ public class HomeController extends AnchorPane implements Initializable {
             this.writeMessage("Error while trying to reach the browsed file: it is probably on read-only mode.");
             return;
         }
-        DropThatFile.models.File fileToUpload = new DropThatFile.models.File(1, fileToAdd.getName(), null, Date.from(Instant.now()), null);
+
         if(FilesJobs.Instance().sendFile(fileToAdd)){
+            /*APIFile.Instance().addFileUser(
+                    fileToAdd.getParent() + "\\" + fileToAdd.getName(), null
+            );*/
             this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
-            //TODO: Send the File model Object to the database
 
         } else {
-            this.writeMessage("An error occured while uploading the file.");
+            this.writeMessage("An error occurred while uploading the file.");
         }
+        zipName = null;
+        zipPassword = null;
+        zipDescription = null;
     }
 
     /**
      * Create an alert that demands confirmation from the user to delete the selected node and its potential children
      */
     private String alertDeletion(){
-        treeView_repository.setEditable(false);
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirming dialog");
         alert.setHeaderText("Delete this?");
         alert.setContentText("Are you sure you want to delete this?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        treeView_repository.setEditable(true);
         if (result.isPresent() && result.get() == ButtonType.OK){
             return userRemoveNode(treeView_repository);
         } else {
@@ -390,10 +409,41 @@ public class HomeController extends AnchorPane implements Initializable {
     }
 
     /**
+     * Create an alert on primary click on the preview MenuItem.
+     * Preview the content of a file
+     * @return
+     */
+    private void alertFilePreview(String fileContent){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Preview Dialog");
+        alert.setHeaderText("This is the content of the file");
+
+        TextArea textArea =
+                new TextArea(fileContent != null ? fileContent : "INFORMATION: No valid content found in this file.");
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane content = new GridPane();
+        content.setMaxWidth(Double.MAX_VALUE);
+        content.add(textArea, 0, 0);
+
+        // Set expandable content into the dialog pane.
+        alert.getDialogPane().setExpandableContent(content);
+        alert.getDialogPane().setExpanded(true);
+
+        alert.showAndWait();
+    }
+
+    /**
      * Inform the user of the result from his actions in the application
      */
     private void writeMessage(String msg) {
         now = LocalDateTime.now();
-        message_textArea.appendText(now.format(dtFormatter) + "\n" + msg + "\n");
+        message_textArea.appendText("At " + now.format(dtFormatter) + "\n" + msg + "\n");
     }
 }

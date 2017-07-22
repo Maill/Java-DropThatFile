@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
+
 public class Main extends Application{
 
     static {

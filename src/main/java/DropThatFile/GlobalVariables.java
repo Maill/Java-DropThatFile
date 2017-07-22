@@ -12,17 +12,15 @@ import java.util.ArrayList;
  * Created by Nicol on 22/03/2017.
  */
 public class GlobalVariables {
-
-    // On stocke globalement la clé publique du serveur afin de ne pas surcharger les appels API
-    // Init : au démarrage.
+    // Public key global storage
     public static PublicKey public_key_server = null;
 
-     static {
-         if(public_key_server == null){
-             String key = APIConfig.Instance().getPublicKeyServer();
-             public_key_server = KeyStoreFactory.getPublicKeyFromString(key);
-         }
-     }
+    static {
+        if(public_key_server == null){
+            String key = APIConfig.Instance().getPublicKeyServer();
+            public_key_server = KeyStoreFactory.getPublicKeyFromString(key);
+        }
+    }
 
     public static User currentUser;
 
@@ -35,9 +33,9 @@ public class GlobalVariables {
 
     public static String repositoriesMainPath = appDataPath.concat("\\DropThatFile\\repositories\\");
 
-    public static String groupRepoMainPath = repositoriesMainPath.concat("groupFiles\\");
+    public static String groupRepoMainPath = repositoriesMainPath.concat("groupfiles\\");
 
-    public static String userRepoMainPath = repositoriesMainPath.concat("userFiles\\");
+    public static String userRepoMainPath = repositoriesMainPath.concat("userfiles\\");
 
     public static String currentUserRepoPath;
 }

@@ -1,8 +1,7 @@
 package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
-import DropThatFile.engines.annotations.Level;
-import DropThatFile.engines.annotations._Todo;
+import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.models.Group;
 import javafx.scene.control.*;
 import javafx.scene.control.ButtonType;
@@ -27,9 +26,6 @@ public class FilesJobs {
     public static FilesJobs instance = null;
 
     //region init
-    /**
-     *
-     */
     static {
         File f = new File(userRepoMainPath);
         if (!f.exists() || !f.isDirectory()) {
@@ -42,12 +38,9 @@ public class FilesJobs {
      * Send the file to the storage server
      * @param file File to send
      */
-    public static boolean sendFile(File file) {
-        File test = new File(userRepoMainPath + "\\" + file.getName());
+    public boolean sendFile(File file) {
         // File future location
-        if (!test.exists() || !test.isDirectory()){
-            //new File(userRepoMainPath + "\\" + file.getName());
-            //sendFileToServer("blabla");
+        if (!file.exists() || !file.isDirectory()){
             return true;
         } else {
             //TODO: Ajout à une liste de fichiers qui n'ont pas envoyés
@@ -58,14 +51,11 @@ public class FilesJobs {
 
     /**
      * Encrypt and send the archive to the storage server
-     * @param fileModel DropThatFile.models.File file model describing the actual file
      * @param filesInArchive List of files to add in the archive
      */
-    public void sendEncryptedArchive(DropThatFile.models.File fileModel, List<File> filesInArchive) throws ZipException {
+    public boolean sendEncryptedArchive(List<File> filesInArchive) throws ZipException {
         // Zip name
-        String fileNameWithoutExt = fileModel.getName().replaceFirst("[.][^.]+$", "");
-
-        if(fileAlreadyExists(fileNameWithoutExt)) return;
+        String fileNameWithoutExt = HomeController.zipName.replaceFirst("[.][^.]+$", "");
 
         // Zip future location
         ZipFile zipFile = new ZipFile(userRepoMainPath + "\\" + fileNameWithoutExt + ".zip");
@@ -87,21 +77,11 @@ public class FilesJobs {
 
         try{
             zipFile.addFiles(filesToAdd, parameters);
+            return true;
         } catch(ZipException ex){
-            System.out.println("ZipException : " + ex.getMessage());
+            ex.printStackTrace();
+            return false;
         }
-
-        //sendFileToServer(zipFile.getFile().getPath());
-    }
-
-    /**
-     * Submit the file, found in the path' parameter, to the storage server <Protocol SFTP>
-     * @param pathFileToSend Path of the file to send
-     */
-    @_Todo(level = Level.EVOLUTION, comment = "Pouvoir envoyer les fichiers au serveur de stockage.")
-    private static void sendFileToServer(String pathFileToSend){
-
-        return;
     }
 
     /**
@@ -135,26 +115,26 @@ public class FilesJobs {
      */
     public void retrieveUserFilesFromServer() {
         FTPClient ftpClient = null;
-        int userId = currentUser.getId();
+        //int userId = currentUser.getId();
+        String firstCharFName = currentUser.getfName().substring(0,1);
+        String lName = currentUser.getlName();
 
         try {
             ftpClient = getFTPConnexion();
 
-            FTPFile[] files = ftpClient.listFiles("/userfiles/" + userId);
-            ftpClient.changeWorkingDirectory("/userfiles/" + userId);
+            FTPFile[] files = ftpClient.listFiles("/userfiles/" + (firstCharFName + lName));
+            ftpClient.changeWorkingDirectory("/userfiles/" + (firstCharFName + lName));
 
             for (FTPFile file : files) {
                 if (file.isDirectory()) continue;
 
                 new File(currentUserRepoPath).mkdirs();
-                File downloadFile = new File(
-                        currentUserRepoPath + file.getName()
-                );
+                File downloadFile = new File(currentUserRepoPath + file.getName());
 
                 if(downloadFile.exists()) continue;
 
                 try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
-                    ftpClient.retrieveFile("/userfiles/" + userId + "\\" + file.getName(), outputStream);
+                    ftpClient.retrieveFile("/userfiles/" + (firstCharFName + lName) + "\\" + file.getName(), outputStream);
                 }
             }
         } catch (IOException e) {
@@ -180,11 +160,10 @@ public class FilesJobs {
         try {
             for(Integer idGroup : listOfGroups){
                 ftpClient = getFTPConnexion();
-
-                FTPFile[] files = ftpClient.listFiles("/groupfiles/" + idGroup);
-                ftpClient.changeWorkingDirectory("/groupfiles/" + idGroup);
-
                 String groupName = userGroups.get(idGroup).getName();
+
+                FTPFile[] files = ftpClient.listFiles("/groupfiles/" + groupName);
+                ftpClient.changeWorkingDirectory("/groupfiles/" + groupName);
 
                 for (FTPFile file : files) {
                     if (file.isDirectory()) continue;
@@ -195,7 +174,7 @@ public class FilesJobs {
                     if(downloadFile.exists()) continue;
 
                     try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))){
-                        ftpClient.retrieveFile("/groupfiles/" + idGroup + "\\" + file.getName(), outputStream);
+                        ftpClient.retrieveFile("/groupfiles/" + groupName + "\\" + file.getName(), outputStream);
                     }
                 }
             }
@@ -221,39 +200,6 @@ public class FilesJobs {
         ftpClient.connect("localhost");
         ftpClient.login("dtfftpaccount", "password");
         return ftpClient;
-    }
-
-
-    /**
-     * Check if the file already exists at the destination
-     * @param fileNameWithoutExt file name without its extension
-     */
-    private boolean fileAlreadyExists(String fileNameWithoutExt){
-        File fileToOverwrite = new File(userRepoMainPath + "\\" + fileNameWithoutExt + ".zip");
-        Alert alertOverwriteFile = new Alert(Alert.AlertType.CONFIRMATION);
-        Alert alertFileCantBeDeleted = new Alert(Alert.AlertType.ERROR);
-        if (fileToOverwrite.exists()){
-            if (fileToOverwrite.isFile() && fileToOverwrite.canExecute()){
-                alertOverwriteFile.setTitle("Confirmation Dialog");
-                alertOverwriteFile.setHeaderText("File already exists.");
-                alertOverwriteFile.setContentText("File already exists at the output destination. Overwrite it?");
-
-                Optional<ButtonType> result = alertOverwriteFile.showAndWait();
-                if (result.get().equals(ButtonType.OK)){
-                    fileToOverwrite.delete();
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                alertFileCantBeDeleted.setTitle("Error Dialog");
-                alertFileCantBeDeleted.setHeaderText("Operation aborted - File can not be deleted.");
-                alertFileCantBeDeleted.setContentText("Please check if the file does exist, if it's really a file and if you're allowed to execute/delete it.");
-                alertFileCantBeDeleted.showAndWait();
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

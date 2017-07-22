@@ -10,26 +10,32 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="353.0" prefWidth="388.0" styleClass="background" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.LoginController">
+<AnchorPane id="AnchorPane" styleClass="" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="353.0" prefWidth="388.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DropThatFile.controllers.LoginController">
     <stylesheets>
         <URL value="@style.css" />
     </stylesheets>
     <AnchorPane id="anchorPane2" prefHeight="250.0" prefWidth="389.0" styleClass="top-segment" AnchorPane.bottomAnchor="103.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <VBox id="VBox" alignment="CENTER" prefHeight="300.0" prefWidth="428.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="29.0" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="0.0">
             <AnchorPane id="AnchorPane" prefHeight="180.0" prefWidth="430.0">
-                <Label id="label1" layoutX="14.0" layoutY="67.0" text="Email :" />
+                <Label fx:id="label_email" layoutX="9.0" layoutY="67.0" text="Email:" />
                 <TextField id="emailField" fx:id="email" layoutY="86.0" prefWidth="415.0" text="nicolas.demoncourt@gmail.com" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-                <Label id="label1" layoutX="14.0" layoutY="139.0" text="Mot de passe :" />
+                <Label fx:id="label_password" layoutX="9.0" layoutY="139.0" text="Password:" />
                 <PasswordField id="passwordField" fx:id="password" layoutY="157.0" prefWidth="415.0" text="aaaa" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-                <ImageView id="logo1" fx:id="imageView_logo" fitHeight="78.0" fitWidth="72.0" layoutX="10.0" layoutY="-27.0" pickOnBounds="true">
-                    <Image fx:id="image_logo" url="@../images/logo.png" />
+                <ImageView  fitHeight="78.0" fitWidth="72.0" layoutX="5.0" layoutY="-27.0" pickOnBounds="true">
+                    <Image url="@../images/logo.png" />
                 </ImageView>
-                <Label id="logoLabel1" layoutX="82.0" layoutY="4.0" prefHeight="16.0" prefWidth="149.0" text="DropThatFile" />
-                <ImageView id="logo1" fx:id="imageView_login" fitHeight="78.0" fitWidth="72.0" layoutX="266.0" layoutY="-19.0" pickOnBounds="true">
-                    <Image fx:id="image_login" url="@../images/login.png" />
+                <Label layoutX="77.0" layoutY="4.0" prefHeight="16.0" prefWidth="149.0" text="DropThatFile" />
+                <ImageView fitHeight="78.0" fitWidth="72.0" layoutX="266.0" layoutY="-19.0" pickOnBounds="true">
+                    <Image url="@../images/login.png" />
                 </ImageView>
             </AnchorPane>
         </VBox>
     </AnchorPane>
-    <Button id="button_login" fx:id="button_login" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="41.0" layoutY="272.0" onAction="#loginVerification" prefHeight="51.0" prefWidth="219.0" text="Connexion" textAlignment="CENTER" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="41.0" AnchorPane.rightAnchor="41.0" />
+    <Button id="button_login" fx:id="button_login" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="91.0" layoutY="270.0" onAction="#loginVerification" prefHeight="50.0" prefWidth="206.0" text="Log in" textAlignment="CENTER" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="91.0" />
+    <ImageView id="flagOn" fx:id="imageView_flagEN" fitHeight="15.0" fitWidth="30.0" layoutX="3.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../images/EN_flag.png"/>
+    </ImageView>
+    <ImageView id="flagOff" fx:id="imageView_flagFR" fitHeight="15.0" fitWidth="30.0" layoutX="38.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
+        <Image url="@../images/FR_flag.png"/>
+    </ImageView>
 </AnchorPane>
