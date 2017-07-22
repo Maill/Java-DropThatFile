@@ -43,8 +43,6 @@ public class FilesJobs {
         if (!file.exists() || !file.isDirectory()){
             return true;
         } else {
-            //TODO: Ajout à une liste de fichiers qui n'ont pas envoyés
-
             return false;
         }
     }
@@ -53,17 +51,15 @@ public class FilesJobs {
      * Encrypt and send the archive to the storage server
      * @param filesInArchive List of files to add in the archive
      */
-    public boolean sendEncryptedArchive(List<File> filesInArchive) throws ZipException {
+    public boolean sendEncryptedArchive(List<File> filesInArchive, TreeItem<File> selectedFolder) throws ZipException {
         // Zip name
         String fileNameWithoutExt = HomeController.zipName.replaceFirst("[.][^.]+$", "");
 
         // Zip future location
-        ZipFile zipFile = new ZipFile(userRepoMainPath + "\\" + fileNameWithoutExt + ".zip");
+        ZipFile zipFile = new ZipFile(selectedFolder.getValue().getAbsolutePath() + "\\" + fileNameWithoutExt + ".zip");
 
         ArrayList<File> filesToAdd = new ArrayList<>();
-        for (File f : filesInArchive) {
-            filesToAdd.add(new File(f.getAbsolutePath()));
-        }
+        filesToAdd.addAll(filesInArchive);
 
         ZipParameters parameters = new ZipParameters();
         parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE); // set compression method to deflate compression

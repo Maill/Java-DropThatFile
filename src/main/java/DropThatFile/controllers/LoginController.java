@@ -31,13 +31,13 @@ public class LoginController extends AnchorPane implements Initializable {
     PasswordField password;
 
     @FXML @Translate(translation = "Connexion")
-    Button button_login;
+    public Button button_login;
 
     @FXML @Translate(translation = "Email :")
-    Label label_email;
+    public Label label_email;
 
     @FXML @Translate(translation = "Mot de passe :")
-    Label label_password;
+    public Label label_password;
 
     @FXML
     ImageView imageView_flagEN;

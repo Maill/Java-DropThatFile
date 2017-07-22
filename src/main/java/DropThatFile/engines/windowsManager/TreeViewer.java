@@ -26,8 +26,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import static DropThatFile.GlobalVariables.*;
-
 /**
  * Created by Olivier on 17/06/2017.
  */
@@ -116,6 +114,8 @@ public final class TreeViewer{
                     }
                     else if(nodeName.endsWith(".doc") || nodeName.endsWith(".docx"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[5])));
+                    else if(nodeName.endsWith(".xlsx") || nodeName.endsWith(".xls"))
+                        root.getChildren().add(new TreeItem<>(node, new ImageView(icons[6])));
                     else
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[1])));
 
@@ -344,7 +344,7 @@ public final class TreeViewer{
         }
 
         // Regex checking the name for special characters not allowed on the Windows OS
-        newFolder_name = newFolder_name.replaceAll(specialCharsFolder_replaceRgx, "_");
+        newFolder_name = newFolder_name.replaceAll(specialCharsFolder_replaceRgx, " ");
 
         // Get selected node in the TreeView
         TreeItem<File> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -419,7 +419,7 @@ public final class TreeViewer{
     @Deprecated
     public static void addFolderNode(TreeView<File> treeView, File folderToAdd, Image[] icons) {
         // Regex checking the name for special characters not allowed on the Windows OS
-        folderToAdd.getName().replaceAll(specialCharsFolder_replaceRgx, "_");
+        folderToAdd.getName().replaceAll(specialCharsFolder_replaceRgx, " ");
 
         // Get selected node in the TreeView
         TreeItem<File> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -446,7 +446,7 @@ public final class TreeViewer{
     @Deprecated
     public static void addFileNode(TreeView<File> treeView, File fileToAdd, Image[] icons) {
         // Regex checking the name for special characters not allowed on the Windows OS
-        fileToAdd.getName().replaceAll(specialCharsFile_replaceRgx, "_");
+        fileToAdd.getName().replaceAll(specialCharsFile_replaceRgx, " ");
 
         // Get selected node in the TreeView
         TreeItem<File> selectedItem = treeView.getSelectionModel().getSelectedItem();
@@ -537,7 +537,6 @@ public final class TreeViewer{
      */
     private static boolean user_isDuplicateFolder(TreeItem<File> selectedItem, TreeItem<File> newItem){
         String newNodeName = newItem.getValue().getName();
-        System.out.println(newItem.getValue().getName() + " | " + newItem.getValue().isDirectory());
 
         // If selected node doesn't have any children
         if(selectedItem.isLeaf() && selectedItem.getValue().isDirectory()) return false;

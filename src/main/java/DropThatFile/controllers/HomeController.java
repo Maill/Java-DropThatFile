@@ -124,10 +124,15 @@ public class HomeController extends AnchorPane implements Initializable {
         ArrayList<ImageView> langFlags = new ArrayList<>();
         langFlags.add(imageView_flagEN);
         langFlags.add(imageView_flagFR);
+        // Set translation annotation
         windowsHandler.languageListening(this, langFlags);
+        // Set the plugins for previewing files
         pluginExpander.loadFilePreviewers();
+        // Set the TreeView
         buildTreeView(treeView_repository, icons, contextMenu, checkBox_autoRefresh, currentUserRepoPath);
+        // Set a bunch of graphic controls and events
         setAllControls();
+        // Link the TreeView to the groups of the user too
         setUserGroupsTabPanes();
     }
 
@@ -165,8 +170,6 @@ public class HomeController extends AnchorPane implements Initializable {
                 button_synchronize.setOnAction(null);
                 button_synchronize.setOnAction(e2 -> setNodes(treeView_repository, icons, currentUserRepoPath));
             });
-            button_synchronize.setOnAction(null);
-            button_synchronize.setOnAction(e -> setNodes(treeView_repository, icons, currentUserRepoPath));
         }
     }
 
@@ -188,13 +191,11 @@ public class HomeController extends AnchorPane implements Initializable {
         contextMenu.getItems().get(1).setOnAction(e -> this.writeMessage(openFile(treeView_repository)));
         // Add folder MenuItem
         contextMenu.getItems().get(2).setOnAction(e ->
-                this.writeMessage(userAddFolderNode(treeView_repository, icons, "New_folder")));
+                this.writeMessage(userAddFolderNode(treeView_repository, icons, "New folder")));
         // Delete MenuItem
         contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(alertDeletion()));
 
         // Button events
-        button_synchronize.setOnAction(null);
-        button_synchronize.setOnAction(e -> setNodes(treeView_repository, icons, currentUserRepoPath));
         createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, folderName_textField.getText())));
         removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion()));
     }
@@ -268,6 +269,7 @@ public class HomeController extends AnchorPane implements Initializable {
         fileChooser.setTitle("Choose some files");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
         Stage fileChooserStage = new Stage();
+
         button_archiveBrowse.setOnAction(e -> {
             modalSetArchiveFile();
             // Retrieve current selected item
@@ -347,7 +349,8 @@ public class HomeController extends AnchorPane implements Initializable {
         try {
             TreeItem<File> selectedFolder = treeView_repository.getSelectionModel().getSelectedItem();
 
-            if(FilesJobs.Instance().sendEncryptedArchive(files)){
+            if(FilesJobs.Instance().sendEncryptedArchive(files, selectedFolder)){
+                setNodes(treeView_repository, icons, currentUserRepoPath);
                 /*APIFile.Instance().addArchiveUser(
                         selectedFolder.getValue().getName() + "\\" + zipName, zipDescription, zipPassword
                 );*/
