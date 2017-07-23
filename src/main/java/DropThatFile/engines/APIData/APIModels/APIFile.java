@@ -94,9 +94,10 @@ public class APIFile extends APIConnector {
 
     public void addFileUser(String fileName, String description){
         //ajout des informations du fichier lors de l'ajout d'un fichier
+        JSONObject toAPI = new JSONObject();
+        toAPI.append("name", fileName).append("description", description);
+        System.out.println(toAPI.toString());
         try{
-            JSONObject toAPI = new JSONObject();
-            toAPI.append("name", fileName).append("description", description);
             String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
             List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
             JSONObject responseFile = this.readFromUrl(this.route + "accounts/addFile", postContent);

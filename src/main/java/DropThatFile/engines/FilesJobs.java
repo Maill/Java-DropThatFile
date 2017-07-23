@@ -1,6 +1,7 @@
 package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
+import DropThatFile.engines.APIData.APIModels.APIConfig;
 import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.models.Group;
 import javafx.scene.control.*;
@@ -11,10 +12,13 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static DropThatFile.GlobalVariables.*;
 
@@ -23,7 +27,13 @@ import static DropThatFile.GlobalVariables.*;
  */
 public class FilesJobs {
 
+    public JSONObject FTPCrendials;
+
     public static FilesJobs instance = null;
+
+    public FilesJobs(){
+        this.FTPCrendials = APIConfig.Instance().getFTPInformations();
+    }
 
     //region init
     static {
@@ -34,16 +44,42 @@ public class FilesJobs {
     }
     //endregion
 
-    /**
-     * Send the file to the storage server
-     * @param file File to send
-     */
-    public boolean sendFile(File file) {
-        // File future location
-        if (!file.exists() || !file.isDirectory()){
-            return true;
-        } else {
-            return false;
+    public void  SendUserFileToServer(File file){
+        String path = file.getAbsolutePath();
+        final String regex = "\\\\userfiles.+\\\\";
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(path);
+        String pathFileFTP = null;
+        while (matcher.find()) {
+            pathFileFTP = matcher.group(0);
+        }
+        this.SendFileToServer(file, pathFileFTP);
+    }
+
+    public void  SendGroupFileToServer(File file){
+        String path = file.getAbsolutePath();
+        final String regex = "\\\\groupfiles.+\\\\";
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(path);
+        String pathFileFTP = null;
+        while (matcher.find()) {
+            pathFileFTP = matcher.group(0);
+        }
+        this.SendFileToServer(file, pathFileFTP);
+    }
+
+    private void SendFileToServer(File file, String path){
+        InputStream fileToSend;
+        try {
+            FTPClient ftpClient = getFTPConnexion();
+            ftpClient.makeDirectory(path);
+            fileToSend = new FileInputStream(file);
+            ftpClient.storeFile(path + file.getName(), fileToSend);
+            ftpClient.logout();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -111,7 +147,6 @@ public class FilesJobs {
      */
     public void retrieveUserFilesFromServer() {
         FTPClient ftpClient = null;
-        //int userId = currentUser.getId();
         String firstCharFName = currentUser.getfName().substring(0,1);
         String lName = currentUser.getlName();
 
@@ -193,8 +228,8 @@ public class FilesJobs {
      */
     public FTPClient getFTPConnexion() throws IOException {
         FTPClient ftpClient = new FTPClient();
-        ftpClient.connect("localhost");
-        ftpClient.login("dtfftpaccount", "password");
+        ftpClient.connect(this.FTPCrendials.getString("host"));
+        ftpClient.login(this.FTPCrendials.getString("user"), this.FTPCrendials.getString("password"));
         return ftpClient;
     }
 

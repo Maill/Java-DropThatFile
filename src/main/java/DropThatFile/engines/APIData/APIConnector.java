@@ -41,7 +41,7 @@ public abstract class APIConnector {
             conn.setRequestMethod("POST");
             conn.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty( "charset", "utf-8");
-            if(!URL.contains("configuration") && !URL.contains("accounts/login")){
+            if(!URL.contains("configuration/getServerPublicKey") && !URL.contains("accounts/login")){
                 conn.setRequestProperty("Authorization", GlobalVariables.currentUser.getToken());
             }
 
