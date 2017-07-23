@@ -1,86 +1,90 @@
 package DropThatFile.pluginManager;
 
-import DropThatFile.engines.LogManagement;
-import javafx.stage.Stage;
-import org.apache.log4j.Logger;
-
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Nicol on 21/03/2017.
  *
  * Plugin loader
  */
-@Deprecated
-public final class PluginLoader {
-    private Logger log = LogManagement.getInstanceLogger(this);
-    private ArrayList<String> pluginClassNames = new ArrayList<>();
-    private ArrayList<File> files = new ArrayList<>();
-    private ArrayList<URL> urls = new ArrayList<>();
-    private ArrayList<URLClassLoader> urlClassLoaders = new ArrayList<>();
-    private HashMap<String, Stage> pluginStages = new HashMap<>();
-    private int count = 0;
+public class PluginLoader {
+    private URL[] classLoaderUrls;
+    private URLClassLoader urlClassLoader;
+    private Class<?> beanClass;
+    private Constructor<?> constructor;
+    private Object pluginObject;
+    private Method method;
+
+    private File pluginFile;
+    private String classToLoad;
+    private String methodToInvoke;
 
     /**
-     * Load a plugin from a jar file
-     * @param pluginJarPath absolute path to the jar
-     * @param packageClassPath package class path
-     * @throws Exception
+     * Invoke the specified method from the specified class from the specified jar file
+     * @param pluginFile Plugin File to load
+     * @param classToLoad Class to instantiate from the jar file
+     * @param methodToInvoke Method to invoke from the instantiated class
+     * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'InstantiationException',
+     * and 'NoSuchMethodException'
      */
-    public Stage load(String pluginJarPath, String packageClassPath) throws Exception {
-        files.add(new File(pluginJarPath));
-        urls.add(new URL(files.get(count).toURI().toURL().toString()));
-        urlClassLoaders.add(new URLClassLoader(
-                new URL[] {urls.get(count)},
-                this.getClass().getClassLoader()
-        ));
+    public PluginLoader(File pluginFile, String classToLoad, String methodToInvoke) throws Exception{
+        this.pluginFile = pluginFile;
+        this.classToLoad = classToLoad;
+        this.methodToInvoke = methodToInvoke;
 
-        Class classToLoad = Class.forName(packageClassPath, true, urlClassLoaders.get(count));
-        Method method = null;
-        try{
-            method = classToLoad.getDeclaredMethod("DropThatFile_Start", Stage.class);
-        }
-        catch (NullPointerException ex){ // If no such method is found
-            log.warn(ex.getMessage(), ex);
-            return new Stage();
-        }
-        Object instance = classToLoad.newInstance();
-        String className = getClassName(instance);
-        Stage pluginStage = getPluginStage(method, instance);
+        // Getting the jar URL which contains target class
+        classLoaderUrls = new URL[]{pluginFile.toURI().toURL()};
 
-        pluginClassNames.add(className);
-        pluginStages.put(className, pluginStage);
+        // Create a new URLClassLoader
+        urlClassLoader = new URLClassLoader(classLoaderUrls);
 
+        // Load the target class
+        beanClass = urlClassLoader.loadClass(classToLoad);
 
-        return pluginStages.get(className);
+        // Create a new instance from the loaded class
+        constructor = beanClass.getConstructor();
+        pluginObject = constructor.newInstance();
+
+        method = beanClass.getMethod(methodToInvoke);
     }
 
     /**
-     * Unload loaded plugins
+     * Invoke the method from the constructor of PluginLoader
+     * @param param1 First parameter of the called function
+     * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
+     * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
      */
-    public void unloadAll() {
-        try {
-            urlClassLoaders.clear();
-            urls.clear();
-            files.clear();
-            pluginClassNames.clear();
-            count = 0;
-        }catch(NullPointerException ex){
-            log.warn(ex.getMessage(), ex);
-        }
+    public void invokeMethod(Object param1) throws Exception{
+        method = beanClass.getMethod(methodToInvoke, param1.getClass());
+        method.invoke(pluginObject, param1);
     }
 
-    private Stage getPluginStage(Method method, Object instance) throws InvocationTargetException, IllegalAccessException {
-        return (Stage)method.invoke(instance, new Stage());
+    /**
+     * Invoke the method from the constructor of PluginLoader
+     * @param param1 First parameter of the called function
+     * @param param2 Second parameter of the called function
+     * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
+     * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
+     */
+    public void invokeMethod(Object param1, Object param2) throws Exception{
+        method = beanClass.getMethod(methodToInvoke, param1.getClass(), param2.getClass());
+        method.invoke(pluginObject, param1, param2);
     }
 
-    private String getClassName(Object instance){
-        return instance.getClass().getSimpleName();
+    /**
+     * Invoke the method from the constructor of PluginLoader
+     * @param param1 First parameter of the called function
+     * @param param2 Second parameter of the called function
+     * @param param3 Third parameter of the called function
+     * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
+     * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
+     */
+    public void invokeMethod(Object param1, Object param2, Object param3) throws Exception{
+        method = beanClass.getMethod(methodToInvoke, param1.getClass(), param2.getClass(), param3.getClass());
+        method.invoke(pluginObject, param1, param2, param3);
     }
 }

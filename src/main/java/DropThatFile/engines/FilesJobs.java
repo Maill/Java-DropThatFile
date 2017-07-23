@@ -2,10 +2,8 @@ package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
 import DropThatFile.engines.APIData.APIModels.APIConfig;
-import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.models.Group;
 import javafx.scene.control.*;
-import javafx.scene.control.ButtonType;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
@@ -27,12 +25,12 @@ import static DropThatFile.GlobalVariables.*;
  */
 public class FilesJobs {
 
-    public JSONObject FTPCrendials;
+    public JSONObject credentialsFTP;
 
     public static FilesJobs instance = null;
 
     public FilesJobs(){
-        this.FTPCrendials = APIConfig.Instance().getFTPInformations();
+        this.credentialsFTP = APIConfig.Instance().getFTPInformations();
     }
 
     //region init
@@ -44,42 +42,39 @@ public class FilesJobs {
     }
     //endregion
 
-    public void  SendUserFileToServer(File file){
+    public boolean sendFileToServer(File file, boolean isForUser){
         String path = file.getAbsolutePath();
-        final String regex = "\\\\userfiles.+\\\\";
+        final String regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(path);
         String pathFileFTP = null;
         while (matcher.find()) {
             pathFileFTP = matcher.group(0);
         }
-        this.SendFileToServer(file, pathFileFTP);
-    }
-
-    public void  SendGroupFileToServer(File file){
-        String path = file.getAbsolutePath();
-        final String regex = "\\\\groupfiles.+\\\\";
-        final Pattern pattern = Pattern.compile(regex);
-        final Matcher matcher = pattern.matcher(path);
-        String pathFileFTP = null;
-        while (matcher.find()) {
-            pathFileFTP = matcher.group(0);
+        if(this.sendToFTP(file, pathFileFTP)){
+            return true;
         }
-        this.SendFileToServer(file, pathFileFTP);
+        return false;
     }
 
-    private void SendFileToServer(File file, String path){
+    private boolean sendToFTP(File file, String path){
         InputStream fileToSend;
+        FTPClient ftpClient = null;
         try {
-            FTPClient ftpClient = getFTPConnexion();
+            ftpClient = getFTPConnexion();
             ftpClient.makeDirectory(path);
             fileToSend = new FileInputStream(file);
             ftpClient.storeFile(path + file.getName(), fileToSend);
-            ftpClient.logout();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                ftpClient.logout();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -109,6 +104,7 @@ public class FilesJobs {
 
         try{
             zipFile.addFiles(filesToAdd, parameters);
+            sendFileToServer(new File(selectedFolder.getValue().getAbsolutePath() + "\\" + fileNameWithoutExt + ".zip"), true);
             return true;
         } catch(ZipException ex){
             ex.printStackTrace();
@@ -228,8 +224,8 @@ public class FilesJobs {
      */
     public FTPClient getFTPConnexion() throws IOException {
         FTPClient ftpClient = new FTPClient();
-        ftpClient.connect(this.FTPCrendials.getString("host"));
-        ftpClient.login(this.FTPCrendials.getString("user"), this.FTPCrendials.getString("password"));
+        ftpClient.connect(this.credentialsFTP.getString("host"));
+        ftpClient.login(this.credentialsFTP.getString("user"), this.credentialsFTP.getString("password"));
         return ftpClient;
     }
 

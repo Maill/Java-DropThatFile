@@ -69,6 +69,7 @@ public class WindowsHandler {
             constructor.newInstance(jfxStage);
         } catch (Exception ex) {
             log.error("Unable to load \"" + formName + "\" Form.");
+            ex.printStackTrace();
             return false;
         }
         // Show the form or not yet

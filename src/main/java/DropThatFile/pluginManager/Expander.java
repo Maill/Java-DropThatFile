@@ -90,9 +90,18 @@ public class Expander {
             try {
                 String className = previewer.getClass().getSimpleName();
                 if(selectedFileName.endsWith(".xlsx")) {
+                    // Uncomment to enable Excel file previews from the Expander class
                     if(className.equals("ExcelFilePreviewer")) {
                         return previewer.getFileContent(selectedFile);
                     }
+                    /*try {
+
+                        PluginLoader.invokePreviewMethod(selectedFile, "ExcelFilePlugin.ExcelFilePreviewer", "getFileContent");
+                        break;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        break;
+                    }*/
                 } else {
                     if(className.equals("TextFilePreviewer")) {
                         return previewer.getFileContent(selectedFile);

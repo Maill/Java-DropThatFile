@@ -1,7 +1,6 @@
 package DropThatFile.engines.annotations.processors;
 
 import DropThatFile.engines.annotations.Translate;
-import DropThatFile.engines.annotations.Translates;
 import javafx.fxml.FXML;
 
 import java.lang.reflect.AccessibleObject;

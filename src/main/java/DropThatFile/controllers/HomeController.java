@@ -1,5 +1,6 @@
 package DropThatFile.controllers;
 
+import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.engines.APIData.APIModels.APIGroup;
 import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
@@ -7,6 +8,9 @@ import DropThatFile.engines.annotations.Translate;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.models.Group;
 import DropThatFile.pluginManager.Expander;
+import DropThatFile.pluginManager.PluginLoader;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -30,9 +34,7 @@ import org.apache.log4j.Logger;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -93,11 +95,27 @@ public class HomeController extends AnchorPane implements Initializable {
     private ImageView imageView_flagFR;
 
     @FXML
+    private ListView<File> listView_plugins;
+
+    @FXML
+    private Button button_addPlugin;
+
+    @FXML
+    private Button button_removePlugin;
+
+    @FXML
     public void openLink() throws URISyntaxException, IOException {
         if(!desktop.isSupported(Desktop.Action.BROWSE)) return;
         desktop.browse(new URI("http://localhost:8080/DropThatFile-Web/"));
     }
     //endregion
+
+    // HashMap for loaded pluginsArrayList
+    //private ArrayList<URL[]> pluginsArrayList = new ArrayList<>();
+    // Set the PluginLoader
+    //private PluginLoader pluginLoader = new PluginLoader(pluginsArrayList);
+
+    public PluginLoader pluginLoader;
 
     // Dropdown menu on right-click in the TreeView
     private ContextMenu contextMenu = new ContextMenu();
@@ -134,7 +152,6 @@ public class HomeController extends AnchorPane implements Initializable {
     public static String zipDescription = null;
 
     private DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private LocalDateTime now;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -143,14 +160,19 @@ public class HomeController extends AnchorPane implements Initializable {
         langFlags.add(imageView_flagFR);
         // Set translation annotation
         windowsHandler.languageListening(this, langFlags);
-        // Set the plugins for previewing files
+
+        // Set the pluginsArrayList for previewing files
         pluginExpander.loadFilePreviewers();
+
         // Set the TreeView
         buildTreeView(treeView_repository, icons, contextMenu, checkBox_autoRefresh, currentUserRepoPath);
         // Set a bunch of graphic controls and events
         setAllControls();
         // Link the TreeView to the groups of the user too
         setUserGroupsTabPanes();
+
+        // Set the plugin ListView
+        setPluginListView();
     }
 
     /**
@@ -215,6 +237,78 @@ public class HomeController extends AnchorPane implements Initializable {
         // Button events
         createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, textField_folderName.getText())));
         removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion()));
+    }
+
+    /**
+     * Set the ListView for the plugins to be added
+     */
+    private void setPluginListView(){
+        listView_plugins.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        listView_plugins.setCellFactory(listView -> new ListCell<File>() {
+            @Override
+            public void updateItem(File filePath, boolean empty) {
+                super.updateItem(filePath, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(filePath.getName());
+                    setGraphic(null);
+                }
+            }
+        });
+
+        setAddPluginButton();
+        setRemovePluginButton();
+    }
+
+    /**
+     * Set the '+' button to add a plugin
+     */
+    private void setAddPluginButton(){
+        final FileChooser jarChooser = new FileChooser();
+        jarChooser.setTitle("Choose a jar plugin");
+        jarChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Jar files", "*.jar"));
+        Stage jarChooserStage = new Stage();
+
+        button_addPlugin.setOnAction(e -> {
+            File fileToAdd = jarChooser.showOpenDialog(jarChooserStage);
+            if (fileToAdd != null) {
+                // Plugin implementation
+                try {
+                    for (File file : listView_plugins.getItems()) {
+                        if(fileToAdd.getName().equals(file.getName())){
+                            listView_plugins.getItems().remove(listView_plugins.getSelectionModel().getSelectedItem());
+                            break;
+                        }
+                    }
+                    ObservableList<File> newFile = FXCollections.observableArrayList(fileToAdd);
+                    listView_plugins.setItems(newFile);
+                    this.writeMessage("Plugin successfully added.");
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    this.writeMessage("Failed to load plugin.");
+                }
+            }
+        });
+    }
+
+    /**
+     * Set the '-' button to remove a plugin
+     */
+    private void setRemovePluginButton(){
+        button_removePlugin.setOnAction(e -> {
+            // Retrieve current selected item
+            File selectedFile =  listView_plugins.getSelectionModel().getSelectedItem();
+
+            if (listView_plugins.getSelectionModel().isEmpty() || selectedFile == null) {
+                this.writeMessage("Please select a plugin.");
+            } else {
+                listView_plugins.getItems().remove(selectedFile);
+                this.writeMessage("Plugin successfully unloaded.");
+            }
+        });
     }
 
     /**
@@ -396,9 +490,8 @@ public class HomeController extends AnchorPane implements Initializable {
             this.writeMessage("Error while trying to reach the browsed file: it is probably on read-only mode.");
             return;
         }
-
-        /*if(FilesJobs.Instance().sendFile(fileToAdd)){
-            /*APIFile.Instance().addFileUser(
+        if(FilesJobs.Instance().sendFileToServer(fileToAdd, true)){
+            APIFile.Instance().addFileUser(
                     fileToAdd.getParent() + "\\" + fileToAdd.getName(), null
             );
             this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
@@ -408,7 +501,7 @@ public class HomeController extends AnchorPane implements Initializable {
         }
         zipName = null;
         zipPassword = null;
-        zipDescription = null;*/
+        zipDescription = null;
     }
 
     /**
@@ -463,7 +556,7 @@ public class HomeController extends AnchorPane implements Initializable {
      * Inform the user of the result from his actions in the application
      */
     private void writeMessage(String msg) {
-        now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         message_textArea.appendText("At " + now.format(dtFormatter) + "\n" + msg + "\n");
     }
 

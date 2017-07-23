@@ -1,5 +1,6 @@
 package DropThatFile.controllers;
 
+import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.APIData.APIModels.APIUser;
 import DropThatFile.engines.annotations.Translate;
@@ -105,7 +106,7 @@ public class LoginController extends AnchorPane implements Initializable {
         if(userLogging()){
             try {
                 // Get files from FTP
-                //FilesJobs.Instance().retrieveFilesFromServer();
+                FilesJobs.Instance().retrieveFilesFromServer();
                 if(!windowsHandler.goToForm("HomeForm", true)) return;
                 ((Stage)button_login.getScene().getWindow()).close();
             } catch (IOException ex) {
