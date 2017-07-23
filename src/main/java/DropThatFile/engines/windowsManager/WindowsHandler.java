@@ -100,6 +100,7 @@ public class WindowsHandler {
      * @param extDescription Extension description
      * @param ext Example : "*.jar" or "*.*"
      */
+    @Deprecated
     public void configureFileChooser(FileChooser fileChooser, String title, String initialDirectory, String extDescription, String ext){
         fileChooser.setInitialDirectory(new File(initialDirectory));
         fileChooser.setTitle(title);
@@ -121,8 +122,10 @@ public class WindowsHandler {
     public void languageListening(Initializable instance, ArrayList<ImageView> langFlags){
         for (ImageView flag : langFlags) {
             flag.setOnMouseClicked(e -> {
-                if(flag.getId().equals("flagOff"))
+                if(flag.getId().equals("FR")){
                     Translator.inject(instance);
+                    flag.setDisable(true);
+                }
             });
         }
     }

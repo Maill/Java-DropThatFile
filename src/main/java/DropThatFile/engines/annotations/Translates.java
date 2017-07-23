@@ -1,5 +1,6 @@
 package DropThatFile.engines.annotations;
 
+
 import java.lang.annotation.*;
 
 /**
@@ -9,10 +10,8 @@ import java.lang.annotation.*;
 @Inherited
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-//@Repeatable(Translates.class)
-public @interface Translate {
-    //Translation language();
-    String translation();
+public @interface Translates {
+    Translate[] value();
 }
 
 

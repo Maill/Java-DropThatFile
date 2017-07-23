@@ -40,7 +40,7 @@ public class FilesJobs {
      */
     public boolean sendFile(File file) {
         // File future location
-        if (!file.exists() || !file.isDirectory()){
+        if (file.exists() || !file.isDirectory()){
             return true;
         } else {
             return false;
