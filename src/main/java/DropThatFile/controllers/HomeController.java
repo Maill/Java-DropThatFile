@@ -3,6 +3,7 @@ package DropThatFile.controllers;
 import DropThatFile.engines.APIData.APIModels.APIGroup;
 import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
+import DropThatFile.engines.annotations.Translate;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import DropThatFile.models.Group;
 import DropThatFile.pluginManager.Expander;
@@ -47,7 +48,13 @@ public class HomeController extends AnchorPane implements Initializable {
     //region FXML
     @FXML private TabPane repositories_tabPane;
 
-    @FXML private Tab myRepository_tab;
+    @FXML
+    @Translate(translation = "Mon dépôt")
+    private Tab myRepository_tab;
+
+    @FXML
+    @Translate(translation = "Dépôts")
+    private Tab home_tab;
 
     @FXML private Button button_archiveBrowse;
 
@@ -57,23 +64,33 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @FXML public TreeView<File> treeView_repository;
 
-    @FXML private CheckBox checkBox_autoRefresh;
+    @FXML
+    @Translate(translation = "Actualisation automatique")
+    private CheckBox checkBox_autoRefresh;
 
     @FXML private TextArea message_textArea;
 
     @FXML private TextArea preview_textArea;
 
-    @FXML private TextField folderName_textField;
-
-    @FXML private Button createFolder_button;
-
-    @FXML private Button removeFolder_button;
+    @FXML private TextField textField_folderName;
 
     @FXML
-    ImageView imageView_flagEN;
+    @Translate(translation = "Nom du dossier")
+    private Label label_folderName;
 
     @FXML
-    ImageView imageView_flagFR;
+    @Translate(translation = "Créer")
+    private Button createFolder_button;
+
+    @FXML
+    @Translate(translation = "Suppr.")
+    private Button removeFolder_button;
+
+    //@FXML
+    //private ImageView imageView_flagEN;
+
+    @FXML
+    private ImageView imageView_flagFR;
 
     @FXML
     public void openLink() throws URISyntaxException, IOException {
@@ -122,7 +139,7 @@ public class HomeController extends AnchorPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ArrayList<ImageView> langFlags = new ArrayList<>();
-        langFlags.add(imageView_flagEN);
+        //langFlags.add(imageView_flagEN);
         langFlags.add(imageView_flagFR);
         // Set translation annotation
         windowsHandler.languageListening(this, langFlags);
@@ -196,7 +213,7 @@ public class HomeController extends AnchorPane implements Initializable {
         contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(alertDeletion()));
 
         // Button events
-        createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, folderName_textField.getText())));
+        createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, textField_folderName.getText())));
         removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion()));
     }
 
@@ -449,4 +466,30 @@ public class HomeController extends AnchorPane implements Initializable {
         now = LocalDateTime.now();
         message_textArea.appendText("At " + now.format(dtFormatter) + "\n" + msg + "\n");
     }
+
+    //region
+    public void setLabelFolderName(String str){
+        label_folderName.setText(str);
+    }
+
+    public void setButtonCreateFolder(String str){
+        createFolder_button.setText(str);
+    }
+
+    public void setButtonRemoveFolder(String str){
+        removeFolder_button.setText(str);
+    }
+
+    public void setTabMyRepository(String str){
+        myRepository_tab.setText(str);
+    }
+
+    public void setTabHome(String str){
+        home_tab.setText(str);
+    }
+
+    public void setCheckBoxAutoRefresh(String str){
+        checkBox_autoRefresh.setText(str);
+    }
+    //endregion
 }

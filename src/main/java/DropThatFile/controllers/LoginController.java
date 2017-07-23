@@ -3,6 +3,7 @@ package DropThatFile.controllers;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.APIData.APIModels.APIUser;
 import DropThatFile.engines.annotations.Translate;
+import DropThatFile.engines.annotations.Translation;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +13,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,25 +26,31 @@ import static DropThatFile.GlobalVariables.currentUserRepoPath;
 import static DropThatFile.GlobalVariables.userRepoMainPath;
 import static DropThatFile.engines.windowsManager.WindowsHandler.setMessage;
 
+
+@SupportedAnnotationTypes(value = { "DropThatFile.engines.annotations.Translate" }) //Specify which annotation Recipient process
+@SupportedSourceVersion(SourceVersion.RELEASE_8) //Specify which jdk source version Recipient handle
 public class LoginController extends AnchorPane implements Initializable {
     //region FXML attributes
     @FXML
-    TextField email;
+    private TextField email;
 
     @FXML
-    PasswordField password;
-
-    @FXML @Translate(translation = "Connexion")
-    public Button button_login;
-
-    @FXML @Translate(translation = "Email :")
-    public Label label_email;
-
-    @FXML @Translate(translation = "Mot de passe :")
-    public Label label_password;
+    private PasswordField password;
 
     @FXML
-    ImageView imageView_flagEN;
+    @Translate(translation = "Connexion")
+    private Button button_login;
+
+    @FXML
+    @Translate(translation = "Email :")
+    private Label label_email;
+
+    @FXML
+    @Translate(translation = "Mot de passe :")
+    private Label label_password;
+
+    //@FXML
+    //ImageView imageView_flagEN;
 
     @FXML
     ImageView imageView_flagFR;
@@ -55,7 +65,7 @@ public class LoginController extends AnchorPane implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ArrayList<ImageView> langFlags = new ArrayList<>();
-        langFlags.add(imageView_flagEN);
+        //langFlags.add(imageView_flagEN);
         langFlags.add(imageView_flagFR);
         windowsHandler.languageListening(this, langFlags);
         email.setPromptText("Email...");
@@ -106,4 +116,18 @@ public class LoginController extends AnchorPane implements Initializable {
             log.error("Credentials error in the 'LoginController' form.\n");
         }
     }
+
+    //region
+    public void setLabelEmail(String str){
+        label_email.setText(str);
+    }
+
+    public void setLabelPassword(String str){
+        label_password.setText(str);
+    }
+
+    public void setButtonLogin(String str){
+        button_login.setText(str);
+    }
+    //endregion
 }

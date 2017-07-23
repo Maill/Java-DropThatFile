@@ -32,10 +32,10 @@
         </VBox>
     </AnchorPane>
     <Button id="button_login" fx:id="button_login" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="91.0" layoutY="270.0" onAction="#loginVerification" prefHeight="50.0" prefWidth="206.0" text="Log in" textAlignment="CENTER" AnchorPane.bottomAnchor="33.0" AnchorPane.leftAnchor="91.0" AnchorPane.rightAnchor="91.0" />
-    <ImageView id="flagOn" fx:id="imageView_flagEN" fitHeight="15.0" fitWidth="30.0" layoutX="3.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
+    <!--<ImageView id="EN" fx:id="imageView_flagEN" fitHeight="15.0" fitWidth="30.0" layoutX="3.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
         <Image url="@../images/EN_flag.png"/>
-    </ImageView>
-    <ImageView id="flagOff" fx:id="imageView_flagFR" fitHeight="15.0" fitWidth="30.0" layoutX="38.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
+    </ImageView>-->
+    <ImageView id="FR" fx:id="imageView_flagFR" fitHeight="15.0" fitWidth="30.0" layoutX="38.0" layoutY="335.0" pickOnBounds="true" preserveRatio="true">
         <Image url="@../images/FR_flag.png"/>
     </ImageView>
 </AnchorPane>

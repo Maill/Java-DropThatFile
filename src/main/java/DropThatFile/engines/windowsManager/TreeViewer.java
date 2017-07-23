@@ -108,10 +108,8 @@ public final class TreeViewer{
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[2])));
                     else if(nodeName.endsWith(".txt"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[3])));
-                    else if(nodeName.endsWith(".png") || nodeName.endsWith(".jpg") || nodeName.endsWith(".jpeg")
-                            || nodeName.endsWith(".bmp")) {
+                    else if(nodeName.endsWith(".png") || nodeName.endsWith(".jpg"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[4])));
-                    }
                     else if(nodeName.endsWith(".doc") || nodeName.endsWith(".docx"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[5])));
                     else if(nodeName.endsWith(".xlsx") || nodeName.endsWith(".xls"))

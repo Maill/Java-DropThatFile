@@ -12,8 +12,4 @@ public enum Translation {
     Translation(String newText){
         translatedText = newText;
     }
-
-    public String toString(){
-        return translatedText;
-    }
 }
