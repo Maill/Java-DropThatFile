@@ -7,10 +7,11 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- * Created by Nicol on 21/03/2017.
+ * Created by Olivier on 21/03/2017.
  *
  * Plugin loader
  */
+@Deprecated
 public class PluginLoader {
     private URL[] classLoaderUrls;
     private URLClassLoader urlClassLoader;
@@ -19,25 +20,25 @@ public class PluginLoader {
     private Object pluginObject;
     private Method method;
 
-    private File pluginFile;
+    private File jarFile;
     private String classToLoad;
     private String methodToInvoke;
 
     /**
      * Invoke the specified method from the specified class from the specified jar file
-     * @param pluginFile Plugin File to load
+     * @param jarFile Plugin File to load
      * @param classToLoad Class to instantiate from the jar file
      * @param methodToInvoke Method to invoke from the instantiated class
      * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'InstantiationException',
      * and 'NoSuchMethodException'
      */
-    public PluginLoader(File pluginFile, String classToLoad, String methodToInvoke) throws Exception{
-        this.pluginFile = pluginFile;
+    public PluginLoader(File jarFile, String classToLoad, String methodToInvoke) throws Exception{
+        this.jarFile = jarFile;
         this.classToLoad = classToLoad;
         this.methodToInvoke = methodToInvoke;
 
         // Getting the jar URL which contains target class
-        classLoaderUrls = new URL[]{pluginFile.toURI().toURL()};
+        classLoaderUrls = new URL[]{jarFile.toURI().toURL()};
 
         // Create a new URLClassLoader
         urlClassLoader = new URLClassLoader(classLoaderUrls);
@@ -58,9 +59,9 @@ public class PluginLoader {
      * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
      * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
      */
-    public void invokeMethod(Object param1) throws Exception{
+    public Object invokeMethod(Object param1) throws Exception{
         method = beanClass.getMethod(methodToInvoke, param1.getClass());
-        method.invoke(pluginObject, param1);
+        return method.invoke(pluginObject, param1);
     }
 
     /**
@@ -70,9 +71,9 @@ public class PluginLoader {
      * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
      * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
      */
-    public void invokeMethod(Object param1, Object param2) throws Exception{
+    public Object invokeMethod(Object param1, Object param2) throws Exception{
         method = beanClass.getMethod(methodToInvoke, param1.getClass(), param2.getClass());
-        method.invoke(pluginObject, param1, param2);
+        return method.invoke(pluginObject, param1, param2);
     }
 
     /**
@@ -83,8 +84,8 @@ public class PluginLoader {
      * @throws Exception Throws 'MalformedURLException', 'ClassNotFoundException', 'IllegalAccessException',
      * 'InvocationTargetException', 'InstantiationException', and 'NoSuchMethodException'
      */
-    public void invokeMethod(Object param1, Object param2, Object param3) throws Exception{
+    public Object invokeMethod(Object param1, Object param2, Object param3) throws Exception{
         method = beanClass.getMethod(methodToInvoke, param1.getClass(), param2.getClass(), param3.getClass());
-        method.invoke(pluginObject, param1, param2, param3);
+        return method.invoke(pluginObject, param1, param2, param3);
     }
 }

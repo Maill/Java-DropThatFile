@@ -18,6 +18,7 @@ import javax.lang.model.element.TypeElement;
 
 import DropThatFile.engines.annotations._Todo;
 
+@Deprecated
 @SupportedAnnotationTypes(value = { "DropThatFile.engines.annotations._Todo" }) //Specifie which annotation Recipient to process
 @SupportedSourceVersion(SourceVersion.RELEASE_8) //Specifie which jdk source version Recipient to handle
 public class TodoHTMLProcessor extends AbstractProcessor {

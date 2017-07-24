@@ -2,7 +2,6 @@ package DropThatFile.pluginManager;
 
 import javafx.scene.control.TreeItem;
 import ro.fortsoft.pf4j.JarPluginManager;
-import ro.fortsoft.pf4j.PluginManager;
 import ro.fortsoft.pf4j.PluginWrapper;
 
 import java.io.File;
@@ -14,9 +13,9 @@ import java.util.Set;
  * Created by Olivier on 02/05/2017.
  */
 public class Expander {
-    private final PluginManager pluginManager = new JarPluginManager();
-    // Retrieves the extensions for IPlugin extension point after plugins' launch
-    private List<IPlugin> previewers;
+    private final JarPluginManager pluginManager = new JarPluginManager();
+    // Retrieves the extensions for IPreviewable extension point after plugins' launch
+    private List<IPreviewable> previewers;
     // Retrieves extensions from classpath (non plugin) after plugins' launch
     private Set<String> extensionClassNames;
     // Retrieves extensions for each started plugin after plugins' launch
@@ -24,7 +23,7 @@ public class Expander {
 
     //region Plugin initialization
     /**
-     * Load all plugins implementing the IPlugin interface and extending the P4J Plugin class.
+     * Load all plugins implementing the IPreviewable interface and extending the P4J Plugin class.
      * Default : enable
      */
     public void loadAll(){
@@ -70,8 +69,8 @@ public class Expander {
         loadAll();
         startAll();
 
-        // Retrieves the extensions for IPlugin extension point
-        previewers = pluginManager.getExtensions(IPlugin.class);
+        // Retrieves the extensions for IPreviewable extension point
+        previewers = pluginManager.getExtensions(IPreviewable.class);
         // Retrieves extensions from classpath (non plugin)
         extensionClassNames = pluginManager.getExtensionClassNames(null);
         // Retrieves extensions for each started plugin
@@ -86,21 +85,18 @@ public class Expander {
     public String getFilePreview(TreeItem<File> selectedNode){
         File selectedFile = selectedNode.getValue();
         String selectedFileName = selectedNode.getValue().getName();
-        for (IPlugin previewer : previewers) {
+        for (IPreviewable previewer : previewers) {
             try {
                 String className = previewer.getClass().getSimpleName();
                 if(selectedFileName.endsWith(".xlsx")) {
-                    // Uncomment to enable Excel file previews from the Expander class
                     if(className.equals("ExcelFilePreviewer")) {
                         return previewer.getFileContent(selectedFile);
                     }
                     /*try {
-
-                        PluginLoader.invokePreviewMethod(selectedFile, "ExcelFilePlugin.ExcelFilePreviewer", "getFileContent");
-                        break;
+                        return (String)HomeController.pluginLoader.invokeMethod(selectedFile);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        break;
+                        return null;
                     }*/
                 } else {
                     if(className.equals("TextFilePreviewer")) {
@@ -109,6 +105,7 @@ public class Expander {
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
+                return null;
             }
         }
         return null;

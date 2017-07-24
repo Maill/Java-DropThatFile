@@ -4,7 +4,6 @@ import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.APIData.APIModels.APIUser;
 import DropThatFile.engines.annotations.Translate;
-import DropThatFile.engines.annotations.Translation;
 import DropThatFile.engines.windowsManager.WindowsHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -86,7 +85,7 @@ public class LoginController extends AnchorPane implements Initializable {
             if(!APIUser.Instance().login(email, password)){
                 return false;
             } else {
-                // Get the repository path of the user
+                // Set the repository path of the user
                 String firstCharFName = currentUser.getfName().substring(0,1);
                 String lName = currentUser.getlName();
                 currentUserRepoPath = userRepoMainPath.concat(firstCharFName + lName + "\\");
@@ -106,7 +105,7 @@ public class LoginController extends AnchorPane implements Initializable {
         if(userLogging()){
             try {
                 // Get files from FTP
-                FilesJobs.Instance().retrieveFilesFromServer();
+                FilesJobs.Instance().downloadFiles();
                 if(!windowsHandler.goToForm("HomeForm", true)) return;
                 ((Stage)button_login.getScene().getWindow()).close();
             } catch (IOException ex) {

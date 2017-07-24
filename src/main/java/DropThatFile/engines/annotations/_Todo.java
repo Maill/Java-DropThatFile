@@ -10,6 +10,7 @@ import java.lang.annotation.Inherited;
 /**
  * Created by Olivier on 31/03/2017.
  */
+@Deprecated
 @Documented
 @Inherited
 @Target(ElementType.METHOD)

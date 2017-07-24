@@ -3,6 +3,7 @@ package DropThatFile.engines.annotations;
 /**
  * Created by olefebvre on 18/04/2017.
  */
+@Deprecated
 public enum Level {
     IMPROVEMENT("IMPROVEMENT"),
     EVOLUTION("EVOLUTION"),

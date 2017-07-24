@@ -116,7 +116,7 @@ public class FilesJobs {
      *
      * @return
      */
-    public ThreadGroup retrieveFilesFromServer(){
+    public ThreadGroup downloadFiles(){
         Set<Integer> keysOfGroups = currentUser.getIsMemberOf().keySet();
         Integer[] integerIdGroups = keysOfGroups.toArray(new Integer[keysOfGroups.size()]);
         final ArrayList<Integer> groupsPart1 = new ArrayList<>();
@@ -125,11 +125,11 @@ public class FilesJobs {
 
         ThreadGroup thdGrp = new ThreadGroup("FTP Async Thread Group");
 
-        Thread thread1 = new Thread(thdGrp, () -> FilesJobs.Instance().retrieveUserFilesFromServer());
+        Thread thread1 = new Thread(thdGrp, () -> FilesJobs.Instance().downloadUserFiles());
 
-        Thread thread2 = new Thread(thdGrp, () -> FilesJobs.Instance().retrieveGroupFilesFromServer(groupsPart1));
+        Thread thread2 = new Thread(thdGrp, () -> FilesJobs.Instance().downloadGroupFiles(groupsPart1));
 
-        Thread thread3 = new Thread(thdGrp, () -> FilesJobs.Instance().retrieveGroupFilesFromServer(groupsPart2));
+        Thread thread3 = new Thread(thdGrp, () -> FilesJobs.Instance().downloadGroupFiles(groupsPart2));
 
         thread1.start();
         thread2.start();
@@ -141,7 +141,7 @@ public class FilesJobs {
     /**
      *
      */
-    public void retrieveUserFilesFromServer() {
+    public void downloadUserFiles() {
         FTPClient ftpClient = null;
         String firstCharFName = currentUser.getfName().substring(0,1);
         String lName = currentUser.getlName();
@@ -183,7 +183,7 @@ public class FilesJobs {
      *
      * @param listOfGroups
      */
-    public void retrieveGroupFilesFromServer(ArrayList<Integer> listOfGroups) {
+    public void downloadGroupFiles(ArrayList<Integer> listOfGroups) {
         FTPClient ftpClient = null;
         HashMap<Integer, Group> userGroups = currentUser.getIsMemberOf();
 
@@ -196,7 +196,10 @@ public class FilesJobs {
                 ftpClient.changeWorkingDirectory("/groupfiles/" + groupName);
 
                 for (FTPFile file : files) {
-                    if (file.isDirectory()) continue;
+                    if (file.isDirectory()) {
+                        getFilesOnDirectoryRecursive("/groupfiles/" + groupName + "/" + file.getName(), file.getName());
+                        continue;
+                    }
 
                     new File(groupRepoMainPath + groupName).mkdirs();
                     File downloadFile = new File(groupRepoMainPath + groupName + "\\" + file.getName());

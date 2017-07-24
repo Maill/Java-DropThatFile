@@ -19,7 +19,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
         //APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa");
         //FilesJobs.Instance().SendGroupFileToServer(new File("C:\\Users\\Nicol\\AppData\\Roaming\\DropThatFile\\repositories\\groupfiles\\Groupe 2\\888.txt"));
 

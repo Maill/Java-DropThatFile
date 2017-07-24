@@ -27,7 +27,7 @@ public class GlobalVariables {
     public static ArrayList<Group> currentGroups = new ArrayList<>();
 
     // Groups of the current user
-    public static ArrayList<String> groupPaths = new ArrayList<>();
+    //public static ArrayList<String> groupPaths = new ArrayList<>();
 
     public static String appDataPath = System.getenv("APPDATA");
 

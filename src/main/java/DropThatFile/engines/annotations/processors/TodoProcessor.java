@@ -12,6 +12,7 @@ import javax.lang.model.element.TypeElement;
 //INFO : Annotations used in here must exist and accessible.
 import DropThatFile.engines.annotations._Todo;
 
+@Deprecated
 @SupportedAnnotationTypes(value = { "DropThatFile.engines.annotations._Todo" }) //Specifie which annotation Recipient process
 @SupportedSourceVersion(SourceVersion.RELEASE_8) //Specifie which jdk source version Recipient handle
 public class TodoProcessor extends AbstractProcessor {

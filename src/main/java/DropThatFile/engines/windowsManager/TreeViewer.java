@@ -104,7 +104,7 @@ public final class TreeViewer{
                 else {
                     nodeName = node.getName();
 
-                    if(nodeName.endsWith(".zip"))
+                    if(nodeName.endsWith(".zip") ||nodeName.endsWith(".rar"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[2])));
                     else if(nodeName.endsWith(".txt"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[3])));
@@ -112,7 +112,7 @@ public final class TreeViewer{
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[4])));
                     else if(nodeName.endsWith(".doc") || nodeName.endsWith(".docx"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[5])));
-                    else if(nodeName.endsWith(".xlsx") || nodeName.endsWith(".xls"))
+                    else if(nodeName.endsWith(".xls") || nodeName.endsWith(".xlsx"))
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[6])));
                     else
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[1])));

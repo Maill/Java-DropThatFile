@@ -64,7 +64,8 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @FXML private Button button_synchronize;
 
-    @FXML public TreeView<File> treeView_repository;
+    @FXML
+    public TreeView<File> treeView_repository;
 
     @FXML
     @Translate(translation = "Actualisation automatique")
@@ -95,7 +96,7 @@ public class HomeController extends AnchorPane implements Initializable {
     private ImageView imageView_flagFR;
 
     @FXML
-    private ListView<File> listView_plugins;
+    public ListView<File> listView_plugins;
 
     @FXML
     private Button button_addPlugin;
@@ -110,12 +111,7 @@ public class HomeController extends AnchorPane implements Initializable {
     }
     //endregion
 
-    // HashMap for loaded pluginsArrayList
-    //private ArrayList<URL[]> pluginsArrayList = new ArrayList<>();
-    // Set the PluginLoader
-    //private PluginLoader pluginLoader = new PluginLoader(pluginsArrayList);
-
-    public PluginLoader pluginLoader;
+    public static PluginLoader pluginLoader;
 
     // Dropdown menu on right-click in the TreeView
     private ContextMenu contextMenu = new ContextMenu();
@@ -164,6 +160,9 @@ public class HomeController extends AnchorPane implements Initializable {
         // Set the pluginsArrayList for previewing files
         pluginExpander.loadFilePreviewers();
 
+
+        FilesJobs.Instance().downloadUserFiles();
+
         // Set the TreeView
         buildTreeView(treeView_repository, icons, contextMenu, checkBox_autoRefresh, currentUserRepoPath);
         // Set a bunch of graphic controls and events
@@ -173,6 +172,8 @@ public class HomeController extends AnchorPane implements Initializable {
 
         // Set the plugin ListView
         setPluginListView();
+
+        //FilesJobs.Instance().downloadGroupFiles();
     }
 
     /**
@@ -273,19 +274,24 @@ public class HomeController extends AnchorPane implements Initializable {
         Stage jarChooserStage = new Stage();
 
         button_addPlugin.setOnAction(e -> {
-            File fileToAdd = jarChooser.showOpenDialog(jarChooserStage);
-            if (fileToAdd != null) {
+            File pluginToAdd = jarChooser.showOpenDialog(jarChooserStage);
+            if (pluginToAdd != null) {
                 // Plugin implementation
                 try {
                     for (File file : listView_plugins.getItems()) {
-                        if(fileToAdd.getName().equals(file.getName())){
+                        if(pluginToAdd.getName().equals(file.getName())){
                             listView_plugins.getItems().remove(listView_plugins.getSelectionModel().getSelectedItem());
                             break;
                         }
                     }
-                    ObservableList<File> newFile = FXCollections.observableArrayList(fileToAdd);
+                    /*String test = "DropThatFile.pluginManager.plugins.excelFilePlugin.ExcelFilePlugin$ExcelFilePreviewer";
+                    pluginLoader = new PluginLoader(
+                            pluginToAdd, test, "getFileContent"
+                    );*/
+
+                    ObservableList<File> newFile = FXCollections.observableArrayList(pluginToAdd);
                     listView_plugins.setItems(newFile);
-                    this.writeMessage("Plugin successfully added.");
+                    this.writeMessage("Plugin successfully loaded.");
                 } catch (Exception e1) {
                     e1.printStackTrace();
                     this.writeMessage("Failed to load plugin.");
