@@ -153,7 +153,10 @@ public class FilesJobs {
             ftpClient.changeWorkingDirectory("/userfiles/" + (firstCharFName + lName));
 
             for (FTPFile file : files) {
-                if (file.isDirectory()) continue;
+                if (file.isDirectory()) {
+                    getFilesOnDirectoryRecursive("/userfiles/" + (firstCharFName + lName) + "/" + file.getName(), file.getName());
+                    continue;
+                }
 
                 new File(currentUserRepoPath).mkdirs();
                 File downloadFile = new File(currentUserRepoPath + file.getName());
@@ -197,12 +200,43 @@ public class FilesJobs {
 
                     new File(groupRepoMainPath + groupName).mkdirs();
                     File downloadFile = new File(groupRepoMainPath + groupName + "\\" + file.getName());
-
                     if(downloadFile.exists()) continue;
 
                     try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))){
                         ftpClient.retrieveFile("/groupfiles/" + groupName + "\\" + file.getName(), outputStream);
                     }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(ftpClient != null)
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
+    }
+
+    public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository){
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = getFTPConnexion();
+
+            FTPFile[] files = ftpClient.listFiles(pathFTP);
+            ftpClient.changeWorkingDirectory(pathFTP);
+
+            for (FTPFile file : files) {
+                if (file.isDirectory()) getFilesOnDirectoryRecursive(pathFTP + "/" + file.getName(), pathRepository + "\\" + file.getName());
+
+                new File(currentUserRepoPath + "\\" + pathRepository).mkdirs();
+                File downloadFile = new File(currentUserRepoPath + pathRepository + "\\" +file.getName());
+
+                if(downloadFile.exists()) continue;
+
+                try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
+                    ftpClient.retrieveFile(pathFTP + "\\" + file.getName(), outputStream);
                 }
             }
         } catch (IOException e) {
