@@ -198,10 +198,6 @@ public class APIFile extends APIConnector {
             HomeController.zipPassword
     );*/
 
-    public String getPasswordForGroupArchive(){
-        return null;
-    }
-
     /**
      * Create or return the instance of APIFile
      * @return APIFile instance

@@ -1,12 +1,15 @@
 package DropThatFile.engines.APIData.APIModels;
 
+import DropThatFile.GlobalVariables;
 import DropThatFile.engines.APIData.APIConnector;
 import DropThatFile.engines.KeyStoreFactory;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.models.Group;
+import org.apache.http.NameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import net.arnx.wmf2svg.util.Base64;
 
 import java.util.*;
 
@@ -68,6 +71,20 @@ public class APIGroup extends APIConnector {
             );
         }
 
+        return ret;
+    }
+
+    public String getPasswordForGroupArchive(String passwordFile, String nameGroup){
+        String ret = null;
+        try{
+            List<NameValuePair> postContent = this.buildPOSTList(null, "nameGroup", nameGroup);
+            postContent = this.buildPOSTList(postContent, "passwordFile", passwordFile);
+            postContent = this.buildPOSTList(postContent, "keyUser", Base64.encode(GlobalVariables.currentUser.getUserKeys().getPublic().getEncoded()));
+            JSONObject response = this.readFromUrl(this.route + "getPasswordForFile", postContent);
+            ret = response.getString("password");
+        }catch (Exception ex){
+            log.error(String.format("Error on APIFile on addArchiveUser method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+        }
         return ret;
     }
 
