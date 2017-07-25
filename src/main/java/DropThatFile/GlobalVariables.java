@@ -34,5 +34,5 @@ public class GlobalVariables {
 
     public static String userRepoMainPath = repositoriesMainPath.concat("userfiles\\");
 
-    public static String currentUserRepoPath;// = "C:\\Users\\Nicol\\AppData\\Roaming\\DropThatFile\\repositories\\";
+    public static String currentUserRepoPath;
 }

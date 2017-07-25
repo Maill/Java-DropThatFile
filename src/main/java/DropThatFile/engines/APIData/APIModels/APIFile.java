@@ -1,6 +1,7 @@
 package DropThatFile.engines.APIData.APIModels;
 
 import DropThatFile.GlobalVariables;
+import DropThatFile.controllers.HomeController;
 import DropThatFile.engines.APIData.APIConnector;
 import DropThatFile.engines.KeyStoreFactory;
 import DropThatFile.engines.LogManagement;
@@ -158,13 +159,7 @@ public class APIFile extends APIConnector {
         }catch (Exception ex){
             log.error(String.format("Error on APIFile on addFileGroup method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }
-        //Ajoute l'information du fichier dans la vue des groupes
     }
-    // Appel de la fonction
-    /*APIFile.Instance().addFileGroup(
-            file.getParent() + "\\" + file.getName(),
-            HomeController.zipDescription
-    );*/
 
     /**
      * Add a group archive on the database
@@ -190,12 +185,10 @@ public class APIFile extends APIConnector {
             log.error(String.format("Error on APIFile on addFileGroup method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }
     }
-    // Appel de la fonction
-    /*APIFile.Instance().addArchiveGroup(
-            file.getParent() + "\\" + file.getName(),
-            HomeController.zipDescription,
-            HomeController.zipPassword
-    );*/
+
+    public String getPasswordForGroupArchive(){
+        return null;
+    }
 
     /**
      * Create or return the instance of APIFile

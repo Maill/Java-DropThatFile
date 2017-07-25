@@ -2,7 +2,6 @@ package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
 import DropThatFile.engines.APIData.APIModels.APIConfig;
-import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.models.Group;
 import javafx.scene.control.*;
 import net.lingala.zip4j.core.ZipFile;
@@ -30,6 +29,8 @@ public class FilesJobs {
 
     public static FilesJobs instance = null;
 
+    public static String currentArchiveName = null;
+
     public FilesJobs(){
         this.credentialsFTP = APIConfig.Instance().getFTPInformations();
     }
@@ -53,37 +54,7 @@ public class FilesJobs {
             pathFileFTP = matcher.group(0);
         }
         if(this.sendToFTP(file, pathFileFTP)){
-            if(HomeController.zipPassword == null){ // If this field is null, then it must be a file (and it should be)
-                if(isForUser){
-                    APIFile.Instance().addFileUser(
-                            file.getParent() + "\\" + file.getName(),
-                            HomeController.zipDescription
-                    );
-                    return true;
-                } else {
-                    /*APIFile.Instance().addFileGroup(
-                            file.getParent() + "\\" + file.getName(),
-                            HomeController.zipDescription
-                    );*/
-                }
-                return true;
-            } else {
-                if(!isForUser){
-                    APIFile.Instance().addArchiveUser(
-                            file.getParent() + "\\" + file.getName(),
-                            HomeController.zipDescription,
-                            HomeController.zipPassword
-                    );
-                } else {
-                    /*APIFile.Instance().addArchiveGroup(
-                            file.getParent() + "\\" + file.getName(),
-                            HomeController.zipDescription,
-                            HomeController.zipPassword
-                    );*/
-                }
-
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -113,9 +84,9 @@ public class FilesJobs {
      * Encrypt and send the archive to the storage server
      * @param filesInArchive List of files to add in the archive
      */
-    public boolean sendEncryptedArchive(List<File> filesInArchive, TreeItem<File> selectedFolder) throws ZipException {
+    public boolean sendEncryptedArchive(List<File> filesInArchive, TreeItem<File> selectedFolder, boolean isForUser) throws ZipException {
         // Zip name
-        String fileNameWithoutExt = HomeController.zipName.replaceFirst("[.][^.]+$", "");
+        String fileNameWithoutExt = HomeController.currentFileName.replaceFirst("[.][^.]+$", "");
 
         // Zip future location
         ZipFile zipFile = new ZipFile(selectedFolder.getValue().getAbsolutePath() + "\\" + fileNameWithoutExt + ".zip");
@@ -131,11 +102,12 @@ public class FilesJobs {
         parameters.setEncryptFiles(true);
         parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
         parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-        parameters.setPassword(HomeController.zipPassword);
+        parameters.setPassword(HomeController.currentFilePassword);
 
         try{
             zipFile.addFiles(filesToAdd, parameters);
-            sendFileToServer(new File(selectedFolder.getValue().getAbsolutePath() + "\\" + fileNameWithoutExt + ".zip"), true);
+            sendFileToServer(new File(selectedFolder.getValue().getAbsolutePath() + "\\" + fileNameWithoutExt + ".zip"), isForUser);
+            currentArchiveName = selectedFolder.getValue() + "\\" + fileNameWithoutExt + ".zip";
             return true;
         } catch(ZipException ex){
             ex.printStackTrace();
@@ -272,11 +244,13 @@ public class FilesJobs {
             ftpClient.changeWorkingDirectory(pathFTP);
 
             for (FTPFile file : files) {
-                if (file.isDirectory()) getFilesOnDirectoryRecursive(
-                        pathFTP + "/" + file.getName(),
-                        pathRepository + "\\" + file.getName(),
-                        isForUser
-                );
+                if (file.isDirectory()) {
+                    getFilesOnDirectoryRecursive(
+                            pathFTP + "/" + file.getName(),
+                            pathRepository + "\\" + file.getName(),
+                            isForUser
+                    );
+                }
 
                 new File(currentUsedPath + "\\" + pathRepository).mkdirs();
                 File downloadFile = new File(currentUsedPath + pathRepository + "\\" + file.getName());

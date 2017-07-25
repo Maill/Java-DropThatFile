@@ -143,9 +143,9 @@ public class HomeController extends AnchorPane implements Initializable {
 
     private Expander pluginExpander = new Expander();
 
-    public static String zipPassword = null;
-    public static String zipName = null;
-    public static String zipDescription = null;
+    public static String currentFilePassword = null;
+    public static String currentFileName = null;
+    public static String currentFileDescription = null;
 
     private DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -159,7 +159,6 @@ public class HomeController extends AnchorPane implements Initializable {
 
         // Set the pluginsArrayList for previewing files
         pluginExpander.loadFilePreviewers();
-
 
         FilesJobs.Instance().downloadUserFiles();
 
@@ -193,7 +192,7 @@ public class HomeController extends AnchorPane implements Initializable {
                 Tab groupTab = new Tab(groupName);
                 groupTab.setClosable(false);
                 groupTab.setOnSelectionChanged(e1 -> {
-                    FilesJobs.Instance().downloadGroupFiles(groupsId);
+                    //FilesJobs.Instance().downloadGroupFiles(groupsId);
                     setNodes(treeView_repository, icons, currentGroupPath);
 
                     button_synchronize.setOnAction(null);
@@ -211,7 +210,7 @@ public class HomeController extends AnchorPane implements Initializable {
             ex.printStackTrace();
         } finally {
             myRepository_tab.setOnSelectionChanged(e -> {
-                FilesJobs.Instance().downloadUserFiles();
+                //FilesJobs.Instance().downloadUserFiles();
                 setNodes(treeView_repository, icons, currentUserRepoPath);
 
                 button_synchronize.setOnAction(null);
@@ -348,14 +347,14 @@ public class HomeController extends AnchorPane implements Initializable {
         Button btnValidate = new Button("Continue");
 
         btnValidate.setOnMouseClicked((e) -> {
-            zipName = zipNameTextField.getText();
-            zipPassword = zipPasswordTextField.getText();
-            zipDescription = zipDescriptionTextField.getText();
+            currentFileName = zipNameTextField.getText();
+            currentFilePassword = zipPasswordTextField.getText();
+            currentFileDescription = zipDescriptionTextField.getText();
 
-            if (zipName != null && zipPassword != null) {
-                if(zipName.length() >= 1 && zipPassword.length() >= 1){
+            if (currentFileName != null && currentFilePassword != null) {
+                if(currentFileName.length() >= 1 && currentFilePassword.length() >= 1){
                     if(zipDescriptionTextField.getText().trim().isEmpty())
-                        zipDescription = "No description available";
+                        currentFileDescription = "No description available";
                     dialog.close();
                 } else {
                     if(zipNameTextField.getText() == null)
@@ -405,7 +404,7 @@ public class HomeController extends AnchorPane implements Initializable {
             if (treeView_repository.getSelectionModel().isEmpty() || selectedTreeItem.getValue() == null) {
                 this.writeMessage("Please select a proper directory.");
             }
-            else if (zipName == null || zipPassword == null){
+            else if (currentFileName == null || currentFilePassword == null){
                 this.writeMessage("Please set proper archive name and password .");
             } else {
                 // Allows multiple selection of files in the file browser
@@ -448,9 +447,9 @@ public class HomeController extends AnchorPane implements Initializable {
                         this.writeMessage("Error while trying to reach the file."  + ex.getMessage());
                         log.error("Erreur en tentant d'accéder au fichier parcouru.\nMessage : \n" + ex.getMessage());
                     } finally {
-                        zipName = null;
-                        zipPassword = null;
-                        zipDescription = null;
+                        currentFileName = null;
+                        currentFilePassword = null;
+                        currentFileDescription = null;
                     }
                 }
             }
@@ -476,21 +475,37 @@ public class HomeController extends AnchorPane implements Initializable {
         try {
             TreeItem<File> selectedFolder = treeView_repository.getSelectionModel().getSelectedItem();
 
-            if(FilesJobs.Instance().sendEncryptedArchive(files, selectedFolder)){
-                setNodes(treeView_repository, icons, currentUserRepoPath);
-                /*APIFile.Instance().addArchiveUser(
-                        selectedFolder.getValue().getName() + "\\" + zipName, zipDescription, zipPassword
-                );*/
-            }
+            boolean isForUser = myRepository_tab.isSelected();
 
-            this.writeMessage("Archive successfully uploaded.");
+            if(FilesJobs.Instance().sendEncryptedArchive(files, selectedFolder, isForUser)){
+                if(isForUser){
+                    APIFile.Instance().addArchiveUser(
+                            FilesJobs.currentArchiveName,
+                            HomeController.currentFileDescription,
+                            HomeController.currentFilePassword
+                    );
+                } else {
+                    APIFile.Instance().addArchiveGroup(
+                            FilesJobs.currentArchiveName,
+                            HomeController.currentFileDescription,
+                            HomeController.currentFilePassword,
+                            repositories_tabPane.getSelectionModel().getSelectedItem().getText()
+                    );
+                }
+
+                this.writeMessage("Archive successfully uploaded.");
+                setNodes(treeView_repository, icons, currentUserRepoPath);
+                return;
+            }
+            this.writeMessage("Failed to upload archive.");
+
         } catch (ZipException ex) {
             ex.printStackTrace();
             log.error("Erreur en tentant de créer une archive encryptée.\nMessage : \n" + ex.getMessage());
         } finally {
-            zipName = null;
-            zipPassword = null;
-            zipDescription = null;
+            currentFileName = null;
+            currentFilePassword = null;
+            currentFileDescription = null;
         }
     }
 
@@ -506,15 +521,31 @@ public class HomeController extends AnchorPane implements Initializable {
             this.writeMessage("Error while trying to reach the browsed file: it is probably on read-only mode.");
             return;
         }
-        if(FilesJobs.Instance().sendFileToServer(fileToAdd, true)){
-            this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
+        boolean isForUser = myRepository_tab.isSelected();
 
+        if(FilesJobs.Instance().sendFileToServer(fileToAdd, isForUser)){
+            if(isForUser){
+                APIFile.Instance().addFileUser(
+                        fileToAdd.getParent() + "\\" + fileToAdd.getName(),
+                        HomeController.currentFileDescription
+                );
+            } else {
+                APIFile.Instance().addFileGroup(
+                        fileToAdd.getParent() + "\\" + fileToAdd.getName(),
+                        HomeController.currentFileDescription,
+                        repositories_tabPane.getSelectionModel().getSelectedItem().getText()
+                );
+            }
+
+            this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
+            setNodes(treeView_repository, icons, currentUserRepoPath);
         } else {
             this.writeMessage("An error occurred while uploading the file.");
         }
-        zipName = null;
-        zipPassword = null;
-        zipDescription = null;
+
+        currentFileName = null;
+        currentFilePassword = null;
+        currentFileDescription = null;
     }
 
     /**
