@@ -22,11 +22,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-
-        APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa");
-        File tttt = new File("C:\\Users\\Nicol\\AppData\\Roaming\\DropThatFile\\repositories\\userfiles\\NCornu\\[Planches Exercices] Théorie des graphes 1.pdf");
-        FilesJobs.Instance().sendFileToServer(tttt, true);
-
         // Entry point of the application
         LoginForm startForm = new LoginForm(primaryStage);
         startForm.showForm();
