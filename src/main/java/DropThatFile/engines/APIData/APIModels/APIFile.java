@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.plutext.jaxb.svg11.G;
 
+import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -136,7 +137,7 @@ public class APIFile extends APIConnector {
             postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
             this.readFromUrl(this.route + "accounts/addArchive", postContent);
         }catch (Exception ex){
-            log.error(String.format("Error on APIFile on addArchive method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+            log.error(String.format("Error on APIFile on addArchiveUser method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }
     }
 
@@ -144,7 +145,20 @@ public class APIFile extends APIConnector {
      * Add a group file on the database
      *
      */
-    public void addFileGroup(Group group){
+    public void addFileGroup(String name, String description, String groupName){
+        try{
+            JSONObject toAPIDataFile = new JSONObject();
+            toAPIDataFile.append("name", name).append("description", description);
+            JSONObject toAPIDataGroup = new JSONObject();
+            toAPIDataGroup.append("name", groupName);
+            String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPIDataFile.toString(), GlobalVariables.public_key_server);
+            String encryptedGroupInfoJSON = RSAEngine.Instance().encrypt(toAPIDataGroup.toString(), GlobalVariables.public_key_server);
+            List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
+            postContent = this.buildPOSTList(postContent, "dataGroup", encryptedGroupInfoJSON);
+            this.readFromUrl(this.route + "groups/addFile", postContent);
+        }catch (Exception ex){
+            log.error(String.format("Error on APIFile on addFileGroup method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+        }
         //Ajoute l'information du fichier dans la vue des groupes
     }
     // Appel de la fonction
@@ -157,8 +171,25 @@ public class APIFile extends APIConnector {
      * Add a group archive on the database
      *
      */
-    public void addArchiveGroup(Group group){
-        //Ajoute l'information du fichier dans la vue des groupes
+    public void addArchiveGroup(String name, String description, String password, String groupName){
+        try{
+            JSONObject toAPIDataFile = new JSONObject();
+            toAPIDataFile.append("name", name).append("description", description);
+            JSONObject toAPIDataGroup = new JSONObject();
+            toAPIDataGroup.append("name", groupName);
+            String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPIDataFile.toString(), GlobalVariables.public_key_server);
+            String encryptedGroupInfoJSON = RSAEngine.Instance().encrypt(toAPIDataGroup.toString(), GlobalVariables.public_key_server);
+            List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
+            postContent = this.buildPOSTList(postContent, "dataGroup", encryptedGroupInfoJSON);
+
+            final PublicKey[] keyOfGroup = new PublicKey[1];
+            GlobalVariables.currentUser.getIsMemberOf().forEach((k, v) -> {if(v.getName() == groupName){ keyOfGroup[0] = v.getPublic_key(); }});
+
+            postContent = this.buildPOSTList(postContent, "passwordFile", RSAEngine.Instance().encrypt(password, keyOfGroup[0]));
+            this.readFromUrl(this.route + "groups/addArchive", postContent);
+        }catch (Exception ex){
+            log.error(String.format("Error on APIFile on addFileGroup method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
+        }
     }
     // Appel de la fonction
     /*APIFile.Instance().addArchiveGroup(
@@ -167,6 +198,9 @@ public class APIFile extends APIConnector {
             HomeController.zipPassword
     );*/
 
+    public String getPasswordForGroupArchive(){
+        return null;
+    }
 
     /**
      * Create or return the instance of APIFile
