@@ -39,9 +39,9 @@ public class KeyStoreFactory {
      * @param password Mot de passe en clair pour la création du coffre-fort.
      * @throws Exception Java Exceptions
      */
-    public static void setKeyPairToKeyStore(String password) throws Exception {
+    public static void setKeyPairToKeyStore(String password, String lname, String fname) throws Exception {
         KeyPair pair = RSAEngine.generateKeyPair();
-        X509Certificate cert = KeyStoreFactory.generateCertificate(pair.getPublic(), pair.getPrivate(), GlobalVariables.currentUser.getlName() + " " + GlobalVariables.currentUser.getfName());
+        X509Certificate cert = KeyStoreFactory.generateCertificate(pair.getPublic(), pair.getPrivate(), lname + " " + fname);
         Certificate[] certificate = new Certificate[1];
         certificate[0] = cert;
         try {

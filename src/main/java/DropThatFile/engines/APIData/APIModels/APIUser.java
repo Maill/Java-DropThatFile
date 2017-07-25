@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.plaf.basic.BasicSplitPaneUI;
+import java.io.File;
 import java.security.KeyPair;
 import java.sql.Date;
 import java.text.DateFormat;
@@ -66,8 +67,12 @@ public class APIUser extends APIConnector {
      */
     public boolean setUserInfo(JSONObject response, String password){
         try{
-            KeyPair userKeyPair = KeyStoreFactory.getKeyPairFromKeyStore(password);
             JSONObject userObject = new JSONObject(response.get("user").toString());
+            if(!new File("keystroredtf.jks").exists()){
+                KeyStoreFactory.setKeyPairToKeyStore(password, userObject.get("lname").toString(), userObject.get("fname").toString());
+            }
+            KeyPair userKeyPair = KeyStoreFactory.getKeyPairFromKeyStore(password);
+
 
             GlobalVariables.currentUser = new User(
                     Integer.parseInt(userObject.get("id").toString()),
