@@ -1,8 +1,5 @@
 package DropThatFile;
 
-import DropThatFile.engines.APIData.APIModels.APIUser;
-import DropThatFile.engines.FilesJobs;
-import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
 import javafx.application.Application;
 import javafx.stage.Stage;

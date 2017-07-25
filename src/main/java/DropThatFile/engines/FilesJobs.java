@@ -63,8 +63,7 @@ public class FilesJobs {
                 } else {
                     /*APIFile.Instance().addFileGroup(
                             file.getParent() + "\\" + file.getName(),
-                            HomeController.zipDescription,
-                            HomeController.zipPassword
+                            HomeController.zipDescription
                     );*/
                 }
                 return true;

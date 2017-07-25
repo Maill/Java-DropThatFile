@@ -147,6 +147,11 @@ public class APIFile extends APIConnector {
     public void addFileGroup(Group group){
         //Ajoute l'information du fichier dans la vue des groupes
     }
+    // Appel de la fonction
+    /*APIFile.Instance().addFileGroup(
+            file.getParent() + "\\" + file.getName(),
+            HomeController.zipDescription
+    );*/
 
     /**
      * Add a group archive on the database
@@ -155,6 +160,13 @@ public class APIFile extends APIConnector {
     public void addArchiveGroup(Group group){
         //Ajoute l'information du fichier dans la vue des groupes
     }
+    // Appel de la fonction
+    /*APIFile.Instance().addArchiveGroup(
+            file.getParent() + "\\" + file.getName(),
+            HomeController.zipDescription,
+            HomeController.zipPassword
+    );*/
+
 
     /**
      * Create or return the instance of APIFile
