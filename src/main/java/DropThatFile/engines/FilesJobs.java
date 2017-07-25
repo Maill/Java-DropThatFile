@@ -2,6 +2,7 @@ package DropThatFile.engines;
 
 import DropThatFile.controllers.HomeController;
 import DropThatFile.engines.APIData.APIModels.APIConfig;
+import DropThatFile.engines.APIData.APIModels.APIFile;
 import DropThatFile.models.Group;
 import javafx.scene.control.*;
 import net.lingala.zip4j.core.ZipFile;
@@ -42,11 +43,6 @@ public class FilesJobs {
     }
     //endregion
 
-    /**
-     * Encrypt and send the archive to the storage server
-     * @param file List of files to add in the archive
-     * @param isForUser Selected files from TreeView
-     */
     public boolean sendFileToServer(File file, boolean isForUser){
         String path = file.getAbsolutePath();
         final String regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
@@ -57,16 +53,42 @@ public class FilesJobs {
             pathFileFTP = matcher.group(0);
         }
         if(this.sendToFTP(file, pathFileFTP)){
-            return true;
+            if(HomeController.zipPassword == null){ // If this field is null, then it must be a file (and it should be)
+                if(isForUser){
+                    APIFile.Instance().addFileUser(
+                            file.getParent() + "\\" + file.getName(),
+                            HomeController.zipDescription
+                    );
+                    return true;
+                } else {
+                    /*APIFile.Instance().addFileGroup(
+                            file.getParent() + "\\" + file.getName(),
+                            HomeController.zipDescription,
+                            HomeController.zipPassword
+                    );*/
+                }
+                return true;
+            } else {
+                if(!isForUser){
+                    APIFile.Instance().addArchiveUser(
+                            file.getParent() + "\\" + file.getName(),
+                            HomeController.zipDescription,
+                            HomeController.zipPassword
+                    );
+                } else {
+                    /*APIFile.Instance().addArchiveGroup(
+                            file.getParent() + "\\" + file.getName(),
+                            HomeController.zipDescription,
+                            HomeController.zipPassword
+                    );*/
+                }
+
+                return true;
+            }
         }
         return false;
     }
 
-    /**
-     * Encrypt and send the archive to the storage server
-     * @param file File to send
-     * @param path Path on FTP to store the file
-     */
     private boolean sendToFTP(File file, String path){
         InputStream fileToSend;
         FTPClient ftpClient = null;
@@ -91,7 +113,6 @@ public class FilesJobs {
     /**
      * Encrypt and send the archive to the storage server
      * @param filesInArchive List of files to add in the archive
-     * @param selectedFolder Selected files from TreeView
      */
     public boolean sendEncryptedArchive(List<File> filesInArchive, TreeItem<File> selectedFolder) throws ZipException {
         // Zip name
@@ -124,8 +145,8 @@ public class FilesJobs {
     }
 
     /**
-     * Synchronize the local repository with the server
-     * @return ThreadGroup, give an indicator of Threads state
+     *
+     * @return
      */
     public ThreadGroup downloadFiles(){
         Set<Integer> keysOfGroups = currentUser.getIsMemberOf().keySet();
@@ -150,7 +171,7 @@ public class FilesJobs {
     }
 
     /**
-     * Synchronize the user repository with the server
+     *
      */
     public void downloadUserFiles() {
         FTPClient ftpClient = null;
@@ -165,7 +186,10 @@ public class FilesJobs {
 
             for (FTPFile file : files) {
                 if (file.isDirectory()) {
-                    getFilesOnDirectoryRecursive("/userfiles/" + (firstCharFName + lName) + "/" + file.getName(), file.getName());
+                    getFilesOnDirectoryRecursive(
+                            "/userfiles/" + (firstCharFName + lName) + "/" + file.getName(),
+                            file.getName(), true
+                    );
                     continue;
                 }
 
@@ -192,8 +216,8 @@ public class FilesJobs {
     }
 
     /**
-     * Synchronize the groups repository with the server
-     * @param listOfGroups List of group id
+     *
+     * @param listOfGroups
      */
     public void downloadGroupFiles(ArrayList<Integer> listOfGroups) {
         FTPClient ftpClient = null;
@@ -202,14 +226,18 @@ public class FilesJobs {
         try {
             for(Integer idGroup : listOfGroups){
                 ftpClient = getFTPConnexion();
-                String groupName = userGroups.get(idGroup).getName().trim();
+                String groupName = userGroups.get(idGroup).getName();
 
                 FTPFile[] files = ftpClient.listFiles("/groupfiles/" + groupName);
                 ftpClient.changeWorkingDirectory("/groupfiles/" + groupName);
 
                 for (FTPFile file : files) {
                     if (file.isDirectory()) {
-                        getFilesOnDirectoryRecursive("/groupfiles/" + groupName + "/" + file.getName(), file.getName());
+                        getFilesOnDirectoryRecursive(
+                                "/groupfiles/" + groupName + "/" + file.getName(),
+                                file.getName(),
+                                false
+                        );
                         continue;
                     }
 
@@ -235,13 +263,9 @@ public class FilesJobs {
         }
     }
 
-    /**
-     * Synchronize the groups repository with the server
-     * @param pathFTP Path on working directory on FTP
-     * @param pathRepository User/Group Repository
-     */
-   public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository){
+   public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository, boolean isForUser){
         FTPClient ftpClient = null;
+        String currentUsedPath = (isForUser) ? currentUserRepoPath : groupRepoMainPath;
         try {
             ftpClient = getFTPConnexion();
 
@@ -249,10 +273,14 @@ public class FilesJobs {
             ftpClient.changeWorkingDirectory(pathFTP);
 
             for (FTPFile file : files) {
-                if (file.isDirectory()) getFilesOnDirectoryRecursive(pathFTP + "/" + file.getName(), pathRepository + "\\" + file.getName());
+                if (file.isDirectory()) getFilesOnDirectoryRecursive(
+                        pathFTP + "/" + file.getName(),
+                        pathRepository + "\\" + file.getName(),
+                        isForUser
+                );
 
-                new File(repositoriesMainPath + "\\" + pathFTP).mkdirs();
-                File downloadFile = new File(repositoriesMainPath + pathFTP + "\\" +file.getName());
+                new File(currentUsedPath + "\\" + pathRepository).mkdirs();
+                File downloadFile = new File(currentUsedPath + pathRepository + "\\" + file.getName());
 
                 if(downloadFile.exists()) continue;
 
@@ -274,8 +302,8 @@ public class FilesJobs {
     }
 
     /**
-     *  Get the FTP Object connector
-     * @return Instance of FTPClient with credentials
+     *
+     * @return
      * @throws IOException
      */
     public FTPClient getFTPConnexion() throws IOException {
@@ -286,8 +314,8 @@ public class FilesJobs {
     }
 
     /**
-     * Return an instance of FilesJobs
-     * @return FilesJobs instance
+     *
+     * @return
      */
     public static FilesJobs Instance(){
         if(instance == null){

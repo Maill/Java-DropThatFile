@@ -38,10 +38,16 @@ public class PluginLoader {
         this.methodToInvoke = methodToInvoke;
 
         // Getting the jar URL which contains target class
-        classLoaderUrls = new URL[]{jarFile.toURI().toURL()};
+        classLoaderUrls = new URL[]{
+                jarFile.toURI().toURL(),
+
+        };
 
         // Create a new URLClassLoader
-        urlClassLoader = new URLClassLoader(classLoaderUrls);
+        urlClassLoader = new URLClassLoader(
+                classLoaderUrls,
+                this.getClass().getClassLoader()
+        );
 
         // Load the target class
         beanClass = urlClassLoader.loadClass(classToLoad);

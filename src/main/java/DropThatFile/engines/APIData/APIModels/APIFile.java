@@ -113,7 +113,7 @@ public class APIFile extends APIConnector {
         try{
             String encryptedFileInfoJSON = RSAEngine.Instance().encrypt(toAPI.toString(), GlobalVariables.public_key_server);
             List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
-            JSONObject responseFile = this.readFromUrl(this.route + "accounts/addFile", postContent);
+            this.readFromUrl(this.route + "accounts/addFile", postContent);
         }catch (Exception ex){
             log.error(String.format("Error on APIFile on addFile method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }
@@ -134,7 +134,7 @@ public class APIFile extends APIConnector {
             List<NameValuePair> postContent = this.buildPOSTList(null, "dataFile", encryptedFileInfoJSON);
             String encryptedFilePasswordJSON = RSAEngine.Instance().encrypt(password);
             postContent = this.buildPOSTList(postContent, "passwordFile", encryptedFilePasswordJSON);
-            JSONObject responseFile = this.readFromUrl(this.route + "accounts/addArchive", postContent);
+            this.readFromUrl(this.route + "accounts/addArchive", postContent);
         }catch (Exception ex){
             log.error(String.format("Error on APIFile on addArchive method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), Arrays.toString(ex.getStackTrace())));
         }

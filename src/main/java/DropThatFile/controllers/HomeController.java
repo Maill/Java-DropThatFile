@@ -507,9 +507,6 @@ public class HomeController extends AnchorPane implements Initializable {
             return;
         }
         if(FilesJobs.Instance().sendFileToServer(fileToAdd, true)){
-            APIFile.Instance().addFileUser(
-                    fileToAdd.getParent() + "\\" + fileToAdd.getName(), null
-            );
             this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
 
         } else {
