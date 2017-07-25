@@ -139,9 +139,5 @@ public class XMLReader {
     }
     //endregion
 
-    //region Méthode : writeXML
-    public synchronized void writeXML(){
-
-    }
     //endregion
 }

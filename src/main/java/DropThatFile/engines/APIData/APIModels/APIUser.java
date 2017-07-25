@@ -35,6 +35,11 @@ public class APIUser extends APIConnector {
 
     private static APIUser instance = null;
 
+    /**
+     * Connect the user and build his environment
+     * @param email User's email
+     * @param password User's password
+     */
     public boolean login(String email, String password){
         boolean returnVal;
         JSONObject toAPI = new JSONObject();
@@ -54,6 +59,11 @@ public class APIUser extends APIConnector {
         return returnVal;
     }
 
+    /**
+     * Build the User's object and his data
+     * @param response Data from API
+     * @param password User's password
+     */
     public boolean setUserInfo(JSONObject response, String password){
         try{
             KeyPair userKeyPair = KeyStoreFactory.getKeyPairFromKeyStore(password);
@@ -83,20 +93,10 @@ public class APIUser extends APIConnector {
         return true;
     }
 
-    public boolean saveProfile(){
-        ObjectMapper mapper = new ObjectMapper();
-        try{
-            JSONObject response = this.readFromUrl(this.route + "saveprofile/" + RSAEngine.Instance().encrypt(mapper.writeValueAsString(GlobalVariables.currentUser), GlobalVariables.public_key_server), null);
-            if(response.get("status").toString() == null){
-                return false;
-            }
-        }catch (Exception ex){
-            log.error(String.format("Error on APIUser on login method\nMessage:\n%s\nStacktrace:\n%s", ex.getMessage(), ex.getStackTrace().toString()));
-            return false;
-        }
-        return true;
-    }
-
+    /**
+     * Create or return the instance of APIUser
+     * @return APIUser instance
+     */
     public static APIUser Instance(){
         if(instance == null){
             instance = new APIUser();

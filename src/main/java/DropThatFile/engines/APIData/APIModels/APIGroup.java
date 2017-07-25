@@ -21,6 +21,10 @@ public class APIGroup extends APIConnector {
 
     private static APIGroup instance = null;
 
+    /**
+     * Build the user's groups
+     * @return User's groups
+     */
     public HashMap<Integer, Group> getGroupsForUser(){
         HashMap<Integer, Group> ret;
         try{
@@ -40,6 +44,11 @@ public class APIGroup extends APIConnector {
         return ret;
     }
 
+    /**
+     * Build a list for body HTTP Request
+     * @param response Group's data from API
+     * @return Create group's data from API
+     */
     private HashMap<Integer, Group> buildGroupsFromResponse(JSONObject response){
         // Get data
         JSONArray getResult = response.getJSONArray("result");
@@ -62,6 +71,10 @@ public class APIGroup extends APIConnector {
         return ret;
     }
 
+    /**
+     * Create or return the instance of APIGroup
+     * @return APIGroup instance
+     */
     public static APIGroup Instance(){
         if(instance == null){
             instance = new APIGroup();

@@ -28,6 +28,10 @@ public class APIFile extends APIConnector {
 
     private static APIFile instance = null;
 
+    /**
+     * Build the User's files
+     * @return List of user's files
+     */
     public HashMap<String, File> getFilesUser(){
         HashMap<String, File> ret = new HashMap<>();
 
@@ -57,6 +61,10 @@ public class APIFile extends APIConnector {
         return ret;
     }
 
+    /**
+     * Build the Group's files
+     * @return List of groups's files
+     */
     public void getFilesGroups(){
         HashMap<String, File> files = new HashMap<>();
 
@@ -92,6 +100,11 @@ public class APIFile extends APIConnector {
         }
     }
 
+    /**
+     * Add a user's file on the database
+     * @param fileName File's name
+     * @param description Description of the file
+     */
     public void addFileUser(String fileName, String description){
         //ajout des informations du fichier lors de l'ajout d'un fichier
         JSONObject toAPI = new JSONObject();
@@ -106,6 +119,12 @@ public class APIFile extends APIConnector {
         }
     }
 
+    /**
+     * Add a user archive on the database
+     * @param fileName File's name
+     * @param description Description of the file
+     * @param password File's password
+     */
     public void addArchiveUser(String fileName, String description, String password){
         //ajout des informations du fichier lors de l'ajout d'un fichier
         try{
@@ -121,10 +140,26 @@ public class APIFile extends APIConnector {
         }
     }
 
+    /**
+     * Add a group file on the database
+     *
+     */
     public void addFileGroup(Group group){
         //Ajoute l'information du fichier dans la vue des groupes
     }
 
+    /**
+     * Add a group archive on the database
+     *
+     */
+    public void addArchiveGroup(Group group){
+        //Ajoute l'information du fichier dans la vue des groupes
+    }
+
+    /**
+     * Create or return the instance of APIFile
+     * @return APIFile instance
+     */
     public static APIFile Instance(){
         if(instance == null){
             instance = new APIFile();

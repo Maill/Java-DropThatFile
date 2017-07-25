@@ -1,5 +1,7 @@
 package DropThatFile;
 
+import DropThatFile.engines.APIData.APIModels.APIUser;
+import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -19,8 +21,9 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+
         //APIUser.Instance().login("nicolas.demoncourt@gmail.com", "aaaa");
-        //FilesJobs.Instance().SendGroupFileToServer(new File("C:\\Users\\Nicol\\AppData\\Roaming\\DropThatFile\\repositories\\groupfiles\\Groupe 2\\888.txt"));
+        //FilesJobs.Instance().downloadFiles();
 
         // Entry point of the application
         LoginForm startForm = new LoginForm(primaryStage);

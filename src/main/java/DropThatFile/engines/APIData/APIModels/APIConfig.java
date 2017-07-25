@@ -22,6 +22,10 @@ public class APIConfig extends APIConnector {
 
     private static APIConfig instance = null;
 
+    /**
+     * Get the RSA Public Key of the server
+     * @return Public server key as string
+     */
     public String getPublicKeyServer(){
         String returnVal;
         try{
@@ -37,6 +41,10 @@ public class APIConfig extends APIConnector {
         return returnVal;
     }
 
+    /**
+     * Get the FTP credentials from the server
+     * @return FTP credentials
+     */
     public JSONObject getFTPInformations(){
         JSONObject returnVal = null;
         try{
@@ -54,6 +62,10 @@ public class APIConfig extends APIConnector {
         return returnVal;
     }
 
+    /**
+     * Create or return the instance of APIConfig
+     * @return APIConfig instance
+     */
     public static APIConfig Instance(){
         if(instance == null){
             instance = new APIConfig();

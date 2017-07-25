@@ -193,12 +193,12 @@ public class HomeController extends AnchorPane implements Initializable {
                 Tab groupTab = new Tab(groupName);
                 groupTab.setClosable(false);
                 groupTab.setOnSelectionChanged(e1 -> {
-                    FilesJobs.Instance().downloadFiles();
+                    FilesJobs.Instance().downloadGroupFiles(groupsId);
                     setNodes(treeView_repository, icons, currentGroupPath);
 
                     button_synchronize.setOnAction(null);
                     button_synchronize.setOnAction(e2 -> {
-                        FilesJobs.Instance().downloadFiles();
+                        FilesJobs.Instance().downloadGroupFiles(groupsId);
                         setNodes(treeView_repository, icons, currentGroupPath);
                     });
                 });

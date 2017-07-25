@@ -42,6 +42,11 @@ public class FilesJobs {
     }
     //endregion
 
+    /**
+     * Encrypt and send the archive to the storage server
+     * @param file List of files to add in the archive
+     * @param isForUser Selected files from TreeView
+     */
     public boolean sendFileToServer(File file, boolean isForUser){
         String path = file.getAbsolutePath();
         final String regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
@@ -57,6 +62,11 @@ public class FilesJobs {
         return false;
     }
 
+    /**
+     * Encrypt and send the archive to the storage server
+     * @param file File to send
+     * @param path Path on FTP to store the file
+     */
     private boolean sendToFTP(File file, String path){
         InputStream fileToSend;
         FTPClient ftpClient = null;
@@ -81,6 +91,7 @@ public class FilesJobs {
     /**
      * Encrypt and send the archive to the storage server
      * @param filesInArchive List of files to add in the archive
+     * @param selectedFolder Selected files from TreeView
      */
     public boolean sendEncryptedArchive(List<File> filesInArchive, TreeItem<File> selectedFolder) throws ZipException {
         // Zip name
@@ -113,8 +124,8 @@ public class FilesJobs {
     }
 
     /**
-     *
-     * @return
+     * Synchronize the local repository with the server
+     * @return ThreadGroup, give an indicator of Threads state
      */
     public ThreadGroup downloadFiles(){
         Set<Integer> keysOfGroups = currentUser.getIsMemberOf().keySet();
@@ -139,7 +150,7 @@ public class FilesJobs {
     }
 
     /**
-     *
+     * Synchronize the user repository with the server
      */
     public void downloadUserFiles() {
         FTPClient ftpClient = null;
@@ -181,8 +192,8 @@ public class FilesJobs {
     }
 
     /**
-     *
-     * @param listOfGroups
+     * Synchronize the groups repository with the server
+     * @param listOfGroups List of group id
      */
     public void downloadGroupFiles(ArrayList<Integer> listOfGroups) {
         FTPClient ftpClient = null;
@@ -191,7 +202,7 @@ public class FilesJobs {
         try {
             for(Integer idGroup : listOfGroups){
                 ftpClient = getFTPConnexion();
-                String groupName = userGroups.get(idGroup).getName();
+                String groupName = userGroups.get(idGroup).getName().trim();
 
                 FTPFile[] files = ftpClient.listFiles("/groupfiles/" + groupName);
                 ftpClient.changeWorkingDirectory("/groupfiles/" + groupName);
@@ -224,6 +235,11 @@ public class FilesJobs {
         }
     }
 
+    /**
+     * Synchronize the groups repository with the server
+     * @param pathFTP Path on working directory on FTP
+     * @param pathRepository User/Group Repository
+     */
    public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository){
         FTPClient ftpClient = null;
         try {
@@ -235,8 +251,8 @@ public class FilesJobs {
             for (FTPFile file : files) {
                 if (file.isDirectory()) getFilesOnDirectoryRecursive(pathFTP + "/" + file.getName(), pathRepository + "\\" + file.getName());
 
-                new File(currentUserRepoPath + "\\" + pathRepository).mkdirs();
-                File downloadFile = new File(currentUserRepoPath + pathRepository + "\\" +file.getName());
+                new File(repositoriesMainPath + "\\" + pathFTP).mkdirs();
+                File downloadFile = new File(repositoriesMainPath + pathFTP + "\\" +file.getName());
 
                 if(downloadFile.exists()) continue;
 
@@ -258,8 +274,8 @@ public class FilesJobs {
     }
 
     /**
-     *
-     * @return
+     *  Get the FTP Object connector
+     * @return Instance of FTPClient with credentials
      * @throws IOException
      */
     public FTPClient getFTPConnexion() throws IOException {
@@ -270,8 +286,8 @@ public class FilesJobs {
     }
 
     /**
-     *
-     * @return
+     * Return an instance of FilesJobs
+     * @return FilesJobs instance
      */
     public static FilesJobs Instance(){
         if(instance == null){

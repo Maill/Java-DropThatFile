@@ -31,6 +31,11 @@ public abstract class APIConnector {
 
     protected String baseURL = XMLReader.Instance().get(XMLFields.URL_API);
 
+    /**
+     * Build a HTTP Request and get the response of the API
+     * @param URL API Route URL
+     * @param content List for body HTTP Request
+     */
     public JSONObject readFromUrl(String URL, List<NameValuePair> content) throws Exception{
         JSONObject jsonObject = null;
 
@@ -79,6 +84,12 @@ public abstract class APIConnector {
         }
     }
 
+    /**
+     * Build a list for body HTTP Request
+     * @param listArguments If null create a new List, list of body HTTP Request data
+     * @param contentName Name of body content
+     * @param contentPOST Data of body content
+     */
     public List<NameValuePair> buildPOSTList(List<NameValuePair> listArguments, String contentName,String contentPOST){
         if (listArguments == null && contentPOST == null) return null;
         if (contentPOST == null || contentName == null) return listArguments;
@@ -91,11 +102,19 @@ public abstract class APIConnector {
         return listArguments;
     }
 
+    /**
+     * Transform a String to Date Object
+     * @param date If null create a new List, list of body HTTP Request data
+     */
     public java.util.Date getDateFrommString(String date) throws Exception{
         DateFormat format = new SimpleDateFormat("yyyy-M-dd", Locale.FRANCE);
         return format.parse(date.substring(0, 10));
     }
 
+    /**
+     * Formatting body of HTTP Request
+     * @param params List of body content
+     */
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
         boolean first = true;
