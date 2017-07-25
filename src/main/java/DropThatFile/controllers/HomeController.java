@@ -168,34 +168,39 @@ public class HomeController extends AnchorPane implements Initializable {
         // Set a bunch of graphic controls and events
         setAllControls();
         // Link the TreeView to the groups of the user too
-        setUserGroupsTabPanes();
+        setUserGroupTabPanes();
 
         // Set the plugin ListView
         setPluginListView();
-
-        //FilesJobs.Instance().downloadGroupFiles();
     }
 
     /**
      * Create a Tab in the PaneTab for each group where the user is a member of.
      */
-    private void setUserGroupsTabPanes(){
+    private void setUserGroupTabPanes(){
         try {
             HashMap<Integer, Group> groupsOfCurrentUser = APIGroup.Instance().getGroupsForUser();
             if(groupsOfCurrentUser.isEmpty()) return;
+            ArrayList<Integer> groupsId = new ArrayList<>(groupsOfCurrentUser.keySet());
 
             int i = 0;
             for (Group group : groupsOfCurrentUser.values()) {
                 if(!currentGroups.contains(group)) currentGroups.add(group);
+
                 String groupName = currentGroups.get(i).getName();
                 String currentGroupPath = groupRepoMainPath.concat(groupName) + "\\";
 
                 Tab groupTab = new Tab(groupName);
                 groupTab.setClosable(false);
                 groupTab.setOnSelectionChanged(e1 -> {
+                    FilesJobs.Instance().downloadFiles();
                     setNodes(treeView_repository, icons, currentGroupPath);
+
                     button_synchronize.setOnAction(null);
-                    button_synchronize.setOnAction(e2 -> setNodes(treeView_repository, icons, currentGroupPath));
+                    button_synchronize.setOnAction(e2 -> {
+                        FilesJobs.Instance().downloadFiles();
+                        setNodes(treeView_repository, icons, currentGroupPath);
+                    });
                 });
 
                 repositories_tabPane.getTabs().add(groupTab);
@@ -206,9 +211,14 @@ public class HomeController extends AnchorPane implements Initializable {
             ex.printStackTrace();
         } finally {
             myRepository_tab.setOnSelectionChanged(e -> {
+                FilesJobs.Instance().downloadUserFiles();
                 setNodes(treeView_repository, icons, currentUserRepoPath);
+
                 button_synchronize.setOnAction(null);
-                button_synchronize.setOnAction(e2 -> setNodes(treeView_repository, icons, currentUserRepoPath));
+                button_synchronize.setOnAction(e2 -> {
+                    FilesJobs.Instance().downloadUserFiles();
+                    setNodes(treeView_repository, icons, currentUserRepoPath);
+                });
             });
         }
     }

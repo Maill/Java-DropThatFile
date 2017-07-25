@@ -170,12 +170,13 @@ public class FilesJobs {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(ftpClient != null)
+            if(ftpClient != null){
                 try {
                     ftpClient.logout();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
@@ -213,16 +214,17 @@ public class FilesJobs {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(ftpClient != null)
+            if(ftpClient != null){
                 try {
                     ftpClient.logout();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
-    public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository){
+   public void getFilesOnDirectoryRecursive(String pathFTP, String pathRepository){
         FTPClient ftpClient = null;
         try {
             ftpClient = getFTPConnexion();
@@ -245,12 +247,13 @@ public class FilesJobs {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if(ftpClient != null)
+            if(ftpClient != null){
                 try {
                     ftpClient.logout();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
         }
     }
 
