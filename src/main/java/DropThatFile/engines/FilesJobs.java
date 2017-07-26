@@ -59,6 +59,74 @@ public class FilesJobs {
         return false;
     }
 
+    public void DeleteFile(File file, boolean isForUser){
+        String path = file.getAbsolutePath();
+        final String regex;
+
+        if(file.isDirectory()){
+            regex = (isForUser) ? "\\\\userfiles.+" : "\\\\groupfiles.+";
+        } else {
+            regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
+        }
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(path);
+        String pathFileFTP = null;
+        while (matcher.find()) {
+            pathFileFTP = matcher.group(0);
+        }
+
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = getFTPConnexion();
+            ftpClient.makeDirectory(pathFileFTP);
+            if(file.isDirectory()){
+                DeleteDirectory(pathFileFTP);
+                ftpClient.removeDirectory(pathFileFTP + "\\");
+            } else {
+                ftpClient.deleteFile(pathFileFTP + file.getName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                ftpClient.logout();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void DeleteDirectory(String path){
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = getFTPConnexion();
+
+            FTPFile[] files = ftpClient.listFiles(path);
+            ftpClient.changeWorkingDirectory(path);
+
+            for (FTPFile file : files) {
+                if (file.isDirectory()) {
+                    DeleteDirectory(path + "\\" + file.getName() + "\\");
+                    ftpClient.removeDirectory(path + "\\" + file.getName());
+                    continue;
+                }
+
+                ftpClient.deleteFile(path + "\\" + file.getName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(ftpClient != null){
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
     private boolean sendToFTP(File file, String path){
         InputStream fileToSend;
         FTPClient ftpClient = null;

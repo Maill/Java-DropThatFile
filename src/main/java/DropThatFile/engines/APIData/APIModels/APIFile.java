@@ -1,19 +1,15 @@
 package DropThatFile.engines.APIData.APIModels;
 
 import DropThatFile.GlobalVariables;
-import DropThatFile.controllers.HomeController;
 import DropThatFile.engines.APIData.APIConnector;
-import DropThatFile.engines.KeyStoreFactory;
 import DropThatFile.engines.LogManagement;
 import DropThatFile.engines.RSAEngine;
 import DropThatFile.models.File;
 import DropThatFile.models.Group;
-import com.sun.istack.internal.Nullable;
 import org.apache.http.NameValuePair;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.plutext.jaxb.svg11.G;
 
 import java.security.PublicKey;
 import java.util.Arrays;
