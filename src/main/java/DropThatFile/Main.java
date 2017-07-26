@@ -1,13 +1,10 @@
 package DropThatFile;
 
-import DropThatFile.engines.APIData.APIModels.APIUser;
-import DropThatFile.engines.FilesJobs;
 import DropThatFile.engines.windowsManager.forms.LoginForm;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.File;
 import java.security.Security;
 
 public class Main extends Application{

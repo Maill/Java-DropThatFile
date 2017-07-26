@@ -1,15 +1,5 @@
 package DropThatFile.engines.windowsManager;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Optional;
-
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -25,6 +15,16 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * Created by Olivier on 17/06/2017.
@@ -116,7 +116,6 @@ public final class TreeViewer{
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[6])));
                     else
                         root.getChildren().add(new TreeItem<>(node, new ImageView(icons[1])));
-
                 }
             }
             return root;
@@ -216,7 +215,7 @@ public final class TreeViewer{
     }
 
     /**
-     * Handle delete key to remove node
+     * Handle events key for the TreeView
      * @param event Custom event
      * @param treeView FXML TreeView field to interact with
      */
@@ -224,7 +223,6 @@ public final class TreeViewer{
         TreeItem<File> selectedNode = treeView.getSelectionModel().getSelectedItem();
 
         if (event.getCode().equals(KeyCode.DELETE) && selectedNode != null) {
-            treeView.setEditable(false);
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Confirming dialog");
             alert.setHeaderText("Delete this?");
@@ -338,7 +336,7 @@ public final class TreeViewer{
      */
     public static String userAddFolderNode(TreeView<File> treeView, Image[] icons, String newFolder_name) {
         if (newFolder_name == null || newFolder_name.trim().equals("")){
-            newFolder_name = "New_folder"; // Just in case
+            newFolder_name = "New folder"; // Just in case
         }
 
         // Regex checking the name for special characters not allowed on the Windows OS

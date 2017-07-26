@@ -50,6 +50,7 @@ public class FilesJobs {
         final Pattern pattern = Pattern.compile(regex);
         final Matcher matcher = pattern.matcher(path);
         String pathFileFTP = null;
+
         while (matcher.find()) {
             pathFileFTP = matcher.group(0);
         }
@@ -59,74 +60,6 @@ public class FilesJobs {
         return false;
     }
 
-    public void DeleteFile(File file, boolean isForUser){
-        String path = file.getAbsolutePath();
-        final String regex;
-
-        if(file.isDirectory()){
-            regex = (isForUser) ? "\\\\userfiles.+" : "\\\\groupfiles.+";
-        } else {
-            regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
-        }
-        final Pattern pattern = Pattern.compile(regex);
-        final Matcher matcher = pattern.matcher(path);
-        String pathFileFTP = null;
-        while (matcher.find()) {
-            pathFileFTP = matcher.group(0);
-        }
-
-        FTPClient ftpClient = null;
-        try {
-            ftpClient = getFTPConnexion();
-            ftpClient.makeDirectory(pathFileFTP);
-            if(file.isDirectory()){
-                DeleteDirectory(pathFileFTP);
-                ftpClient.removeDirectory(pathFileFTP + "\\");
-            } else {
-                ftpClient.deleteFile(pathFileFTP + file.getName());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                ftpClient.logout();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void DeleteDirectory(String path){
-        FTPClient ftpClient = null;
-        try {
-            ftpClient = getFTPConnexion();
-
-            FTPFile[] files = ftpClient.listFiles(path);
-            ftpClient.changeWorkingDirectory(path);
-
-            for (FTPFile file : files) {
-                if (file.isDirectory()) {
-                    DeleteDirectory(path + "\\" + file.getName() + "\\");
-                    ftpClient.removeDirectory(path + "\\" + file.getName());
-                    continue;
-                }
-
-                ftpClient.deleteFile(path + "\\" + file.getName());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if(ftpClient != null){
-                try {
-                    ftpClient.logout();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-
     private boolean sendToFTP(File file, String path){
         InputStream fileToSend;
         FTPClient ftpClient = null;
@@ -135,6 +68,7 @@ public class FilesJobs {
             ftpClient.makeDirectory(path);
             fileToSend = new FileInputStream(file);
             ftpClient.storeFile(path + file.getName(), fileToSend);
+            fileToSend.close();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -180,6 +114,76 @@ public class FilesJobs {
         } catch(ZipException ex){
             ex.printStackTrace();
             return false;
+        }
+    }
+
+    public boolean deleteFile(File file, boolean isForUser){
+        String path = file.getAbsolutePath();
+        final String regex;
+
+        if(file.isDirectory()){
+            regex = (isForUser) ? "\\\\userfiles.+" : "\\\\groupfiles.+";
+        } else {
+            regex = (isForUser) ? "\\\\userfiles.+\\\\" : "\\\\groupfiles.+\\\\";
+        }
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(path);
+        String pathFileFTP = null;
+        while (matcher.find()) {
+            pathFileFTP = matcher.group(0);
+        }
+
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = getFTPConnexion();
+            ftpClient.makeDirectory(pathFileFTP);
+            if(file.isDirectory()){
+                deleteDirectory(pathFileFTP);
+                return ftpClient.removeDirectory(pathFileFTP + "\\");
+            } else {
+                return ftpClient.deleteFile(pathFileFTP + file.getName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if(ftpClient != null){
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void deleteDirectory(String path){
+        FTPClient ftpClient = null;
+        try {
+            ftpClient = getFTPConnexion();
+
+            FTPFile[] files = ftpClient.listFiles(path);
+            ftpClient.changeWorkingDirectory(path);
+
+            for (FTPFile file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(path + "\\" + file.getName() + "\\");
+                    ftpClient.removeDirectory(path + "\\" + file.getName());
+                    continue;
+                }
+
+                ftpClient.deleteFile(path + "\\" + file.getName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if(ftpClient != null){
+                try {
+                    ftpClient.logout();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -240,6 +244,7 @@ public class FilesJobs {
                 try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
                     ftpClient.retrieveFile("/userfiles/" + (firstCharFName + lName) + "\\" + file.getName(), outputStream);
                 }
+                downloadFile = null;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -265,7 +270,7 @@ public class FilesJobs {
         try {
             for(Integer idGroup : listOfGroups){
                 ftpClient = getFTPConnexion();
-                String groupName = userGroups.get(idGroup).getName();
+                String groupName = userGroups.get(idGroup).getName().trim();
 
                 FTPFile[] files = ftpClient.listFiles("/groupfiles/" + groupName);
                 ftpClient.changeWorkingDirectory("/groupfiles/" + groupName);
@@ -287,6 +292,7 @@ public class FilesJobs {
                     try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))){
                         ftpClient.retrieveFile("/groupfiles/" + groupName + "\\" + file.getName(), outputStream);
                     }
+                    downloadFile = null;
                 }
             }
         } catch (IOException e) {
@@ -327,7 +333,10 @@ public class FilesJobs {
 
                 try(OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile))) {
                     ftpClient.retrieveFile(pathFTP + "\\" + file.getName(), outputStream);
+                    outputStream.close();
                 }
+
+                downloadFile = null;
             }
         } catch (IOException e) {
             e.printStackTrace();

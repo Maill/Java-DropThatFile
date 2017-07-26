@@ -26,7 +26,7 @@ public class WindowsHandler {
     public WindowsHandler(Stage jfxStage){
         this.jfxStage = jfxStage;
         // Application icon
-        jfxStage.getIcons().add(new Image(this.getClass().getResourceAsStream( "/images/logo.png" )));
+        jfxStage.getIcons().add(new Image(this.getClass().getResourceAsStream( "/images/logo.png")));
         jfxStage.setResizable(false);
     }
 

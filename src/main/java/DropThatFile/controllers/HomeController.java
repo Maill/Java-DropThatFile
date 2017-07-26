@@ -35,6 +35,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -111,8 +113,6 @@ public class HomeController extends AnchorPane implements Initializable {
     }
     //endregion
 
-    public static PluginLoader pluginLoader;
-
     // Dropdown menu on right-click in the TreeView
     private ContextMenu contextMenu = new ContextMenu();
     private MenuItem preview_menuItem = new MenuItem("Preview");
@@ -141,6 +141,8 @@ public class HomeController extends AnchorPane implements Initializable {
 
     private WindowsHandler windowsHandler = new WindowsHandler(stage);
 
+    public static PluginLoader pluginLoader;
+
     private Expander pluginExpander = new Expander();
 
     public static String currentFilePassword = null;
@@ -151,16 +153,14 @@ public class HomeController extends AnchorPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Download all needed files
+        FilesJobs.Instance().downloadUserFiles();
+
         ArrayList<ImageView> langFlags = new ArrayList<>();
         //langFlags.add(imageView_flagEN);
         langFlags.add(imageView_flagFR);
         // Set translation annotation
         windowsHandler.languageListening(this, langFlags);
-
-        // Set the pluginsArrayList for previewing files
-        pluginExpander.loadFilePreviewers();
-
-        FilesJobs.Instance().downloadUserFiles();
 
         // Set the TreeView
         buildTreeView(treeView_repository, icons, contextMenu, checkBox_autoRefresh, currentUserRepoPath);
@@ -171,6 +171,8 @@ public class HomeController extends AnchorPane implements Initializable {
 
         // Set the plugin ListView
         setPluginListView();
+        // Set the pluginsArrayList for previewing files
+        pluginExpander.loadFilePreviewers();
     }
 
     /**
@@ -192,10 +194,9 @@ public class HomeController extends AnchorPane implements Initializable {
                 Tab groupTab = new Tab(groupName);
                 groupTab.setClosable(false);
                 groupTab.setOnSelectionChanged(e1 -> {
-                    //FilesJobs.Instance().downloadGroupFiles(groupsId);
+                    FilesJobs.Instance().downloadGroupFiles(groupsId);
                     setNodes(treeView_repository, icons, currentGroupPath);
 
-                    button_synchronize.setOnAction(null);
                     button_synchronize.setOnAction(e2 -> {
                         FilesJobs.Instance().downloadGroupFiles(groupsId);
                         setNodes(treeView_repository, icons, currentGroupPath);
@@ -210,10 +211,9 @@ public class HomeController extends AnchorPane implements Initializable {
             ex.printStackTrace();
         } finally {
             myRepository_tab.setOnSelectionChanged(e -> {
-                //FilesJobs.Instance().downloadUserFiles();
+                FilesJobs.Instance().downloadUserFiles();
                 setNodes(treeView_repository, icons, currentUserRepoPath);
 
-                button_synchronize.setOnAction(null);
                 button_synchronize.setOnAction(e2 -> {
                     FilesJobs.Instance().downloadUserFiles();
                     setNodes(treeView_repository, icons, currentUserRepoPath);
@@ -242,11 +242,11 @@ public class HomeController extends AnchorPane implements Initializable {
         contextMenu.getItems().get(2).setOnAction(e ->
                 this.writeMessage(userAddFolderNode(treeView_repository, icons, "New folder")));
         // Delete MenuItem
-        contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(alertDeletion()));
+        contextMenu.getItems().get(3).setOnAction(e -> this.writeMessage(alertDeletion(treeView_repository)));
 
         // Button events
         createFolder_button.setOnAction(e -> this.writeMessage(userAddFolderNode(treeView_repository, icons, textField_folderName.getText())));
-        removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion()));
+        removeFolder_button.setOnAction(e -> this.writeMessage(alertDeletion(treeView_repository)));
     }
 
     /**
@@ -381,7 +381,7 @@ public class HomeController extends AnchorPane implements Initializable {
         root.setCenter(dialogVox);
         root.setBottom(btnValidate);
 
-        Scene dialogScene = new Scene(root, 500, 275);
+        Scene dialogScene = new Scene(root, 600, 300);
         dialog.setScene(dialogScene);
         dialog.showAndWait();
     }
@@ -522,22 +522,25 @@ public class HomeController extends AnchorPane implements Initializable {
             return;
         }
         boolean isForUser = myRepository_tab.isSelected();
+        TreeItem<File> selectedItem = treeView_repository.getSelectionModel().getSelectedItem();
+        File newFile = new File(selectedItem.getValue().getAbsolutePath() + "\\" + fileToAdd.getName());
+        Files.copy(fileToAdd.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        if(FilesJobs.Instance().sendFileToServer(fileToAdd, isForUser)){
+        if(FilesJobs.Instance().sendFileToServer(newFile, isForUser)){
             if(isForUser){
                 APIFile.Instance().addFileUser(
-                        fileToAdd.getParent() + "\\" + fileToAdd.getName(),
+                        newFile.getParent() + "\\" + newFile.getName(),
                         HomeController.currentFileDescription
                 );
             } else {
                 APIFile.Instance().addFileGroup(
-                        fileToAdd.getParent() + "\\" + fileToAdd.getName(),
+                        newFile.getParent() + "\\" + newFile.getName(),
                         HomeController.currentFileDescription,
                         repositories_tabPane.getSelectionModel().getSelectedItem().getText()
                 );
             }
 
-            this.writeMessage(userAddFileNode(treeView_repository, icons, fileToAdd));
+            this.writeMessage(userAddFileNode(treeView_repository, icons, newFile));
             setNodes(treeView_repository, icons, currentUserRepoPath);
         } else {
             this.writeMessage("An error occurred while uploading the file.");
@@ -551,15 +554,26 @@ public class HomeController extends AnchorPane implements Initializable {
     /**
      * Create an alert that demands confirmation from the user to delete the selected node and its potential children
      */
-    private String alertDeletion(){
+    private String alertDeletion(TreeView<File> treeView){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirming dialog");
         alert.setHeaderText("Delete this?");
         alert.setContentText("Are you sure you want to delete this?");
 
+        boolean isForUser = myRepository_tab.isSelected();
+        TreeItem<File> selectedNode = treeView_repository.getSelectionModel().getSelectedItem();
+
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK){
-            return userRemoveNode(treeView_repository);
+            if(FilesJobs.Instance().deleteFile(selectedNode.getValue(), isForUser)){
+                if(selectedNode.getValue().delete()){
+                    return userRemoveNode(treeView_repository);
+                } else {
+                    return "Element deletion aborted.";
+                }
+            } else {
+                return "Element deletion aborted.";
+            }
         } else {
             return "Element deletion aborted.";
         }
@@ -603,7 +617,6 @@ public class HomeController extends AnchorPane implements Initializable {
         LocalDateTime now = LocalDateTime.now();
         message_textArea.appendText("At " + now.format(dtFormatter) + "\n" + msg + "\n");
     }
-
     //region
     public void setLabelFolderName(String str){
         label_folderName.setText(str);

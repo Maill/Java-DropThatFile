@@ -1,8 +1,7 @@
 package DropThatFile.pluginManager;
 
 import javafx.scene.control.TreeItem;
-import ro.fortsoft.pf4j.JarPluginManager;
-import ro.fortsoft.pf4j.PluginWrapper;
+import ro.fortsoft.pf4j.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +12,8 @@ import java.util.Set;
  * Created by Olivier on 02/05/2017.
  */
 public class Expander {
-    private final JarPluginManager pluginManager = new JarPluginManager();
-    // Retrieves the extensions for IPreviewable extension point after plugins' launch
+    private PluginManager pluginManager = new DefaultPluginManager();
+    // Retrieves the extensions for IPlugin extension point after plugins' launch
     private List<IPreviewable> previewers;
     // Retrieves extensions from classpath (non plugin) after plugins' launch
     private Set<String> extensionClassNames;
@@ -23,7 +22,7 @@ public class Expander {
 
     //region Plugin initialization
     /**
-     * Load all plugins implementing the IPreviewable interface and extending the P4J Plugin class.
+     * Load all plugins implementing the IPlugin interface and extending the P4J Plugin class.
      * Default : enable
      */
     public void loadAll(){
@@ -92,12 +91,6 @@ public class Expander {
                     if(className.equals("ExcelFilePreviewer")) {
                         return previewer.getFileContent(selectedFile);
                     }
-                    /*try {
-                        return (String)HomeController.pluginLoader.invokeMethod(selectedFile);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }*/
                 } else {
                     if(className.equals("TextFilePreviewer")) {
                         return previewer.getFileContent(selectedFile);
@@ -105,7 +98,6 @@ public class Expander {
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
-                return null;
             }
         }
         return null;
